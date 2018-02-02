@@ -11,7 +11,7 @@ import com.starrtc.starrtcsdk.im.message.StarIMMessage;
 public class DemoC2CListener implements IStarIMC2CListener {
 
     @Override
-    public void onNewMessages(StarIMMessage msg) {
+    public void onNewMessage(StarIMMessage msg) {
         AEvent.notifyListener(AEvent.AEVENT_C2C_REV_MSG,true,msg);
     }
 

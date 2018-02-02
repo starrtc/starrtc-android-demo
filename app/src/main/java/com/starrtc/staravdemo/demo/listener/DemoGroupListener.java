@@ -10,7 +10,7 @@ import com.starrtc.starrtcsdk.im.message.StarIMMessage;
 
 public class DemoGroupListener implements IStarIMGroupListener {
     @Override
-    public void onNewMessages(StarIMMessage msg) {
+    public void onNewMessage(StarIMMessage msg) {
         AEvent.notifyListener(AEvent.AEVENT_GROUP_REV_MSG,true,msg);
     }
 

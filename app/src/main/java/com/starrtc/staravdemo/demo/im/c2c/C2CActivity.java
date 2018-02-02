@@ -100,8 +100,7 @@ public class C2CActivity extends Activity implements IEventListener {
 
 
     private void sendMsg(String msg){
-        StarIMMessage message = StarIMMessageBuilder.getC2CMessage(MLOC.userId,mTargetId,msg);
-        StarManager.getInstance().sendMessage(message);
+        StarIMMessage message = StarManager.getInstance().sendMessage(mTargetId,msg);
         mDatas.add(message);
         mAdapter.notifyDataSetChanged();
     }

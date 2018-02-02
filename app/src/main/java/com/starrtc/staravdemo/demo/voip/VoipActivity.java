@@ -107,7 +107,7 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
                 }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        StarManager.getInstance().voipHangup(MLOC.starUid,targetId);
+                        StarManager.getInstance().voipHangup(targetId);
                     }
                  }
         ).show();
@@ -172,7 +172,6 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
     private void initVoip(){
         boolean isCaller = action.equals(CALLING);
         StarManager.getInstance().initVoip(isCaller,
-                MLOC.userId,
                 targetId,
                 this,
                 new StarLiveConfig(),
@@ -183,7 +182,7 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
             public void callback(boolean reqSuccess, String statusCode, String data) {
                 if (reqSuccess){
                     if(action.equals(CALLING)){
-                        StarManager.getInstance().voipCall(MLOC.userId,targetId);
+                        StarManager.getInstance().voipCall(targetId);
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -219,7 +218,7 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
     }
 
     private void onPickup(){
-        StarManager.getInstance().voipConnect(MLOC.starUid,targetId);
+        StarManager.getInstance().voipConnect(targetId);
         uiHandler.sendEmptyMessage(0);
     }
 
@@ -228,16 +227,16 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ring_hangoff:
-                StarManager.getInstance().voipRefuse(MLOC.starUid,targetId);
+                StarManager.getInstance().voipRefuse(targetId);
                 break;
             case R.id.ring_pickup:
                 onPickup();
                 break;
             case R.id.calling_hangoff:
-                StarManager.getInstance().voipHangup(MLOC.starUid,targetId);
+                StarManager.getInstance().voipHangup(targetId);
                 break;
             case R.id.talking_hangoff:
-                StarManager.getInstance().voipHangup(MLOC.starUid,targetId);
+                StarManager.getInstance().voipHangup(targetId);
                 break;
             case R.id.screen_btn:
                 if(mMediaProjectionManager==null){

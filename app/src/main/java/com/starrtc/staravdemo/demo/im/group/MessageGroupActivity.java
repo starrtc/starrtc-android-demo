@@ -190,8 +190,7 @@ public class MessageGroupActivity extends Activity implements IEventListener {
     }
 
     private void sendMsg(String msg){
-        StarIMMessage imMessage = StarIMMessageBuilder.getGroupMessage(MLOC.userId, mGroupId,"",msg);
-        StarManager.getInstance().sendGroupMessage(imMessage.atList,imMessage);
+        StarIMMessage imMessage = StarManager.getInstance().sendGroupMessage(mGroupId,"",msg);
         mDatas.add(imMessage);
         mAdapter.notifyDataSetChanged();
     }

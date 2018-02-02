@@ -24,15 +24,19 @@ import com.starrtc.staravdemo.utils.StarHttpUtil;
 
 public class InterfaceUrls {
     public static final String BASE_URL = "https://api.starrtc.com";
+    //获取authKey
     public static final String LOGIN_URL = BASE_URL+"/demo/authKey";
-//    public static final String LOGIN_URL = BASE_URL+"/basic/authKey";
-
+    //会议室列表
     public static final String MEETING_LIST_URL = BASE_URL+"/demo/meeting/list";
+    //直播列表
     public static final String LIVE_LIST_URL = BASE_URL+"/demo/live/list";
+    //上报直播间使用的聊天室ID（直播里的文字聊天用了一个聊天室）
     public static final String LIVE_SET_CHAT_URL = BASE_URL+"/demo/live/set_chat";
+    //聊天室列表
     public static final String CHATROOM_LIST_URL = BASE_URL+"/demo/chat/list";
-//    public static final String GROUP_LIST_URL = BASE_URL+"/demo/group/list";
+    //自己加入的群列表
     public static final String GROUP_LIST_URL = BASE_URL+"/demo/group/list_all";
+    //群成员列表
     public static final String GROUP_MEMBERS_URL = BASE_URL+"/demo/group/members";
 
     public static void demoLogin(String userId){

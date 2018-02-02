@@ -136,13 +136,13 @@ public class ChatroomActivity extends Activity implements IEventListener {
     }
 
     private void sendChatMsg(String msg){
-        StarIMMessage imMessage = StarIMMessageBuilder.getGhatRoomMessage(MLOC.userId,mRoomId,msg);
         if(TextUtils.isEmpty(mPrivateMsgTargetId)){
-            StarManager.getInstance().sendChatroomMessage(imMessage);
+            StarIMMessage imMessage = StarManager.getInstance().sendChatroomMessage(mRoomId,msg);
+            mDatas.add(imMessage);
         }else{
-            StarManager.getInstance().sendChatroomPrivateMessage(mPrivateMsgTargetId,imMessage);
+            StarIMMessage imMessage = StarManager.getInstance().sendChatroomPrivateMessage(mPrivateMsgTargetId,mRoomId,msg);
+            mDatas.add(imMessage);
         }
-        mDatas.add(imMessage);
         mAdapter.notifyDataSetChanged();
         mPrivateMsgTargetId = "";
     }
