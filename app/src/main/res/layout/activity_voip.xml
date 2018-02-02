@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <com.starrtc.starrtcsdk.player.StarPlayer
+        android:id="@+id/voip_surface_target"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.starrtc.starrtcsdk.player.StarPlayer
+                android:id="@+id/voip_surface_self"
+                android:layout_width="90dp"
+                android:layout_height="120dp"/>
+
+        <LinearLayout
+            android:id="@+id/ring_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="bottom"
+            android:visibility="gone">
+
+
+            <ImageView
+                android:id="@+id/ring_pickup"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/voip_pickup"/>
+
+            <ImageView
+                android:id="@+id/ring_hangoff"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/voip_hangoff"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/calling_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="bottom"
+            android:visibility="invisible">
+            <ImageView
+                android:id="@+id/calling_hangoff"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/voip_hangoff"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/talking_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="bottom"
+            android:visibility="invisible">
+            <ImageView
+                android:id="@+id/talking_hangoff"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/voip_hangoff"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/switch_camera"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_overturn"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"/>
+        <TextView
+            android:id="@+id/screen_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:text="屏"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:background="@drawable/icon_bg"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+</FrameLayout>

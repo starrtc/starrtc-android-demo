@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.starrtc.staravdemo.demo.test.EchoTestActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/trace_box"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_style_white"
+            android:layout_margin="10dp"
+            android:padding="10dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/clear_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_margin="20dp"
+                android:background="@drawable/btn_style_green"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_size_small"
+                android:text="清空"/>
+            <TextView
+                android:id="@+id/back_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_margin="20dp"
+                android:background="@drawable/btn_style_pink"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_size_small"
+                android:text="退出"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

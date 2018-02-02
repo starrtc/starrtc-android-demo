@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:layout_marginLeft="40dp"
+    android:layout_marginRight="40dp"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/btn_style_white_normal"
+        android:gravity="center"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="#dddddd"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            >
+            <TextView
+                android:id="@+id/gout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="踢出"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:background="@drawable/btn_style_white"
+                android:layout_margin="5dp"
+                />
+
+            <TextView
+                android:id="@+id/shutup"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="禁言"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:background="@drawable/btn_style_white"
+                android:layout_margin="5dp"
+                />
+
+            <TextView
+                android:id="@+id/forgive"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="取消"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:background="@drawable/btn_style_white"
+                android:layout_margin="5dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
