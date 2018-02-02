@@ -81,7 +81,8 @@ fastlane/readme.md
 *.pch
 
 # Compiled Dynamic libraries
-*.so
+#we need this file
+#*.so
 *.dylib
 *.dll
 
@@ -127,8 +128,9 @@ fastlane/readme.md
 
 # Shared objects (inc. Windows DLLs)
 *.dll
-*.so
-*.so.*
+#we need this file
+#*.so
+#*.so.*
 *.dylib
 
 # Executables
