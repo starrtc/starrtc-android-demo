@@ -1,40 +1,36 @@
 package com.starrtc.staravdemo.demo.im.group;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
+import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
+import com.starrtc.staravdemo.utils.ColorUtils;
+import com.starrtc.staravdemo.utils.DensityUtils;
 import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.im.message.StarIMMessage;
-import com.starrtc.starrtcsdk.im.message.StarIMMessageBuilder;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHGroupManager;
+import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 public class MessageGroupActivity extends Activity implements IEventListener {
     public static String TYPE = "TYPE";
@@ -42,48 +38,75 @@ public class MessageGroupActivity extends Activity implements IEventListener {
     public static String GROUP_ID = "GROUP_ID";
     public static String CREATER_ID = "CREATER_ID";
 
+    private XHGroupManager groupManager;
+
     private EditText vEditText;
-    private TextView vGroupName;
     private ListView vMsgList;
     private View vSendBtn;
 
     private String mGroupId;
     private String mGroupName;
     private String mCreaterId;
-    private List<StarIMMessage> mDatas;
+    private List<XHIMMessage> mDatas;
     private MyChatroomListAdapter mAdapter ;
-    private Timer onLineTimer;
-    private TimerTask onLineTimerTask;
-
-    private List<Map<String,String>> mMembersDatas;
-    private SimpleAdapter simplead;
 
     private String type;
-    private boolean joinOk = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_group);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        groupManager = XHClient.getInstance().getGroupManager();
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.title_right_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_right_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MessageGroupActivity.this,MessageGroupSettingActivity.class);
+                intent.putExtra("groupId",mGroupId);
+                intent.putExtra("createrId",mCreaterId);
+                startActivity(intent);
+            }
+        });
+        addListener();
 
-        vGroupName = (TextView) findViewById(R.id.group_name);
 
         type = getIntent().getStringExtra(TYPE);
         if(type.equals(GROUP_ID)){
             mGroupId = getIntent().getStringExtra(GROUP_ID);
             mGroupName = getIntent().getStringExtra(GROUP_NAME);
             mCreaterId = getIntent().getStringExtra(CREATER_ID);
-            vGroupName.setText(mGroupName);
-            InterfaceUrls.demoRequestGroupMembers(mGroupId);
         }else if(type.equals(GROUP_NAME)){
             mGroupName = getIntent().getStringExtra(GROUP_NAME);
             mCreaterId = MLOC.userId;
-            StarManager.getInstance().createGroup(mGroupName);
-            vGroupName.setText(mGroupName);
-        }
+            groupManager.createGroup(mGroupName, new IXHCallback() {
+                @Override
+                public void success(Object data) {
+                    mGroupId = (String) data;
+                    InterfaceUrls.demoRequestGroupMembers(mGroupId);
+                }
 
+                @Override
+                public void failed(final String errMsg) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MLOC.showMsg(MessageGroupActivity.this,errMsg);
+                        }
+                    });
+                    finish();
+                }
+
+            });
+        }
+        ((TextView)findViewById(R.id.title_text)).setText(mGroupName);
         vEditText = (EditText) findViewById(R.id.id_input);
         mDatas = new ArrayList<>();
         mAdapter = new MyChatroomListAdapter();
@@ -94,15 +117,6 @@ public class MessageGroupActivity extends Activity implements IEventListener {
 
         mAdapter = new MyChatroomListAdapter();
         vMsgList.setAdapter(mAdapter);
-        vMsgList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String clickUserId = mDatas.get(position).fromId;
-                if(!clickUserId.equals(MLOC.userId)){
-                    showManagerDialog(clickUserId);
-                }
-            }
-        });
 
         vSendBtn = findViewById(R.id.send_btn);
         vSendBtn.setOnClickListener(new View.OnClickListener() {
@@ -115,162 +129,57 @@ public class MessageGroupActivity extends Activity implements IEventListener {
                 }
             }
         });
-
-        mMembersDatas = new ArrayList<>();
-        simplead = new SimpleAdapter(this, mMembersDatas,
-                R.layout.item_group_member,new String[]{"userId"},new int[]{R.id.item_id});
-        ((ListView)findViewById(R.id.user_list)).setAdapter(simplead);
-
-
-
-
-        if(mCreaterId.equals(MLOC.userId)){
-            findViewById(R.id.add_user_btn).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showAddUserDialog();
-                }
-            });
-            findViewById(R.id.delet_group_btn).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteGroup();
-                }
-            });
-        }else{
-            findViewById(R.id.add_user_btn).setVisibility(View.GONE);
-            findViewById(R.id.delet_group_btn).setVisibility(View.GONE);
-        }
-
-        findViewById(R.id.ignore_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(findViewById(R.id.ignore_btn).isSelected()){
-                    findViewById(R.id.ignore_btn).setSelected(false);
-                    StarManager.getInstance().groupPushUnIgnore(mGroupId);
-                }else{
-                    findViewById(R.id.ignore_btn).setSelected(true);
-                    StarManager.getInstance().groupPushIgnore(mGroupId);
-                }
-            }
-        });
-
-        findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        findViewById(R.id.add_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InterfaceUrls.demoRequestGroupMembers(mGroupId);
-                if(findViewById(R.id.users_view).getVisibility()==View.VISIBLE){
-                    findViewById(R.id.users_view).setVisibility(View.GONE);
-                }else{
-                    findViewById(R.id.users_view).setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-    }
-
-    private void addUserToGroup(String addUserId){
-        StarManager.getInstance().addUserToGroup(mGroupId, addUserId);
-    }
-
-    private void deleteUserFormGroup(String delUserId){
-        StarManager.getInstance().deleteUserFromGroup(mGroupId, delUserId);
-    }
-
-    private void deleteGroup(){
-        StarManager.getInstance().deleteGroup(mGroupId);
     }
 
     private void sendMsg(String msg){
-        StarIMMessage imMessage = StarManager.getInstance().sendGroupMessage(mGroupId,"",msg);
+        XHIMMessage imMessage = groupManager.sendMessage(mGroupId, new ArrayList<String>(), msg, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+
+            }
+            @Override
+            public void failed(String errMsg) {
+
+            }
+        });
         mDatas.add(imMessage);
         mAdapter.notifyDataSetChanged();
-    }
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_CREATE_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_CREATE_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_SET_PUSH_MODE_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_SET_PUSH_MODE_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_ADD_USER_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_ADD_USER_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_DELETE_USER_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_DELETE_USER_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_DELETE_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_DELETE_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_SEND_MESSAGE_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_SEND_MESSAGE_FAILED,this);
-    }
-
-    @Override
-    public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_CREATE_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_CREATE_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_SET_PUSH_MODE_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_SET_PUSH_MODE_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_ADD_USER_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_ADD_USER_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_DELETE_USER_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_DELETE_USER_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_DELETE_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_DELETE_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_SEND_MESSAGE_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_SEND_MESSAGE_FAILED,this);
-        super.onStop();
-    }
-
-    @Override
-    public void onPause(){
-        if(onLineTimer!=null){
-            onLineTimer.cancel();
-            onLineTimerTask.cancel();
-            onLineTimer = null;
-            onLineTimerTask = null;
-        }
-        super.onPause();
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(onLineTimer!=null){
-            onLineTimer.cancel();
-            onLineTimerTask.cancel();
-            onLineTimer = null;
-            onLineTimerTask = null;
-        }
-        onLineTimer = new Timer();
-        onLineTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if(joinOk){
-                    StarManager.getInstance().queryRoomOnlineNumber(mGroupId);
-                }
-            }
-        };
-        onLineTimer.schedule(onLineTimerTask,1000,10000);
+        InterfaceUrls.demoRequestGroupMembers(mGroupId);
     }
+
+    private void addListener(){
+        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
+        AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        addListener();
+    }
+
+    @Override
+    public void onStop(){
+        AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
+        AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+        super.onStop();
+    }
+
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         MLOC.d("IM_GROUP",aEventID+"||"+eventObj);
-        String[] datas;
         switch (aEventID){
+            case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
+                if(!success)finish();
+                break;
             case AEvent.AEVENT_GROUP_REV_MSG:
-                StarIMMessage revMsg = (StarIMMessage) eventObj;
+                XHIMMessage revMsg = (XHIMMessage) eventObj;
                 mDatas.add(revMsg);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -278,67 +187,6 @@ public class MessageGroupActivity extends Activity implements IEventListener {
                         mAdapter.notifyDataSetChanged();
                     }
                 });
-                break;
-            case AEvent.AEVENT_GROUP_SEND_MESSAGE_SUCCESS:
-                break;
-            case AEvent.AEVENT_GROUP_SEND_MESSAGE_FAILED:
-                break;
-            case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
-                mMembersDatas.clear();
-                if(success){
-                    List<String> rec = (List) eventObj;
-                    for(int i=0;i<rec.size();i++){
-                        Map<String,String> user = new HashMap<>();
-                        user.put("userId",rec.get(i));
-                        mMembersDatas.add(user);
-                    }
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        simplead.notifyDataSetChanged();
-                    }
-                });
-                break;
-            case AEvent.AEVENT_GROUP_CREATE_SUCCESS:
-                mGroupId = (String) eventObj;
-                InterfaceUrls.demoRequestGroupMembers(mGroupId);
-                break;
-            case AEvent.AEVENT_GROUP_CREATE_FAILED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupActivity.this,(String) eventObj);
-                    }
-                });
-                finish();
-                break;
-            case AEvent.AEVENT_GROUP_DELETE_SUCCESS:
-                MLOC.d("IM_GROUP","deleteGroup:"+success+eventObj);
-                finish();
-                break;
-            case AEvent.AEVENT_GROUP_DELETE_FAILED:
-                MLOC.d("IM_GROUP","deleteGroup:"+success+eventObj);
-                break;
-            case AEvent.AEVENT_GROUP_SET_PUSH_MODE_SUCCESS:
-                MLOC.d("IM_GROUP","setPushMode:"+success+eventObj);
-                break;
-            case AEvent.AEVENT_GROUP_SET_PUSH_MODE_FAILED:
-                MLOC.d("IM_GROUP","setPushMode:"+success+eventObj);
-                break;
-            case AEvent.AEVENT_GROUP_ADD_USER_SUCCESS:
-                MLOC.d("IM_GROUP","addUserToGroup:"+success+eventObj);
-                InterfaceUrls.demoRequestGroupMembers(mGroupId);
-                break;
-            case AEvent.AEVENT_GROUP_ADD_USER_FAILED:
-                MLOC.d("IM_GROUP","addUserToGroup:"+success+eventObj);
-                break;
-            case AEvent.AEVENT_GROUP_DELETE_USER_SUCCESS:
-                MLOC.d("IM_GROUP","delUserToGroup:"+success+eventObj);
-                InterfaceUrls.demoRequestGroupMembers(mGroupId);
-                break;
-            case AEvent.AEVENT_GROUP_DELETE_USER_FAILED:
-                MLOC.d("IM_GROUP","delUserToGroup:"+success+eventObj);
                 break;
         }
     }
@@ -369,82 +217,71 @@ public class MessageGroupActivity extends Activity implements IEventListener {
         }
 
         @Override
+        public int getViewTypeCount(){
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position){
+            return mDatas.get(position).fromId.equals(MLOC.userId)?0:1;
+        }
+
+        @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-            if(convertView == null){
-                holder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_chatroom_msg_list,null);
-                holder.vUserName = (TextView) convertView.findViewById(R.id.item_user_name);
-                holder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
-                holder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
-                convertView.setTag(holder);
-            }else{
-                holder = (ViewHolder)convertView.getTag();
+            int currLayoutType = getItemViewType(position);
+            if(currLayoutType == 0){ //自己的信息
+                final ViewHolder itemSelfHolder;
+                if(convertView == null){
+                    itemSelfHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_chat_msg_list_right,null);
+                    itemSelfHolder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
+                    itemSelfHolder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
+                    itemSelfHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
+                    itemSelfHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
+                    itemSelfHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
+                    convertView.setTag(itemSelfHolder);
+                }else{
+                    itemSelfHolder = (ViewHolder)convertView.getTag();
+                }
+                itemSelfHolder.vUserId.setText(mDatas.get(position).fromId);
+                itemSelfHolder.vMsg.setText(mDatas.get(position).contentData);
+                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).fromId));
+                itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
+                itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+            }else if(currLayoutType == 1){//别人的信息
+                final ViewHolder itemOtherHolder;
+                if(convertView == null){
+                    itemOtherHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_chat_msg_list_left,null);
+                    itemOtherHolder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
+                    itemOtherHolder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
+                    itemOtherHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
+                    itemOtherHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
+                    itemOtherHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
+                    itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                    int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
+                    itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                    itemOtherHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+                    convertView.setTag(itemOtherHolder);
+                }else{
+                    itemOtherHolder = (ViewHolder)convertView.getTag();
+                }
+                itemOtherHolder.vUserId.setText(mDatas.get(position).fromId);
+                itemOtherHolder.vMsg.setText(mDatas.get(position).contentData);
+                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).fromId));
             }
-
-            holder.vUserId.setText(mDatas.get(position).fromId);
-            holder.vMsg.setText(mDatas.get(position).contentData);
-
             return convertView;
         }
     }
 
-
     public class ViewHolder{
-            public TextView vUserName;
-            public TextView vUserId;
-            public TextView vMsg;
-    }
-
-
-    private void showAddUserDialog(){
-        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
-        dialog.setContentView(R.layout.dialog_group_add_user);
-        Window win = dialog.getWindow();
-        win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        win.setGravity(Gravity.CENTER);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String addUser = ((EditText)dialog.findViewById(R.id.add_user_id)).getText().toString();
-                if(TextUtils.isEmpty(addUser)){
-                    MLOC.showMsg(MessageGroupActivity.this,"用户ID不能为空");
-                }else{
-                    addUserToGroup(addUser);
-                    dialog.dismiss();
-                }
-            }
-        });
-        dialog.findViewById(R.id.del_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String addUser = ((EditText)dialog.findViewById(R.id.add_user_id)).getText().toString();
-                if(TextUtils.isEmpty(addUser)){
-                    MLOC.showMsg(MessageGroupActivity.this,"用户ID不能为空");
-                }else{
-                    deleteUserFormGroup(addUser);
-                    dialog.dismiss();
-                }
-            }
-        });
-        dialog.show();
-    }
-
-    private void showManagerDialog(final String userId) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        final String[] Items={"踢出群","取消"};
-        builder.setItems(Items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(i==0){
-                    deleteUserFormGroup(userId);
-                }
-            }
-        });
-        builder.setCancelable(true);
-        AlertDialog dialog=builder.create();
-        dialog.show();
+        public TextView vUserId;
+        public TextView vMsg;
+        public View vHeadBg;
+        public CircularCoverView vHeadCover;
+        public ImageView vHeadImage;
     }
 
 }

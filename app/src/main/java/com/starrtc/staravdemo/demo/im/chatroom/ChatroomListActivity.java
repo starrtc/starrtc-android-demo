@@ -3,6 +3,7 @@ package com.starrtc.staravdemo.demo.im.chatroom;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,7 +20,10 @@ import java.util.ArrayList;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
+import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
+import com.starrtc.staravdemo.utils.ColorUtils;
+import com.starrtc.staravdemo.utils.DensityUtils;
 import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.staravdemo.utils.StarListUtil;
 
@@ -33,18 +38,30 @@ public class ChatroomListActivity extends Activity implements IEventListener, Ad
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom_list);
+        ((TextView)findViewById(R.id.title_text)).setText("聊天室列表");
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ChatroomListActivity.this,ChatroomCreateActivity.class));
             }
         });
-        findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+
+        AEvent.addListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
+
+        findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                startActivity(new Intent(ChatroomListActivity.this,ChatroomCreateActivity.class));
             }
         });
+
 
         refreshLayout = (SwipeRefreshLayout)findViewById(R.id.refresh_layout);
         //设置刷新时动画的颜色，可以设置4个
@@ -76,15 +93,17 @@ public class ChatroomListActivity extends Activity implements IEventListener, Ad
     }
 
     @Override
+    public void onRestart(){
+        super.onRestart();
+        AEvent.addListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         InterfaceUrls.demoRequestChatroomList();
     }
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
-    }
+
     @Override
     public void onStop(){
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
@@ -143,21 +162,32 @@ public class ChatroomListActivity extends Activity implements IEventListener, Ad
             final ViewHolder viewIconImg;
             if(convertView == null){
                 viewIconImg = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_chatroom_list,null);
+                convertView = mInflater.inflate(R.layout.item_all_list,null);
                 viewIconImg.vRoomName = (TextView)convertView.findViewById(R.id.item_id);
                 viewIconImg.vCreaterId = (TextView)convertView.findViewById(R.id.item_creater_id);
+                viewIconImg.vHeadBg =  convertView.findViewById(R.id.head_bg);
+                viewIconImg.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
+                viewIconImg.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
                 convertView.setTag(viewIconImg);
             }else{
                 viewIconImg = (ViewHolder)convertView.getTag();
             }
             viewIconImg.vRoomName.setText(mDatas.get(position).roomName);
             viewIconImg.vCreaterId.setText(mDatas.get(position).createrId);
+            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(ChatroomListActivity.this,mDatas.get(position).roomName));
+            viewIconImg.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
+            int cint = DensityUtils.dip2px(ChatroomListActivity.this,28);
+            viewIconImg.vHeadCover.setRadians(cint, cint, cint, cint,0);
+            viewIconImg.vHeadImage.setImageResource(R.drawable.icon_im_chatroom_item);
             return convertView;
         }
 
         class  ViewHolder{
             private TextView vRoomName;
             private TextView vCreaterId;
+            public View vHeadBg;
+            public CircularCoverView vHeadCover;
+            public ImageView vHeadImage;
         }
     }
 

@@ -3,9 +3,9 @@
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="#000000">
 
-    <com.starrtc.starrtcsdk.player.StarPlayer
+    <com.starrtc.starrtcsdk.core.player.StarPlayer
         android:id="@+id/voip_surface_target"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -13,94 +13,185 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.starrtc.starrtcsdk.player.StarPlayer
+        <com.starrtc.starrtcsdk.core.player.StarPlayer
                 android:id="@+id/voip_surface_self"
                 android:layout_width="90dp"
-                android:layout_height="120dp"/>
+                android:layout_height="160dp"/>
 
-        <LinearLayout
-            android:id="@+id/ring_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:gravity="bottom"
-            android:visibility="gone">
-
-
-            <ImageView
-                android:id="@+id/ring_pickup"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/voip_pickup"/>
-
-            <ImageView
-                android:id="@+id/ring_hangoff"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/voip_hangoff"/>
-        </LinearLayout>
-
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/calling_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
             android:gravity="bottom"
             android:visibility="invisible">
-            <ImageView
-                android:id="@+id/calling_hangoff"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/voip_hangoff"/>
-        </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/head_bg"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                >
+                <com.starrtc.staravdemo.demo.ui.CircularCoverView
+                    android:id="@+id/head_cover"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_centerInParent="true"/>
+                <ImageView
+                    android:id="@+id/head_img"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/starfox_500"/>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/targetid_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="21sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:text="XXX"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/head_bg"
+                android:layout_marginTop="15dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#9E9E9F"
+                android:gravity="center"
+                android:text="正在等待对方接受视频通话..."
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/head_bg"
+                android:layout_marginTop="55dp"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="26dp">
+                <ImageView
+                    android:id="@+id/calling_hangup"
+                    android:layout_width="66dp"
+                    android:layout_height="66dp"
+                    android:layout_marginRight="44dp"
+                    android:layout_marginLeft="44dp"
+                    android:src="@drawable/icon_hangup"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:text="取消"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"/>
+            </RelativeLayout>
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/talking_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="190dp"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
             android:gravity="bottom"
             android:visibility="invisible">
-            <ImageView
-                android:id="@+id/talking_hangoff"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/voip_hangoff"/>
+            <Chronometer
+                android:id="@+id/timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="00:00"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="bottom"
+                android:visibility="visible">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="26dp">
+                    <ImageView
+                        android:id="@+id/screen_btn"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp"
+                        android:src="@drawable/btn_record_screen"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:text="录屏"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_weight="1"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="26dp">
+                    <ImageView
+                        android:id="@+id/talking_hangup"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp"
+                        android:src="@drawable/icon_hangup"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:text="挂断"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_weight="1"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="26dp">
+                    <ImageView
+                        android:id="@+id/switch_camera"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp"
+                        android:src="@drawable/btn_switch_camera"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:text="转换"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
-        <ImageView
-            android:id="@+id/switch_camera"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/btn_overturn"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"/>
-        <TextView
-            android:id="@+id/screen_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:text="屏"
-            android:gravity="center"
-            android:textColor="#ffffff"
-            android:background="@drawable/icon_bg"
-            android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 
 </FrameLayout>

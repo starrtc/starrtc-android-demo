@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.Iterator;
 
 import com.starrtc.staravdemo.demo.MLOC;
-import com.starrtc.starrtcsdk.utils.StringUtils;
+import com.starrtc.starrtcsdk.core.utils.StringUtils;
 
 public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
 

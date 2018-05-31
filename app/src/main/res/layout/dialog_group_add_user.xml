@@ -44,17 +44,7 @@
                 android:background="@drawable/btn_style_white"
                 android:layout_margin="5dp"
                 />
-            <TextView
-                android:id="@+id/del_btn"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:text="刪除"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:background="@drawable/btn_style_white"
-                android:layout_margin="5dp"
-                />
+
         </LinearLayout>
     </LinearLayout>
 

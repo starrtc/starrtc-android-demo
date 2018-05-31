@@ -5,7 +5,7 @@ package com.starrtc.staravdemo.demo.videomeeting;
  */
 
 public class MeetingInfo {
-    public String channelId;
+    public String meetingName;
     public String createrId;
     public String meetingId;
 }

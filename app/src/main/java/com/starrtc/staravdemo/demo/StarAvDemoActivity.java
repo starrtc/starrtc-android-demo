@@ -1,142 +1,47 @@
 package com.starrtc.staravdemo.demo;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.im.IMDemoActivity;
-import com.starrtc.staravdemo.demo.listener.DemoChatroomListener;
-import com.starrtc.staravdemo.demo.listener.DemoGroupListener;
 import com.starrtc.staravdemo.demo.setting.SettingActivity;
-import com.starrtc.staravdemo.demo.videolive.VideoLiveListActivity;
-import com.starrtc.staravdemo.demo.listener.DemoErrorListener;
-import com.starrtc.staravdemo.demo.listener.DemoLiveListener;
-import com.starrtc.staravdemo.demo.listener.DemoC2CListener;
-import com.starrtc.staravdemo.demo.listener.DemoUserStatusListener;
-import com.starrtc.staravdemo.demo.listener.DemoVoipListener;
-import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
 import com.starrtc.staravdemo.demo.test.LoopTestActivity;
+import com.starrtc.staravdemo.demo.videolive.VideoLiveListActivity;
 import com.starrtc.staravdemo.demo.videomeeting.VideoMeetingListActivity;
-import com.starrtc.staravdemo.demo.voip.VoipActivity;
-import com.starrtc.staravdemo.demo.voip.VoipReadyActivity;
+import com.starrtc.staravdemo.demo.voip.VoipListActivity;
+import com.starrtc.staravdemo.demo.voip.VoipRingingActivity;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.im.message.StarIMMessage;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 public class StarAvDemoActivity extends Activity implements View.OnClickListener, IEventListener {
 
-    private boolean isLogin = false;
+    private boolean isOnline = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_star_av_demo);
-        ((TextView)findViewById(R.id.app_name)).setText(R.string.app_name);
+        setContentView(R.layout.activity_star_rtc_main);
+        ((TextView)findViewById(R.id.title_text)).setText(R.string.app_name);
         MLOC.init(getApplicationContext());
-
-        AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
-
-        StarManager.getInstance().init(getApplicationContext());
-        StarManager.getInstance().addC2CListener(new DemoC2CListener())
-                .addGroupListener(new DemoGroupListener())
-                .addUserStatusListener(new DemoUserStatusListener())
-                .addVoipMessageListener(new DemoVoipListener())
-                .addLiveMessageListener(new DemoLiveListener())
-                .addErrorListener(new DemoErrorListener())
-                .addChatroomListener(new DemoChatroomListener());
+        addListener();
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
-        if(MLOC.userId.equals("")){
-            MLOC.userId = "demo"+ new Random().nextInt(100)+ new Random().nextInt(100);
-            MLOC.saveSharedData(getApplicationContext(),"userId",MLOC.userId);
-        }
 
-        ((TextView)findViewById(R.id.userId)).setText(MLOC.userId);
-        findViewById(R.id.button1).setOnClickListener(this);
-        findViewById(R.id.button2).setOnClickListener(this);
-        findViewById(R.id.button3).setOnClickListener(this);
-        findViewById(R.id.button4).setOnClickListener(this);
-        findViewById(R.id.button5).setOnClickListener(this);
-        findViewById(R.id.button6).setOnClickListener(this);
-        findViewById(R.id.button7).setOnClickListener(this);
+        ((TextView)findViewById(R.id.userinfo_id)).setText(MLOC.userId);
+        findViewById(R.id.btn_video_size).setOnClickListener(this);
+        findViewById(R.id.btn_main_voip).setOnClickListener(this);
+        findViewById(R.id.btn_main_meeting).setOnClickListener(this);
+        findViewById(R.id.btn_main_live).setOnClickListener(this);
+        findViewById(R.id.btn_main_loop).setOnClickListener(this);
+        findViewById(R.id.btn_main_logout).setOnClickListener(this);
+        findViewById(R.id.btn_test_speed).setOnClickListener(this);
 
-        InterfaceUrls.demoLogin(MLOC.userId);
-        new Handler(){
-            @Override
-            public void handleMessage(Message msg){
-                if(!isLogin){
-                    InterfaceUrls.demoLogin(MLOC.userId);
-                }
-            }
-
-        }.sendEmptyMessageDelayed(0,5000);
-        checkPermission();
     }
-
-
-    private int times = 0;
-    private final int REQUEST_PHONE_PERMISSIONS = 0;
-    private void checkPermission(){
-        times++;
-        final List<String> permissionsList = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-
-            if ((checkSelfPermission(Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.READ_PHONE_STATE);
-            if ((checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if ((checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            if ((checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            if ((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            if ((checkSelfPermission(Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.CAMERA);
-            if ((checkSelfPermission(Manifest.permission.BLUETOOTH)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.BLUETOOTH);
-            if ((checkSelfPermission(Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED)) permissionsList.add(Manifest.permission.RECORD_AUDIO);
-
-            if (permissionsList.size() != 0){
-                if(times==1){
-                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                            REQUEST_PHONE_PERMISSIONS);
-                }else{
-                    new android.support.v7.app.AlertDialog.Builder(this)
-                        .setCancelable(true)
-                        .setTitle("提示")
-                        .setMessage("获取不到授权，APP将无法正常使用，请允许APP获取权限！")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                                            REQUEST_PHONE_PERMISSIONS);
-                                }
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                finish();
-                            }
-                        }).show();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        checkPermission();
-    }
-
 
     @Override
     public void onBackPressed(){
@@ -146,95 +51,95 @@ public class StarAvDemoActivity extends Activity implements View.OnClickListener
     @Override
     public void onResume(){
         super.onResume();
-        AEvent.addListener(AEvent.AEVENT_LOGIN,this);
-        AEvent.addListener(AEvent.AEVENT_USER_LOGIN_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_USER_LOGIN_FAILED,this);
+        if(MLOC.userId==null){
+            startActivity(new Intent(StarAvDemoActivity.this,SplashActivity.class));
+            finish();
+        }
+        isOnline = StarRtcCore.getInstance().getIsOnline();
+        if(isOnline){
+            findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+        }else{
+            findViewById(R.id.loading).setVisibility(View.VISIBLE);
+        }
     }
+
     @Override
-    public void onPause(){
-        super.onPause();
-        AEvent.removeListener(AEvent.AEVENT_LOGIN,this);
-        AEvent.removeListener(AEvent.AEVENT_USER_LOGIN_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_USER_LOGIN_FAILED,this);
+    public void onRestart(){
+        super.onRestart();
+        addListener();
+    }
+
+    private void addListener(){
+        AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
+        AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
+        AEvent.addListener(AEvent.AEVENT_USER_OFFLINE,this);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
+        AEvent.removeListener(AEvent.AEVENT_USER_OFFLINE,this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.button1:
-                startActivity(new Intent(this,VoipReadyActivity.class));
+            case R.id.btn_main_voip:
+                startActivity(new Intent(this,VoipListActivity.class));
                 break;
-            case R.id.button2:
+            case R.id.btn_main_meeting:
                 startActivity(new Intent(this,VideoMeetingListActivity.class));
                 break;
-            case R.id.button3:
+            case R.id.btn_main_live:
                 Intent intent3 = new Intent(this, VideoLiveListActivity.class);
                 startActivity(intent3);
                 break;
-            case R.id.button4:
+            case R.id.btn_main_loop:
                 startActivity(new Intent(this,LoopTestActivity.class));
                 break;
-            case R.id.button5:
-                StarManager.getInstance().logout();
+            case R.id.btn_main_logout:
+                XHClient.getInstance().getLoginManager().logout();
                 AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
                 finish();
                 break;
-            case R.id.button6:
+            case R.id.btn_test_speed:
                 Intent intent6 = new Intent(this, SettingActivity.class);
                 startActivity(intent6);
                 break;
-            case R.id.button7:
+            case R.id.btn_video_size:
                 Intent intent7= new Intent(this, IMDemoActivity.class);
                 startActivity(intent7);
                 break;
-
         }
     }
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
         switch (aEventID){
-            case AEvent.AEVENT_LOGIN:
-                if(success){
-                    MLOC.d("", (String) eventObj);
-                    StarManager.getInstance().login(getApplicationContext(), MLOC.agentId, MLOC.userId, MLOC.authKey);
-                }else{
-                    MLOC.d("", (String) eventObj);
-                }
-                break;
             case AEvent.AEVENT_VOIP_REV_CALLING:
                 if(success){
-                    StarIMMessage msg = (StarIMMessage) eventObj;
-                    Intent intent = new Intent(StarAvDemoActivity.this,VoipActivity.class);
-                    intent.putExtra("targetId",msg.fromId);
-                    intent.putExtra(VoipActivity.ACTION,VoipActivity.RING);
+                    Intent intent = new Intent(StarAvDemoActivity.this,VoipRingingActivity.class);
+                    intent.putExtra("targetId",eventObj.toString());
                     startActivity(intent);
                 }
                 break;
-            case AEvent.AEVENT_USER_LOGIN_SUCCESS:
-                if(success){
-                    MLOC.d("","StarSdk登录成功");
-                    uiHandler.sendEmptyMessage(0);
-                }
+            case AEvent.AEVENT_USER_OFFLINE:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        findViewById(R.id.loading).setVisibility(View.VISIBLE);
+                    }
+                });
                 break;
-            case AEvent.AEVENT_USER_LOGIN_FAILED:
-                if(success){
-                    MLOC.d("","StarSdk登录失败");
-                }
+            case AEvent.AEVENT_USER_ONLINE:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+                    }
+                });
                 break;
         }
     }
-
-    private Handler uiHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case 0:
-                    isLogin = true;
-                    findViewById(R.id.loading).setVisibility(View.INVISIBLE);
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    };
 }

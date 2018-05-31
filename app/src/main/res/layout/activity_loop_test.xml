@@ -15,12 +15,12 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-            <com.starrtc.starrtcsdk.player.StarPlayer
+            <com.starrtc.starrtcsdk.core.player.StarPlayer
                 android:id="@+id/self_gl_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-            <com.starrtc.starrtcsdk.player.StarPlayer
+            <com.starrtc.starrtcsdk.core.player.StarPlayer
                 android:id="@+id/self_small_gl_view"
                 android:layout_width="80dp"
                 android:layout_height="160dp"
@@ -33,12 +33,12 @@
             android:layout_weight="1"
             android:orientation="horizontal">
 
-            <com.starrtc.starrtcsdk.player.StarPlayer
+            <com.starrtc.starrtcsdk.core.player.StarPlayer
                 android:id="@+id/target_gl_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-            <com.starrtc.starrtcsdk.player.StarPlayer
+            <com.starrtc.starrtcsdk.core.player.StarPlayer
                 android:id="@+id/target_small_gl_view"
                 android:layout_width="80dp"
                 android:layout_height="160dp"
@@ -55,7 +55,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="10dp"
-            android:background="@drawable/btn_back" />
+            android:background="@drawable/btn_back_white" />
         <ImageView
             android:id="@+id/switch_camera"
             android:layout_width="40dp"
@@ -84,6 +84,20 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="60dp"
             android:background="@drawable/icon_info"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"/>
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/beauty_lvl"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="60dp"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:background="@drawable/icon_bg"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"/>
         <LinearLayout

@@ -7,13 +7,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.player.StarPlayer;
-import com.starrtc.starrtcsdk.player.StarPlayerScaleType;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 public class LoopTestActivity extends Activity implements View.OnClickListener {
 
@@ -26,12 +26,14 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
     private TextView vVideoFpsText;
     private TextView vMediaConfigText;
     private int encodeLevel = 1;
+    private float beautyLevel = 0f;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loop_test);
-
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,7 +53,7 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StarManager.getInstance().switchCamera();
+                StarRtcCore.getInstance().switchCamera(LoopTestActivity.this);
             }
         });
         findViewById(R.id.encode_lvl).setOnClickListener(new View.OnClickListener() {
@@ -62,17 +64,37 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
                 }else{
                     encodeLevel = 1;
                 }
-                StarManager.getInstance().encodeLevelDown(encodeLevel);
+                StarRtcCore.getInstance().encodeLevelDown(encodeLevel);
                 ((TextView)findViewById(R.id.encode_lvl)).setText("lv_"+encodeLevel);
             }
         });
         ((TextView)findViewById(R.id.encode_lvl)).setText("lv_"+encodeLevel);
 
+        findViewById(R.id.beauty_lvl).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(beautyLevel<1){
+                    beautyLevel+= 0.1f;
+                }else{
+                    beautyLevel = 0f;
+                }
+                if(beautyLevel==0f){
+                    StarRtcCore.getInstance().setBeautyOff();
+                }else{
+                    StarRtcCore.getInstance().setBeautyLevel(beautyLevel);
+                    StarRtcCore.getInstance().setBrightLevel(beautyLevel);
+                    StarRtcCore.getInstance().setBeautyOn();
+                }
+                ((TextView)findViewById(R.id.beauty_lvl)).setText("美"+beautyLevel);
+            }
+        });
+        ((TextView)findViewById(R.id.beauty_lvl)).setText("美"+beautyLevel);
+
         vVideoSizeText = (TextView) findViewById(R.id.video_size);
         vVideoFpsText = (TextView) findViewById(R.id.video_fps);
         vMediaConfigText = (TextView) findViewById(R.id.media_config);
-        vVideoSizeText.setText(StarManager.keepWatch_videoSize);
-        vMediaConfigText.setText(StarManager.keepWatch_mediaEncodeConfig);
+        vVideoSizeText.setText(StarRtcCore.videoConfig_videoSize);
+        vMediaConfigText.setText(StarRtcCore.videoConfig_mediaEncodeConfig);
 
         final Handler mHandler = new Handler(new Handler.Callback() {
             @Override
@@ -80,7 +102,7 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
                 switch (msg.what){
                     case 0:
                         int fps = msg.getData().getInt("fpsBig");
-                        vVideoFpsText.setText("upId = "+StarManager.keepWatch_upId
+                        vVideoFpsText.setText("upId = "+ StarRtcCore.keepWatch_upId
                                 +" | fps = "+fps
                         );
                         break;
@@ -99,7 +121,7 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
             public void run() {
                 while (true)
                 try {
-                    int fps = (int) StarManager.fpsQueue.take();
+                    int fps = (int) StarRtcCore.fpsQueue.take();
                     if(fps == -1) return;
                     Message msg = new Message();
                     msg.what = 0;
@@ -120,26 +142,26 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
         selfSmallPlayer.setZOrderMediaOverlay(true);
         targetSmallPlayer.setZOrderMediaOverlay(true);
 
-        targetPlayer.setScalType(StarManager.bigVideoW,StarManager.bigVideoH, StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-        selfPlayer.setScalType(StarManager.bigVideoW,StarManager.bigVideoH, StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-        if(StarManager.smallVideoH ==0|| StarManager.smallVideoW ==0){
+        targetPlayer.setVideoSize(StarRtcCore.bigVideoW, StarRtcCore.bigVideoH);
+        selfPlayer.setVideoSize(StarRtcCore.bigVideoW, StarRtcCore.bigVideoH);
+        if(StarRtcCore.smallVideoH ==0|| StarRtcCore.smallVideoW ==0){
             selfSmallPlayer.setVisibility(View.GONE);
             targetSmallPlayer.setVisibility(View.GONE);
 
-            StarManager.getInstance().initLoopTest(getApplicationContext(),
+            StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
                     selfPlayer,2);
 
         }else{
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) selfSmallPlayer.getLayoutParams();
-            lp.height = (int)((float)StarManager.smallVideoH/(float)StarManager.smallVideoW*lp.width);
+            lp.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
             selfSmallPlayer.setLayoutParams(lp);
-            selfSmallPlayer.setScalType(StarManager.smallVideoW,StarManager.smallVideoH, StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
+            selfSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
             RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) targetSmallPlayer.getLayoutParams();
-            lp2.height = (int)((float)StarManager.smallVideoH/(float)StarManager.smallVideoW*lp.width);
+            lp2.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
             targetSmallPlayer.setLayoutParams(lp2);
-            targetSmallPlayer.setScalType(StarManager.smallVideoW,StarManager.smallVideoH, StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-            StarManager.getInstance().initLoopTest(getApplicationContext(),
+            targetSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
+            StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
                     targetSmallPlayer,1,
                     selfPlayer,2,
@@ -150,8 +172,8 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        StarManager.getInstance().stopLoopTest();
-        StarManager.stopKeepWatch();
+        StarRtcCore.getInstance().stopLoopTest();
+        StarRtcCore.stopKeepWatch();
         finish();
     }
 
@@ -159,16 +181,16 @@ public class LoopTestActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.target_gl_view:
-                StarManager.startKeepWatch(0);
+                StarRtcCore.startKeepWatch(0);
                 break;
             case R.id.target_small_gl_view:
-                StarManager.startKeepWatch(1);
+                StarRtcCore.startKeepWatch(1);
                 break;
             case R.id.self_gl_view:
-                StarManager.startKeepWatch(2);
+                StarRtcCore.startKeepWatch(2);
                 break;
             case R.id.self_small_gl_view:
-                StarManager.startKeepWatch(3);
+                StarRtcCore.startKeepWatch(3);
                 break;
         }
     }

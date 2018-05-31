@@ -1,14 +1,19 @@
 package com.starrtc.staravdemo.demo.setting;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.test.EchoTestActivity;
-import com.starrtc.starrtcsdk.StarManager;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.core.utils.StarLog;
 
 public class SettingActivity extends Activity implements View.OnClickListener {
 
@@ -16,54 +21,74 @@ public class SettingActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        ((TextView)findViewById(R.id.title_text)).setText("设置");
 
-        findViewById(R.id.button5).setOnClickListener(this);
-        findViewById(R.id.button6).setOnClickListener(this);
-        findViewById(R.id.button7).setOnClickListener(this);
-        findViewById(R.id.button8).setOnClickListener(this);
-        findViewById(R.id.button9).setOnClickListener(this);
-        findViewById(R.id.button10).setOnClickListener(this);
-        findViewById(R.id.button11).setOnClickListener(this);
-        findViewById(R.id.button12).setOnClickListener(this);
+        findViewById(R.id.btn_test_speed).setOnClickListener(this);
+        findViewById(R.id.btn_video_size).setOnClickListener(this);
+        findViewById(R.id.opengl_switch).setOnClickListener(this);
+        findViewById(R.id.hard_encode_switch).setOnClickListener(this);
+        findViewById(R.id.opensl_switch).setOnClickListener(this);
     }
     @Override
     public void onResume(){
         super.onResume();
-        ((Button)findViewById(R.id.button8)).setText(StarManager.openGLESEnable ?"OPENGL 开":"OPENGL 关");
-        ((Button)findViewById(R.id.button11)).setText(StarManager.openSLESEnable ?"OPENSL 开":"OPENSL 关");
-        ((Button)findViewById(R.id.button12)).setText("音视频硬编格式("+StarManager.keepWatch_mediaEncodeConfig+")");
-        ((Button)findViewById(R.id.button9)).setText(StarManager.ctrlFps?"FPS控制 开":"FPS控制 关");
-        ((Button)findViewById(R.id.button10)).setText("编码器选择（"+StarManager.keepWatch_hardEncoderSetting+")");
+
+        findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
+        findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
+        findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
+        ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
     }
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.button5:
+            case R.id.btn_main_logout:
                 finish();
                 break;
-            case R.id.button6:
+            case R.id.btn_test_speed:
                 startActivity(new Intent(this,EchoTestActivity.class));
                 break;
-            case R.id.button7:
-                startActivity(new Intent(this,VideoSizeSettingActivity.class));
+            case R.id.btn_video_size:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(XHConstants.XHCropTypeEnumName, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        XHConstants.XHCropTypeEnum selected = StarRtcCore.cropTypeEnum;
+                        for (XHConstants.XHCropTypeEnum e : XHConstants.XHCropTypeEnum.values()) {
+                            if(i==e.ordinal()) {
+                                selected = e;
+                            }
+                        }
+                        StarLog.d("Setting","Setting selected "+ selected.toString());
+                        StarRtcCore.setVideoSizeConfig(selected);
+                        ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
                 break;
-            case R.id.button8:
-                StarManager.openGLESEnable =StarManager.openGLESEnable ?false:true;
-                ((Button)findViewById(R.id.button8)).setText(StarManager.openGLESEnable ?"OPENGL 开":"OPENGL 关");
+            }
+            case R.id.opengl_switch:
+                StarRtcCore.getInstance().setOpenGLESEnable(StarRtcCore.openGLESEnable ?false:true);
+                findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
                 break;
-            case R.id.button9:
-                StarManager.ctrlFps=StarManager.ctrlFps?false:true;
-                ((Button)findViewById(R.id.button9)).setText(StarManager.ctrlFps?"FPS控制 开":"FPS控制 关");
+            case R.id.hard_encode_switch:
+                if(StarRtcCore.setHardEncodeEnable(StarRtcCore.hardEncode?false:true)){
+                    findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
+                }else{
+                    MLOC.showMsg(SettingActivity.this,"设置失败");
+                }
                 break;
-            case R.id.button10:
-                startActivity(new Intent(this,HardEncodeSettingActivity.class));
-                break;
-            case R.id.button11:
-                StarManager.openSLESEnable =StarManager.openSLESEnable ?false:true;
-                ((Button)findViewById(R.id.button11)).setText(StarManager.openSLESEnable ?"OPENSL 开":"OPENSL 关");
-                break;
-            case R.id.button12:
-                startActivity(new Intent(this,MediaEncodeConfigSettingActivity.class));
+            case R.id.opensl_switch:
+                StarRtcCore.getInstance().setOpenSLESEnable(StarRtcCore.openSLESEnable ?false:true);
+                findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
                 break;
         }
     }

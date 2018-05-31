@@ -1,12 +1,16 @@
 package com.starrtc.staravdemo.demo.videomeeting;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,408 +18,493 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.listener.XHMeetingManagerListener;
+import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
+import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
+import com.starrtc.staravdemo.utils.DensityUtils;
 import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.live.StarLiveConfig;
-import com.starrtc.starrtcsdk.live.StarLiveVideoSizeConfigType;
-import com.starrtc.starrtcsdk.player.StarPlayer;
-import com.starrtc.starrtcsdk.player.StarPlayerScaleType;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.utils.StarLog;
-import com.starrtc.starrtcsdk.utils.StringUtils;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHMeetingItem;
+import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 public class VideoMeetingActivity extends Activity implements IEventListener {
 
-    private LinearLayout vLine1,vLine2;
-    private List<ViewPosition> mViewList;
+    public static String MEETING_ID         = "MEETING_ID";          //会议ID
+    public static String MEETING_NAME       = "MEETING_NAME";         //会议名称
+    public static String MEETING_TYPE       = "MEETING_TYPE";         //会议类型
+    public static String MEETING_CREATER       = "MEETING_CREATER";   //会议创建者
 
-    public static String MEETING_ID         = "LIVE_ID";          //会议ID
-    public static String CHANNEL_ID         = "CHANNEL_ID";       //频道ID
-
-    private TextView vRoomId;
     private String meetingId;
-    private String channelId;
+    private String meetingName;
+    private String createrId;
 
-    private int bigUpid;
-    private ViewPosition bigViewPosition;
+    private TextView vMeetingName;
 
+    private RelativeLayout vPlayerView;
+    private ArrayList<ViewPosition> mPlayerList;
+    private int borderW = 0;
+    private int borderH = 0;
+
+    private IXHMeetingManager meetingManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_meeting);
 
+        meetingManager = XHClient.getInstance().getMeetingManager(this);
+        meetingManager.addListener(new XHMeetingManagerListener());
+
+        addListener();
+
         meetingId = getIntent().getStringExtra(MEETING_ID);
-        channelId = getIntent().getStringExtra(CHANNEL_ID);
+        meetingName = getIntent().getStringExtra(MEETING_NAME);
+        createrId = getIntent().getStringExtra(MEETING_CREATER);
 
-        if(StringUtils.isEmpty(meetingId)){
-            meetingId = "meeting_"+ meetingId;
-        }
+        vMeetingName = (TextView) findViewById(R.id.live_id_text);
+        vMeetingName.setText("会议："+meetingName);
 
-        vRoomId = (TextView) findViewById(R.id.live_id_text);
-        vRoomId.setText("会议编号："+meetingId);
 
-        vLine1 = (LinearLayout) findViewById(R.id.line1);
-        vLine2 = (LinearLayout) findViewById(R.id.line2);
+        vPlayerView = (RelativeLayout) findViewById(R.id.view1);
+        borderW = DensityUtils.screenWidth(this);
+        borderH = DensityUtils.screenHeight(this);//-DensityUtils.dip2px(this,25);
+        mPlayerList = new ArrayList<>();
 
-        bigViewPosition = addNewPlayer();
-        bigViewPosition.setUserId(MLOC.agentId+"_"+MLOC.userId);
-        bigViewPosition.setUpId(-1);
-        bigViewPosition.setBigW(368);
-        bigViewPosition.setBigH(640);
-        bigViewPosition.setSmallW(368);
-        bigViewPosition.setSmallH(640);
-        bigUpid = -1;
-        StarManager.getInstance().initLive(getApplicationContext(), bigViewPosition.getVideoPlayer());
         findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+
+        findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                meetingManager.switchCamera(VideoMeetingActivity.this);
+            }
+        });
+
+        init();
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_LIVE_INIT_COMPLETE,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_JOIN_OK,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_ADD_UPLOADER,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_REMOVE_UPLOADER,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_ERROR,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_STOP_OK,this);
+    private void init(){
+        if(createrId.equals(MLOC.userId)){
+            if(meetingId==null){
+                createNewMeeting();
+            }else {
+                joinMeeting();
+            }
+        }else{
+            if(meetingId==null){
+                MLOC.showMsg(VideoMeetingActivity.this,"会议ID为空");
+            }else {
+                joinMeeting();
+            }
+        }
+    }
+
+    private void createNewMeeting(){
+        //创建新直播
+        XHMeetingItem meetingItem = new XHMeetingItem();
+        meetingItem.setMeetingName(meetingName);
+        meetingItem.setMeetingType((XHConstants.XHMeetingType) getIntent().getSerializableExtra(MEETING_TYPE));
+        meetingManager.createMeeting(meetingItem, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                meetingId = (String) data;
+                InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                joinMeeting();
+            }
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
+                        removeListener();
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
+    private void stop(){
+        meetingManager.leaveMeeting(meetingId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                removeListener();
+                finish();
+            }
+
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
+                    }
+                });
+                removeListener();
+                finish();
+            }
+        });
+    }
+
+    private void joinMeeting(){
+        //开始直播
+        meetingManager.joinMeeting(meetingId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("XHMeetingManager","startLive success "+data);
+            }
+            @Override
+            public void failed(final String errMsg) {
+                MLOC.d("XHMeetingManager","joinMeeting failed "+errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
+                        removeListener();
+                        finish();
+
+                    }
+                });
+            }
+        });
+    }
+
+    public void addListener(){
+        AEvent.addListener(AEvent.AEVENT_MEETING_ADD_UPLOADER,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_REMOVE_UPLOADER,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_ERROR,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_GET_ONLINE_NUMBER,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_SELF_KICKED,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_SELF_BANNED,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_REV_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_MEETING_REV_PRIVATE_MSG,this);
+    }
+    public void removeListener(){
+        AEvent.removeListener(AEvent.AEVENT_MEETING_ADD_UPLOADER,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_REMOVE_UPLOADER,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_ERROR,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_GET_ONLINE_NUMBER,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_SELF_KICKED,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_SELF_BANNED,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_REV_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_MEETING_REV_PRIVATE_MSG,this);
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        StarManager.getInstance().toBackground();
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-        StarManager.getInstance().toForground();
+    public void onRestart(){
+        super.onRestart();
+        addListener();
     }
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_LIVE_INIT_COMPLETE,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_JOIN_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_ADD_UPLOADER,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_REMOVE_UPLOADER,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_ERROR,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_STOP_OK,this);
+        removeListener();
         super.onStop();
     }
 
     @Override
     public void onBackPressed(){
-        StarManager.getInstance().stopLive();
+        new AlertDialog.Builder(VideoMeetingActivity.this).setCancelable(true)
+                .setTitle("是否退出会议?")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        stop();
+                    }
+                }
+        ).show();
     }
 
+    private void addPlayer(String addUserID){
+        ViewPosition newOne = new ViewPosition();
+        newOne.setUserId(addUserID);
+        StarPlayer player = new StarPlayer(this);
+        newOne.setVideoPlayer(player);
+        mPlayerList.add(newOne);
+        vPlayerView.addView(player);
+        CircularCoverView coverView = new CircularCoverView(this);
+        coverView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        coverView.setCoverColor(Color.BLACK);
+        coverView.setRadians(35, 35, 35, 35,10);
+        player.addView(coverView);
+        player.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeLayout(v);
+            }
+        });
+        resetLayout1();
+        player.setZOrderMediaOverlay(true);
 
-    private ViewPosition addNewPlayer(){
-        if(mViewList==null){
-            mViewList = new ArrayList<ViewPosition>();
+        if(mPlayerList.size()==1){
+            meetingManager.attachPlayerView(addUserID,player,true);
+        }else{
+            meetingManager.attachPlayerView(addUserID,player,false);
         }
-        try {
-            if(mViewList.size()<7){
-                final StarPlayer tv = new StarPlayer(this);
-                tv.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private boolean isRuning = false;
+    private void changeLayout(View v){
+        if(isRuning) return;
+        if(v == mPlayerList.get(0).getVideoPlayer())return;
+        ViewPosition clickPlayer = null;
+        int clickIndex = 0;
+        for (int i=0;i<mPlayerList.size();i++){
+            if(mPlayerList.get(i).getVideoPlayer()==v){
+                clickIndex = i;
+                clickPlayer = mPlayerList.remove(i);
+                meetingManager.changeToBig(clickPlayer.getUserId());
+                break;
+            }
+        }
+        final ViewPosition mainPlayer = mPlayerList.remove(0);
+        meetingManager.changeToSmall(mainPlayer.getUserId());
+        mPlayerList.remove(clickPlayer);
+        mPlayerList.add(0, clickPlayer);
+        mPlayerList.add(clickIndex,mainPlayer);
+
+        final ViewPosition finalClickPlayer = clickPlayer;
+        startAnimation(finalClickPlayer.getVideoPlayer(),mainPlayer.getVideoPlayer());
+    }
+
+    private void startAnimation(final StarPlayer clickPlayer, final StarPlayer mainPlayer){
+        final float clickStartW = clickPlayer.getWidth();
+        final float clickStartH = clickPlayer.getHeight();
+        final float clickEndW = mainPlayer.getWidth();
+        final float clickEndH = mainPlayer.getHeight();
+        final float mainStartW = mainPlayer.getWidth();
+        final float mainStartH = mainPlayer.getHeight();
+        final float mainEndW = clickPlayer.getWidth();
+        final float mainEndH = clickPlayer.getHeight();
+
+        final float clickStartX = clickPlayer.getX();
+        final float clickStartY = clickPlayer.getY();
+        final float clickEndX = mainPlayer.getX();
+        final float clickEndY = mainPlayer.getY();
+        final float mainStartX = mainPlayer.getX();
+        final float mainStartY = mainPlayer.getY();
+        final float mainEndX = clickPlayer.getX();
+        final float mainEndY = clickPlayer.getY();
+
+        if(StarRtcCore.openGLESEnable){
+            clickPlayer.setX(clickEndX);
+            clickPlayer.setY(clickEndY);
+            clickPlayer.getLayoutParams().width = (int) clickEndW;
+            clickPlayer.getLayoutParams().height = (int)clickEndH;
+            clickPlayer.requestLayout();
+
+            mainPlayer.setX(mainEndX);
+            mainPlayer.setY(mainEndY);
+            mainPlayer.getLayoutParams().width = (int) mainEndW;
+            mainPlayer.getLayoutParams().height = (int) mainEndH;
+            mainPlayer.requestLayout();
+        }else{
+
+            final ValueAnimator valTotal  = ValueAnimator.ofFloat(0f,1f);
+            valTotal.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    clickPlayer.setX(clickStartX + (Float) animation.getAnimatedValue()*(clickEndX - clickStartX));
+                    clickPlayer.setY(clickStartY + (Float) animation.getAnimatedValue()*(clickEndY - clickStartY));
+                    clickPlayer.getLayoutParams().width = (int) (clickStartW + (Float) animation.getAnimatedValue()*(clickEndW - clickStartW));
+                    clickPlayer.getLayoutParams().height = (int) (clickStartH + (Float) animation.getAnimatedValue()*(clickEndH - clickStartH));
+                    clickPlayer.requestLayout();
+
+                    mainPlayer.setX(mainStartX + (Float) animation.getAnimatedValue()*(mainEndX - mainStartX));
+                    mainPlayer.setY(mainStartY + (Float) animation.getAnimatedValue()*(mainEndY - mainStartY));
+                    mainPlayer.getLayoutParams().width = (int) (mainStartW + (Float) animation.getAnimatedValue()*(mainEndW - mainStartW));
+                    mainPlayer.getLayoutParams().height = (int) (mainStartH + (Float) animation.getAnimatedValue()*(mainEndH - mainStartH));
+                    mainPlayer.requestLayout();
+                }
+            });
+
+            valTotal.setDuration(300);
+            valTotal.setInterpolator(new LinearInterpolator());
+            valTotal.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    isRuning = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isRuning = false;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    isRuning = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            valTotal.start();
+        }
+    }
+
+    private void deletePlayer(String removeUserId){
+        if(mPlayerList!=null&&mPlayerList.size()>0){
+            for(int i = 0;i<mPlayerList.size();i++) {
+                ViewPosition temp = mPlayerList.get(i);
+                if (temp.getUserId().equals(removeUserId)) {
+                    ViewPosition remove = mPlayerList.remove(i);
+                    vPlayerView.removeView(remove.getVideoPlayer());
+                    resetLayout1();
+                    meetingManager.changeToBig(mPlayerList.get(0).getUserId());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void resetLayout1(){
+        switch (mPlayerList.size()){
+            case 1:{
+                StarPlayer player = mPlayerList.get(0).getVideoPlayer();
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
+                player.setLayoutParams(lp);
+                player.setY(0);
+                player.setX(0);
+                break;
+            }
+            case 2:
+            case 3:
+            case 4:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH-borderW/3);
+                        player.setLayoutParams(lp);
+                        player.setY(0);
+                        player.setX(0);
+                    }else{
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderW/3);
+                        player.setLayoutParams(lp);
+                        player.setY(borderH-borderW/3);
+                        player.setX(borderW/3*(i-1));
+                    }
+                }
+                break;
+            }
+            case 5:
+            case 6:
+            case 7:{
+
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH-borderW/3*2);
+                        player.setLayoutParams(lp);
+                        player.setY(0);
+                        player.setX(0);
+                    }else if(i<4){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderW/3);
+                        player.setLayoutParams(lp);
+                        player.setX(borderW/3*(i-1));
+                        player.setY(borderH-borderW/3*2);
+                    }else {
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderW/3);
+                        player.setLayoutParams(lp);
+                        player.setX(borderW/3*(i-4));
+                        player.setY(borderH-borderW/3);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    @Override
+    public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        switch (aEventID){
+            case AEvent.AEVENT_MEETING_ADD_UPLOADER:
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        resetView(v);
+                    public void run() {
+                        try {
+                            JSONObject data = (JSONObject) eventObj;
+                            String addId = data.getString("userID");
+                            addPlayer(addId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                int[] pos = new int[]{R.id.view1,R.id.view2,R.id.view3,R.id.view4,R.id.view5,R.id.view6,R.id.view7};
-                for (int id:pos){
-                    RelativeLayout pv = (RelativeLayout) findViewById(id);
-                    boolean used = false;
-                    for(ViewPosition v:mViewList){
-                        if(v.getParentView()==pv){
-                            used = true;
-                            break;
+                break;
+            case AEvent.AEVENT_MEETING_REMOVE_UPLOADER:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject data = (JSONObject) eventObj;
+                            String removeUserId = data.getString("userID");
+                            deletePlayer(removeUserId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-                    if(!used){
-                        ViewPosition viewPosition = new ViewPosition();
-                        viewPosition.setParentView(pv);
-                        viewPosition.setVideoPlayer(tv);
-                        mViewList.add(viewPosition);
-                        pv.addView(tv,lp);
-                        return viewPosition;
+                });
+                break;
+            case AEvent.AEVENT_MEETING_ERROR:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String errStr = (String) eventObj;
+                        MLOC.showMsg(getApplicationContext(),errStr);
+                        removeListener();
+                        finish();
                     }
-                }
-                return null;
-            }
-            return null;
-        }finally {
-            if(mViewList.size()==1){
-                vLine1.setVisibility(View.GONE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>1&&mViewList.size()<=4){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>4&&mViewList.size()<=7){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.VISIBLE);
-            }
-            resizeAllVideo();
-        }
-
-    }
-
-    private void removeLeavePlayer(String removeUserId){
-        try {
-            for(int i = 0;i<mViewList.size();i++){
-                ViewPosition temp = mViewList.get(i);
-                if(temp.getUserId().equals(removeUserId)){
-                    StarManager.getInstance().meetingRemoveUser(temp.getUserId(),temp.getUpId());
-                    ViewPosition last = mViewList.get(mViewList.size()-1);
-                    last.getParentView().removeView(last.getVideoPlayer());
-                    for(int j = i+1;j<mViewList.size();j++){
-                        ViewPosition nextVp = mViewList.get(j);
-                        ViewPosition thisVp = mViewList.get(j-1);
-                        thisVp.setUpId(nextVp.getUpId());
-                        thisVp.setUserId(nextVp.getUserId());
-                        if(i==0){
-                            //删除的是大图
-                            bigUpid = thisVp.getUpId();
-                            StarManager.getInstance().setBigVideo(thisVp.getUserId(),thisVp.getUpId());
-                        }
-                        if(nextVp.getUpId()==-1){
-                            StarManager.getInstance().setPreviewVideoView(1,thisVp.getVideoPlayer());
-                        }else{
-                            StarManager.getInstance().setVideoView(thisVp.getUpId(),thisVp.getVideoPlayer());
-                        }
-
+                });
+                break;
+            case AEvent.AEVENT_MEETING_GET_ONLINE_NUMBER:
+                break;
+            case AEvent.AEVENT_MEETING_SELF_KICKED:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoMeetingActivity.this,"你已被踢出");
+                        removeListener();
+                        finish();
                     }
-                    mViewList.remove(mViewList.size()-1);
-                    break;
-                }
-            }
-        }finally {
-            if(mViewList.size()==1){
-                vLine1.setVisibility(View.GONE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>1&&mViewList.size()<=4){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>4&&mViewList.size()<=7){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.VISIBLE);
-            }
-            resizeAllVideo();
-        }
-    }
-
-    private void resizeAllVideo(){
-        uiHandler.sendEmptyMessageDelayed(2,100);
-    }
-
-    private void resetView(View v){
-        ViewPosition click = null;
-        for(int i=0;i<mViewList.size();i++){
-            ViewPosition viewPosition  = mViewList.get(i);
-            if(v == viewPosition.getVideoPlayer()){
-                click = viewPosition;
-                bigUpid = viewPosition.getUpId();
-                StarManager.getInstance().setBigVideo(viewPosition.getUserId(),viewPosition.getUpId());
-            }
-            if(viewPosition.getParentView()==findViewById(R.id.view1)){
-                bigViewPosition = viewPosition;
-            }
-        }
-        int clickId = click.getUpId();
-        int mainId = bigViewPosition.getUpId();
-        StarLog.d("meeting@@","clickId"+clickId);
-        StarLog.d("meeting@@","mainId"+mainId);
-        if(clickId==-1){
-            StarManager.getInstance().setPreviewVideoView(1,bigViewPosition.getVideoPlayer());
-        }else{
-            StarManager.getInstance().setVideoView(clickId,bigViewPosition.getVideoPlayer());
-        }
-        if(mainId==-1){
-            StarManager.getInstance().setPreviewVideoView(1, click.getVideoPlayer());
-        }else{
-            StarManager.getInstance().setVideoView(mainId, click.getVideoPlayer());
-        }
-
-        int tid = click.getUpId();
-        String tUid = click.getUserId();
-        click.setUpId(bigViewPosition.getUpId());
-        click.setUserId(bigViewPosition.getUserId());
-        bigViewPosition.setUpId(tid);
-        bigViewPosition.setUserId(tUid);
-        click.getVideoPlayer().setZOrderMediaOverlay(true);
-        bigViewPosition.getVideoPlayer().setZOrderMediaOverlay(false);
-//        resizeAllVideo();
-
-    }
-
-    @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
-        switch (aEventID){
-            case AEvent.AEVENT_LIVE_INIT_COMPLETE:
-                if(success){
-                    StarManager.getInstance().setPreviewVideoView(1,bigViewPosition.getVideoPlayer());
-                    if(StringUtils.isNotEmpty(channelId)){
-                        StarLog.d("","使用已存在频道上传视频："+channelId);
-                        StarManager.getInstance().applyStartMeeting( new StarLiveConfig(),meetingId,channelId);
-                    }else{
-                        StarLog.d("","申请新的会议频道上传视频");
-                        StarManager.getInstance().applyStartNewMeeting(new StarLiveConfig(),meetingId,7);
-                    }
-                }else{
-                    MLOC.showMsg("initEncoder ERROR!!!");
-                    finish();
-                }
+                });
                 break;
-            case AEvent.AEVENT_LIVE_JOIN_OK:
-
+            case AEvent.AEVENT_MEETING_SELF_BANNED:
                 break;
-            case AEvent.AEVENT_LIVE_ADD_UPLOADER:
-                Message msg = new Message();
-                msg.what = 0;
-                Bundle b = new Bundle();
-                b.putString("data",((JSONObject)eventObj).toString());
-                msg.setData(b);
-                uiHandler.sendMessage(msg);
+            case AEvent.AEVENT_MEETING_REV_MSG:
                 break;
-            case AEvent.AEVENT_LIVE_REMOVE_UPLOADER:
-                Message msg2 = new Message();
-                msg2.what = 1;
-                Bundle b2 = new Bundle();
-                b2.putString("data",((JSONObject)eventObj).toString());
-                msg2.setData(b2);
-                uiHandler.sendMessage(msg2);
-                break;
-            case AEvent.AEVENT_LIVE_STOP_OK:
-                uiHandler.sendEmptyMessage(3);
-                break;
-            case AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO:
-                Message msg4 = new Message();
-                msg4.what = 4;
-                Bundle b4 = new Bundle();
-                b4.putByteArray("data", (byte[]) eventObj);
-                msg4.setData(b4);
-                uiHandler.sendMessage(msg4);
-                break;
-            case AEvent.AEVENT_LIVE_ERROR:
-                Message msg5 = new Message();
-                msg5.what = 5;
-                Bundle b5 = new Bundle();
-                b5.putString("data", (String) eventObj);
-                msg5.setData(b5);
-                uiHandler.sendMessage(msg5);
+            case AEvent.AEVENT_MEETING_REV_PRIVATE_MSG:
                 break;
         }
     }
-
-    private Handler uiHandler = new UIHandler();
-    class UIHandler extends Handler{
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case 0:
-                    try {
-                        StarLog.d("@@@@","add new player:"+msg.getData().getString("data"));
-                        JSONObject data = new JSONObject(msg.getData().getString("data"));
-                        String addId = data.getString("userId");
-                        int bigW = data.getInt("bigW");
-                        int bigH = data.getInt("bigH");
-                        int smallW = data.getInt("smallW");
-                        int smallH = data.getInt("smallH");
-                        int upId = data.getInt("upId");
-                        ViewPosition vp = addNewPlayer();
-                        if(vp!=null){
-                            vp.setUserId(addId);
-                            vp.setBigW(bigW);
-                            vp.setBigH(bigH);
-                            vp.setSmallW(smallW);
-                            vp.setSmallH(smallH);
-                            vp.setUpId(upId);
-                            vp.getVideoPlayer().setZOrderMediaOverlay(true);
-                            StarPlayer newVideoView = vp.getVideoPlayer();
-                            StarManager.getInstance().meetingAddUser(newVideoView,addId,upId);
-                            newVideoView.setScalType(smallW,smallH,
-                                    StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP
-                            );
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 1:
-                    try {
-                        JSONObject data = new JSONObject(msg.getData().getString("data"));
-                        String removeUserId = data.getString("userId");
-                        removeLeavePlayer(removeUserId);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 2:
-                    for(ViewPosition viewPosition:mViewList){
-
-                        if(viewPosition.getUpId()==bigUpid){
-                            StarLog.d("@@@@","setScalType upid:"+viewPosition.getUpId()+"|"+viewPosition.getBigW()+"|"+viewPosition.getBigH() );
-                            viewPosition.getVideoPlayer().setScalType(
-                                    viewPosition.getBigW(),
-                                    viewPosition.getBigH(),
-                                    StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP
-                            );
-                        }else{
-                            StarLog.d("@@@@","setScalType upid:"+viewPosition.getUpId()+"|"+viewPosition.getSmallW()+"|"+viewPosition.getSmallH() );
-                            viewPosition.getVideoPlayer().setScalType(
-                                    viewPosition.getSmallW(),
-                                    viewPosition.getSmallH(),
-                                    StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP
-                            );
-                        }
-
-                    }
-                    StarLog.d("@@@@","setScalType ===============" );
-                    break;
-                case 3:
-                    finish();
-                    break;
-                case 4:
-
-                    byte[] config = msg.getData().getByteArray("data");
-                    StarLog.d("@@@@","resetAll " );
-                    for(ViewPosition info:mViewList){
-                        for(int i=0;i<config.length;i++){
-                            if(info.getUpId()==i){
-                                if(config[i]== StarLiveVideoSizeConfigType.LIVE_STREAM_CONFIG_BIG_BYTE){
-                                    StarLog.d("@@@@","setScalType upid:"+info.getUpId()+"|"+info.getBigW()+"|"+info.getBigH() );
-                                    info.getVideoPlayer().setScalType(info.getBigW(),info.getBigH(), StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-                                }else if(config[i]== StarLiveVideoSizeConfigType.LIVE_STREAM_CONFIG_SMALL_BYTE){
-                                    StarLog.d("@@@@","setScalType upid:"+info.getUpId()+"|"+info.getSmallW()+"|"+info.getSmallH() );
-                                    info.getVideoPlayer().setScalType(info.getSmallW(),info.getSmallH(),StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-                                }
-                            }
-                        }
-                    }
-                    StarLog.d("@@@@","resetAll=================== " );
-                    break;
-                case 5:
-                    String errStr = msg.getData().getString("data");
-                    MLOC.showMsg(getApplicationContext(),errStr);
-                    onBackPressed();
-            }
-            super.handleMessage(msg);
-        }
-    };
-
-
 }

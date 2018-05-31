@@ -2,30 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.starrtc.staravdemo">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -34,11 +21,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.starrtc.staravdemo.demo.StarAvDemoActivity"
+            android:name=".demo.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -46,14 +32,14 @@
         <!-- starAvSdk -->
         <!-- 【必须】消息收发service -->
         <service
-            android:name="com.starrtc.starrtcsdk.service.StarService"
+            android:name="com.starrtc.starrtcsdk.core.service.StarService"
             android:exported="true">
             <intent-filter>
                 <action android:name="cn.starav.staravsdk.service.StarService" />
             </intent-filter>
         </service>
         <service
-            android:name="com.starrtc.starrtcsdk.service.StarAssistService"
+            android:name="com.starrtc.starrtcsdk.core.service.StarAssistService"
             android:exported="false">
             <intent-filter>
                 <action android:name="cn.starav.staravsdk.service.StarAssistService" />
@@ -62,71 +48,81 @@
 
         <!-- starAvSdk -->
         <activity
-            android:name="com.starrtc.staravdemo.demo.voip.VoipReadyActivity"
+            android:name=".demo.voip.VoipListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.voip.VoipActivity"
+            android:name=".demo.voip.VoipActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videolive.VideoLiveListActivity"
+            android:name=".demo.videolive.VideoLiveListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videolive.VideoLiveCreateActivity"
+            android:name=".demo.videolive.VideoLiveCreateActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videolive.VideoLiveActivity"
+            android:name=".demo.videolive.VideoLiveActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videomeeting.VideoMeetingActivity"
+            android:name=".demo.videomeeting.VideoMeetingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videomeeting.VideoMeetingListActivity"
+            android:name=".demo.videomeeting.VideoMeetingListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.videomeeting.VideoMeetingCreateActivity"
+            android:name=".demo.videomeeting.VideoMeetingCreateActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.test.EchoTestActivity"
+            android:name=".demo.test.EchoTestActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.test.LoopTestActivity"
+            android:name=".demo.test.LoopTestActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.setting.VideoSizeSettingActivity"
+            android:name=".demo.setting.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.setting.SettingActivity"
+            android:name=".demo.im.chatroom.ChatroomActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.setting.MediaEncodeConfigSettingActivity"
+            android:name=".demo.im.chatroom.ChatroomCreateActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.setting.HardEncodeSettingActivity"
+            android:name=".demo.im.chatroom.ChatroomListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.chatroom.ChatroomActivity"
+            android:name=".demo.im.IMDemoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.chatroom.ChatroomCreateActivity"
+            android:name=".demo.im.c2c.C2CActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.chatroom.ChatroomListActivity"
+            android:name=".demo.im.group.MessageGroupActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.IMDemoActivity"
+            android:name=".demo.im.group.MessageGroupCreateActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.c2c.C2CActivity"
+            android:name=".demo.im.group.MessageGroupListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.group.MessageGroupActivity"
+            android:name=".demo.voip.VoipRingingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.group.MessageGroupCreateActivity"
+            android:name=".demo.StarAvDemoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.starrtc.staravdemo.demo.im.group.MessageGroupListActivity"
+            android:name=".demo.test.LayoutTestActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".demo.im.c2c.C2CListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".demo.im.c2c.C2CCreateActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".demo.im.group.MessageGroupSettingActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".demo.voip.VoipCreateActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

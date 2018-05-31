@@ -5,8 +5,8 @@ package com.starrtc.staravdemo.demo.videolive;
  */
 
 public class LiveInfo {
-    public String channelId;
-    public String chatroomId;
     public String createrId;
+    public String liveName;
     public String liveId;
+    public String isLiveOn;
 }

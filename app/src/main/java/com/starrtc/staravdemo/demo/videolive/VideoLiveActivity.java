@@ -1,23 +1,46 @@
 package com.starrtc.staravdemo.demo.videolive;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.listener.XHLiveManagerListener;
+import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
+import com.starrtc.staravdemo.demo.ui.CircularCoverView;
+import com.starrtc.staravdemo.demo.videomeeting.ViewPosition;
+import com.starrtc.staravdemo.utils.AEvent;
+import com.starrtc.staravdemo.utils.DensityUtils;
+import com.starrtc.staravdemo.utils.IEventListener;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHLiveItem;
+import com.starrtc.starrtcsdk.api.XHLiveManager;
+import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
+import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,119 +48,82 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.starrtc.staravdemo.R;
-import com.starrtc.staravdemo.demo.MLOC;
-import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.staravdemo.demo.videomeeting.ViewPosition;
-import com.starrtc.staravdemo.utils.AEvent;
-import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.im.message.StarIMMessage;
-import com.starrtc.starrtcsdk.im.message.StarIMMessageBuilder;
-import com.starrtc.starrtcsdk.live.StarLiveConfig;
-import com.starrtc.starrtcsdk.live.StarLiveVideoSizeConfigType;
-import com.starrtc.starrtcsdk.player.StarPlayer;
-import com.starrtc.starrtcsdk.player.StarPlayerScaleType;
-import com.starrtc.starrtcsdk.utils.StarLog;
-import com.starrtc.starrtcsdk.utils.StringUtils;
-
 public class VideoLiveActivity extends Activity implements IEventListener {
 
-    private LinearLayout vLine1,vLine2;
-    private List<ViewPosition> mViewList;
-
+    public static String CREATER_ID         = "CREATER_ID";          //创建者ID
+    public static String LIVE_TYPE          = "LIVE_TYPE";           //创建信息
     public static String LIVE_ID            = "LIVE_ID";            //直播ID
-    public static String CHANNEL_ID         = "CHANNEL_ID";         //频道ID
-    public static String CHATROOM_ID        = "CHATROOM_ID";         //聊天室ID
-    public static String CREATER_ID         = "CREATER_ID";         //创建者ID
+    public static String LIVE_NAME          = "LIVE_NAME";          //直播名称
 
     private TextView vRoomId;
     private ListView vMsgList;
     private View vSendBtn;
     private EditText vEditText;
+    private View vMicBtn;
+    private View vCameraBtn;
+    private View vPanelBtn;
+    private View vCleanBtn;
 
-
-    private String liveId;
-    private String channelId;
-    private String chatroomId;
-    private String createrId;
-    private String mPrivateMsgTargetId;
-
-    private int maxMessageLength;
-    private int onLineUserNumber;
-
-    private boolean joinChatroomOk = false;
-    private boolean joinLiveOk = false;
-
-    private List<StarIMMessage> mDatas;
+    private List<XHIMMessage> mDatas;
     private MyChatroomListAdapter mAdapter ;
 
-    private int bigUpid;
-    private ViewPosition bigViewPosition;
+    private RelativeLayout vPlayerView;
+    private ArrayList<ViewPosition> mPlayerList;
+    private int borderW = 0;
+    private int borderH = 0;
 
+    private String mPrivateMsgTargetId;
+    private XHLiveManager liveManager;
+    private Boolean isUploader = false;
+    private String createrId;
+    private String liveId;
+    private String liveName;
+    private XHConstants.XHLiveType liveType;
+
+    private StarWhitePanel vPaintPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_live);
 
-        liveId = getIntent().getStringExtra(LIVE_ID);
-        channelId = getIntent().getStringExtra(CHANNEL_ID);
-        chatroomId = getIntent().getStringExtra(CHATROOM_ID);
         createrId = getIntent().getStringExtra(CREATER_ID);
+        liveName = getIntent().getStringExtra(LIVE_NAME);
+        liveId = getIntent().getStringExtra(LIVE_ID);
+        liveType = (XHConstants.XHLiveType) getIntent().getSerializableExtra(LIVE_TYPE);
 
-        if(StringUtils.isEmpty(liveId)){
-            liveId = "live_"+ liveId;
+        if(TextUtils.isEmpty(liveId)){
+            if(createrId.equals(MLOC.userId)){
+                if(TextUtils.isEmpty(liveName)||liveType==null){
+                    MLOC.showMsg(this,"没有直播信息");
+                    finish();
+                    return;
+                }
+            }else{
+                if(TextUtils.isEmpty(liveName)||liveType==null){
+                    MLOC.showMsg(this,"没有直播信息");
+                    finish();
+                    return;
+                }
+            }
         }
 
+        liveManager = XHClient.getInstance().getLiveManager(this);
+        liveManager.addListener(new XHLiveManagerListener());
+
+
+        addListener();
         vRoomId = (TextView) findViewById(R.id.live_id_text);
-        vRoomId.setText("直播编号："+ liveId);
+        vRoomId.setText("直播编号："+ liveName);
 
-        vLine1 = (LinearLayout) findViewById(R.id.line1);
-        vLine2 = (LinearLayout) findViewById(R.id.line2);
-
-        bigViewPosition = addNewPlayer();
-        bigViewPosition.setUserId(MLOC.agentId+"_"+MLOC.userId);
-        bigViewPosition.setUpId(-1);
-        bigViewPosition.setBigW(480);
-        bigViewPosition.setBigH(640);
-        bigViewPosition.setSmallW(480);
-        bigViewPosition.setSmallH(640);
-        bigUpid = -1;
-        StarLog.d("@@@@@initLive","");
-        StarManager.getInstance().initLive(getApplicationContext(), bigViewPosition.getVideoPlayer());
-
-        /*if(createrId.equals(MLOC.userId)){
-            bigViewPosition = addNewPlayer();
-            bigViewPosition.setUserId(MLOC.agentId+"_"+MLOC.userId);
-            bigViewPosition.setUpId(-1);
-            bigViewPosition.setBigW(480);
-            bigViewPosition.setBigH(640);
-            bigViewPosition.setSmallW(480);
-            bigViewPosition.setSmallH(640);
-            bigUpid = -1;
-            StarLog.d("@@@@@initLive","");
-            StarManager.getInstance().initLive(getApplicationContext(), bigViewPosition.getVideoPlayer());
-        }else{
-            IStarCallback callback = new IStarCallback() {
-                @Override
-                public void callback(boolean reqSuccess, String statusCode, String data) {
-                    if(reqSuccess){
-                        StarLog.d("@@@@@VideoLiveActivity","申请观看成功");
-                        if(StringUtils.isNotEmpty(chatroomId)){
-                            StarLog.d("@@@@@VideoLiveActivity","加入聊天室："+chatroomId);
-                            StarManager.getInstance().joinChatroom(chatroomId);
-                        }else{
-                            StarLog.d("@@@@@VideoLiveActivity","聊天室ID为空");
-                        }
-                    }else{
-                        StarLog.d("@@@@@VideoLiveActivity","申请观看失败");
-                    }
-                }
-            };
-            StarLog.d("@@@@@joinLive","channelId="+channelId);
-            StarManager.getInstance().joinLive(channelId, callback);
-        }*/
+        vPaintPlayer = (StarWhitePanel) findViewById(R.id.painter);
+        vPanelBtn = findViewById(R.id.panel_btn);
+        vCleanBtn = findViewById(R.id.clean_btn);
 
         findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,8 +131,8 @@ public class VideoLiveActivity extends Activity implements IEventListener {
                 onBackPressed();
             }
         });
-
         vEditText = (EditText) findViewById(R.id.id_input);
+        vEditText.clearFocus();
         mDatas = new ArrayList<>();
         vMsgList = (ListView) findViewById(R.id.msg_list);
 
@@ -159,7 +145,8 @@ public class VideoLiveActivity extends Activity implements IEventListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String clickUserId = mDatas.get(position).fromId;
-                showManagerDialog(clickUserId);
+                String msgText = mDatas.get(position).contentData;
+                showManagerDialog(clickUserId,msgText);
             }
         });
 
@@ -172,394 +159,729 @@ public class VideoLiveActivity extends Activity implements IEventListener {
                     sendChatMsg(txt);
                     vEditText.setText("");
                 }
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(vEditText.getWindowToken(), 0);
             }
         });
 
+        vCameraBtn = findViewById(R.id.switch_camera);
+        vMicBtn = findViewById(R.id.mic_btn);
+        if(createrId!=null&&createrId.equals(MLOC.userId)){
+            vMicBtn.setVisibility(View.GONE);
+            vCameraBtn.setVisibility(View.VISIBLE);
+            vPanelBtn.setVisibility(View.VISIBLE);
+//            vCarBtn.setVisibility(View.VISIBLE);
+        }else{
+            vMicBtn.setVisibility(View.VISIBLE);
+            vCameraBtn.setVisibility(View.GONE);
+            vPanelBtn.setVisibility(View.GONE);
+//            vCarBtn.setVisibility(View.GONE);
+        }
+        vMicBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isUploader){
+                    new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                            .setTitle("是否结束上麦?")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+
+                                }
+                            }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    isUploader = false;
+                                    liveManager.changeToAudience();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            vMicBtn.setSelected(false);
+                                            vCameraBtn.setVisibility(View.GONE);
+                                            vPanelBtn.setVisibility(View.GONE);
+//                                            vCarBtn.setVisibility(View.GONE);
+                                        }
+                                    });
+                                }
+                            }
+                    ).show();
+                }else{
+                    new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                            .setTitle("是否申请上麦?")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+
+                                }
+                            }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    liveManager.applyToBroadcaster(createrId);
+                                }
+                            }
+                    ).show();
+                }
+            }
+        });
+
+        findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StarRtcCore.getInstance().switchCamera(VideoLiveActivity.this);
+            }
+        });
+
+        vPlayerView = (RelativeLayout) findViewById(R.id.view1);
+        borderW = DensityUtils.screenWidth(this);
+        borderH = borderW/3*4;
+        mPlayerList = new ArrayList<>();
+
+
+        vPanelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(vPanelBtn.isSelected()){
+                    vPanelBtn.setSelected(false);
+                    vCleanBtn.setVisibility(View.INVISIBLE);
+                    vPaintPlayer.puase();
+                }else{
+                    vPanelBtn.setSelected(true);
+                    vCleanBtn.setVisibility(View.VISIBLE);
+                    vPaintPlayer.publish();
+                }
+            }
+        });
+        vCleanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vPaintPlayer.clean();
+            }
+        });
+
+        init();
     }
+
+    private void init(){
+        if(createrId.equals(MLOC.userId)){
+            if(liveId==null){
+                createNewLive();
+            }else {
+               starLive();
+            }
+        }else{
+            joinLive();
+        }
+    }
+
+    private void createNewLive(){
+        //创建新直播
+        isUploader = true;
+        XHLiveItem liveItem = new XHLiveItem();
+        liveItem.setLiveName(liveName);
+        liveItem.setLiveType(liveType);
+        liveManager.createLive(liveItem, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                liveId = (String) data;
+                InterfaceUrls.demoReportLive(liveId,liveName,createrId);
+                starLive();
+            }
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoLiveActivity.this,errMsg);
+                        removeListener();
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
+    private void starLive(){
+        //开始直播
+        isUploader = true;
+        liveManager.startLive(liveId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("XHLiveManager","startLive success "+data);
+            }
+            @Override
+            public void failed(final String errMsg) {
+                MLOC.d("XHLiveManager","startLive failed "+errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoLiveActivity.this,errMsg);
+                        removeListener();
+                        finish();
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void joinLive(){
+        //观众加入直播
+        isUploader = false;
+        liveManager.watchLive(liveId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("XHLiveManager","watchLive success "+data);
+            }
+            @Override
+            public void failed(final String errMsg) {
+                MLOC.d("XHLiveManager","watchLive failed "+errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoLiveActivity.this,errMsg);
+                        removeListener();
+                        finish();
+                    }
+                });
+
+            }
+        });
+    }
+
+
     private void sendChatMsg(String msg){
+        MLOC.d("XHLiveManager","sendChatMsg "+msg);
         if(TextUtils.isEmpty(mPrivateMsgTargetId)){
-            StarIMMessage imMessage = StarManager.getInstance().sendChatroomMessage(chatroomId,msg);
+            XHIMMessage imMessage = liveManager.sendMessage(msg,null);
             mDatas.add(imMessage);
         }else{
-            StarIMMessage imMessage = StarManager.getInstance().sendChatroomPrivateMessage(mPrivateMsgTargetId,chatroomId,msg);
+            XHIMMessage imMessage = liveManager.sendPrivateMessage(msg,mPrivateMsgTargetId,null);
             mDatas.add(imMessage);
         }
-
         mAdapter.notifyDataSetChanged();
         mPrivateMsgTargetId = "";
+
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_LIVE_INIT_COMPLETE,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_JOIN_OK,this);
+
+    public void addListener(){
+        AEvent.addListener(AEvent.AEVENT_LIVE_ERROR,this);
         AEvent.addListener(AEvent.AEVENT_LIVE_ADD_UPLOADER,this);
         AEvent.addListener(AEvent.AEVENT_LIVE_REMOVE_UPLOADER,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_ERROR,this);
-        AEvent.addListener(AEvent.AEVENT_LIVE_STOP_OK,this);
-
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_CREATE_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_CREATE_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_JOIN_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_JOIN_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_REV_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_ERROR,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SELF_KICKED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SELF_BANNED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_KICK_OUT_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_BAN_USER_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_BAN_USER_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_STOP_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_DELETE_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_APPLY_LINK,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_APPLY_LINK_RESULT,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_INVITE_LINK,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_INVITE_LINK_RESULT,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_GET_ONLINE_NUMBER,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_SELF_KICKED,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_SELF_BANNED,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_REV_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_REV_PRIVATE_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_SELF_COMMANDED_TO_STOP,this);
+        AEvent.addListener(AEvent.AEVENT_LIVE_REV_REALTIME_DATA,this);
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        StarManager.getInstance().toBackground();
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-        StarManager.getInstance().toForground();
+    public void onRestart(){
+        super.onRestart();
+        addListener();
     }
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_LIVE_INIT_COMPLETE,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_JOIN_OK,this);
+        removeListener();
+        super.onStop();
+    }
+
+    private void removeListener(){
+        AEvent.removeListener(AEvent.AEVENT_LIVE_ERROR,this);
         AEvent.removeListener(AEvent.AEVENT_LIVE_ADD_UPLOADER,this);
         AEvent.removeListener(AEvent.AEVENT_LIVE_REMOVE_UPLOADER,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_ERROR,this);
-        AEvent.removeListener(AEvent.AEVENT_LIVE_STOP_OK,this);
-
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_CREATE_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_CREATE_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_JOIN_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_JOIN_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_REV_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_ERROR,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SELF_KICKED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SELF_BANNED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_KICK_OUT_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_BAN_USER_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_BAN_USER_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_STOP_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_DELETE_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED,this);
-        super.onStop();
+        AEvent.removeListener(AEvent.AEVENT_LIVE_APPLY_LINK,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_APPLY_LINK_RESULT,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_INVITE_LINK,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_INVITE_LINK_RESULT,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_GET_ONLINE_NUMBER,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_SELF_KICKED,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_SELF_BANNED,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_REV_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_REV_PRIVATE_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_SELF_COMMANDED_TO_STOP,this);
+        AEvent.removeListener(AEvent.AEVENT_LIVE_REV_REALTIME_DATA,this);
     }
 
     @Override
     public void onBackPressed(){
-        StarManager.getInstance().stopLive();
-        StarManager.getInstance().exitChatroom();
-    }
-
-
-    private ViewPosition addNewPlayer(){
-        if(mViewList==null){
-            mViewList = new ArrayList<ViewPosition>();
-        }
-        try {
-            if(mViewList.size()<7){
-                final StarPlayer tv = new StarPlayer(this);
-                tv.setOnClickListener(new View.OnClickListener() {
+        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                .setTitle("是否停止直播?")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        resetView(v);
+                    public void onClick(DialogInterface arg0, int arg1) {
+
                     }
-                });
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                int[] pos = new int[]{R.id.view1,R.id.view2,R.id.view3,R.id.view4,R.id.view5,R.id.view6,R.id.view7};
-                for (int id:pos){
-                    RelativeLayout pv = (RelativeLayout) findViewById(id);
-                    boolean used = false;
-                    for(ViewPosition v:mViewList){
-                        if(v.getParentView()==pv){
-                            used = true;
-                            break;
-                        }
-                    }
-                    if(!used){
-                        ViewPosition viewPosition = new ViewPosition();
-                        viewPosition.setParentView(pv);
-                        viewPosition.setVideoPlayer(tv);
-                        mViewList.add(viewPosition);
-                        pv.addView(tv,lp);
-                        return viewPosition;
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        stop();
                     }
                 }
-                return null;
-            }
-            return null;
-        }finally {
-            if(mViewList.size()==1){
-                vLine1.setVisibility(View.GONE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>1&&mViewList.size()<=4){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>4&&mViewList.size()<=7){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.VISIBLE);
-            }
-            resizeAllVideo();
-        }
-
+        ).show();
     }
 
-    private void removeLeavePlayer(String removeUserId){
-        try {
-            for(int i = 0;i<mViewList.size();i++){
-                ViewPosition temp = mViewList.get(i);
-                if(temp.getUserId().equals(removeUserId)){
-                    StarManager.getInstance().meetingRemoveUser(temp.getUserId(),temp.getUpId());
-                    ViewPosition last = mViewList.get(mViewList.size()-1);
-                    last.getParentView().removeView(last.getVideoPlayer());
-                    for(int j = i+1;j<mViewList.size();j++){
-                        ViewPosition nextVp = mViewList.get(j);
-                        ViewPosition thisVp = mViewList.get(j-1);
-                        thisVp.setUpId(nextVp.getUpId());
-                        thisVp.setUserId(nextVp.getUserId());
-                        if(i==0){
-                            //删除的是大图
-                            bigUpid = thisVp.getUpId();
-                            StarManager.getInstance().setBigVideo(thisVp.getUserId(),thisVp.getUpId());
-                        }
-                        if(nextVp.getUpId()==-1){
-                            StarManager.getInstance().setPreviewVideoView(1,thisVp.getVideoPlayer());
-                        }else{
-                            StarManager.getInstance().setVideoView(thisVp.getUpId(),thisVp.getVideoPlayer());
-                        }
+    private void stop(){
+        liveManager.leaveLive(liveId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                removeListener();
+                finish();
+            }
 
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoLiveActivity.this,errMsg);
                     }
-                    mViewList.remove(mViewList.size()-1);
+                });
+                removeListener();
+                finish();
+            }
+        });
+    }
+
+    private void addPlayer(String addUserID){
+        ViewPosition newOne = new ViewPosition();
+        newOne.setUserId(addUserID);
+        StarPlayer player = new StarPlayer(this);
+        newOne.setVideoPlayer(player);
+        mPlayerList.add(newOne);
+        vPlayerView.addView(player);
+        CircularCoverView coverView = new CircularCoverView(this);
+        coverView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        coverView.setCoverColor(Color.BLACK);
+        coverView.setRadians(35, 35, 35, 35,10);
+        player.addView(coverView);
+        player.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeLayout(v);
+            }
+        });
+        resetLayout1();
+        player.setZOrderMediaOverlay(true);
+
+        if(mPlayerList.size()==1){
+            liveManager.attachPlayerView(addUserID,player,true);
+        }else{
+            liveManager.attachPlayerView(addUserID,player,false);
+        }
+    }
+
+    private boolean isRuning = false;
+    private void changeLayout(View v){
+        if(isRuning) return;
+        if(v == mPlayerList.get(0).getVideoPlayer())return;
+        ViewPosition clickPlayer = null;
+        int clickIndex = 0;
+        for (int i=0;i<mPlayerList.size();i++){
+            if(mPlayerList.get(i).getVideoPlayer()==v){
+                clickIndex = i;
+                clickPlayer = mPlayerList.remove(i);
+                liveManager.changeToBig(clickPlayer.getUserId());
+                break;
+            }
+        }
+        final ViewPosition mainPlayer = mPlayerList.remove(0);
+        liveManager.changeToSmall(mainPlayer.getUserId());
+        mPlayerList.remove(clickPlayer);
+        mPlayerList.add(0, clickPlayer);
+        mPlayerList.add(clickIndex,mainPlayer);
+
+        final ViewPosition finalClickPlayer = clickPlayer;
+        startAnimation(finalClickPlayer.getVideoPlayer(),mainPlayer.getVideoPlayer());
+    }
+
+    private void startAnimation(final StarPlayer clickPlayer, final StarPlayer mainPlayer){
+        final float clickStartW = clickPlayer.getWidth();
+        final float clickStartH = clickPlayer.getHeight();
+        final float clickEndW = mainPlayer.getWidth();
+        final float clickEndH = mainPlayer.getHeight();
+        final float mainStartW = mainPlayer.getWidth();
+        final float mainStartH = mainPlayer.getHeight();
+        final float mainEndW = clickPlayer.getWidth();
+        final float mainEndH = clickPlayer.getHeight();
+
+        final float clickStartX = clickPlayer.getX();
+        final float clickStartY = clickPlayer.getY();
+        final float clickEndX = mainPlayer.getX();
+        final float clickEndY = mainPlayer.getY();
+        final float mainStartX = mainPlayer.getX();
+        final float mainStartY = mainPlayer.getY();
+        final float mainEndX = clickPlayer.getX();
+        final float mainEndY = clickPlayer.getY();
+
+        if(StarRtcCore.openGLESEnable){
+            clickPlayer.setX(clickEndX);
+            clickPlayer.setY(clickEndY);
+            clickPlayer.getLayoutParams().width = (int) clickEndW;
+            clickPlayer.getLayoutParams().height = (int)clickEndH;
+            clickPlayer.requestLayout();
+
+            mainPlayer.setX(mainEndX);
+            mainPlayer.setY(mainEndY);
+            mainPlayer.getLayoutParams().width = (int) mainEndW;
+            mainPlayer.getLayoutParams().height = (int) mainEndH;
+            mainPlayer.requestLayout();
+        }else{
+
+            final ValueAnimator valTotal  = ValueAnimator.ofFloat(0f,1f);
+            valTotal.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    clickPlayer.setX(clickStartX + (Float) animation.getAnimatedValue()*(clickEndX - clickStartX));
+                    clickPlayer.setY(clickStartY + (Float) animation.getAnimatedValue()*(clickEndY - clickStartY));
+                    clickPlayer.getLayoutParams().width = (int) (clickStartW + (Float) animation.getAnimatedValue()*(clickEndW - clickStartW));
+                    clickPlayer.getLayoutParams().height = (int) (clickStartH + (Float) animation.getAnimatedValue()*(clickEndH - clickStartH));
+                    clickPlayer.requestLayout();
+
+                    mainPlayer.setX(mainStartX + (Float) animation.getAnimatedValue()*(mainEndX - mainStartX));
+                    mainPlayer.setY(mainStartY + (Float) animation.getAnimatedValue()*(mainEndY - mainStartY));
+                    mainPlayer.getLayoutParams().width = (int) (mainStartW + (Float) animation.getAnimatedValue()*(mainEndW - mainStartW));
+                    mainPlayer.getLayoutParams().height = (int) (mainStartH + (Float) animation.getAnimatedValue()*(mainEndH - mainStartH));
+                    mainPlayer.requestLayout();
+                }
+            });
+
+            valTotal.setDuration(300);
+            valTotal.setInterpolator(new LinearInterpolator());
+            valTotal.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    isRuning = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isRuning = false;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    isRuning = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            valTotal.start();
+        }
+    }
+
+
+    private void deletePlayer(String removeUserId){
+        if(mPlayerList!=null&&mPlayerList.size()>0){
+            for(int i = 0;i<mPlayerList.size();i++) {
+                ViewPosition temp = mPlayerList.get(i);
+                if (temp.getUserId().equals(removeUserId)) {
+                    ViewPosition remove = mPlayerList.remove(i);
+                    vPlayerView.removeView(remove.getVideoPlayer());
+                    resetLayout1();
+                    liveManager.changeToBig(mPlayerList.get(0).getUserId());
                     break;
                 }
             }
-        }finally {
-            if(mViewList.size()==1){
-                vLine1.setVisibility(View.GONE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>1&&mViewList.size()<=4){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.GONE);
-            }else if(mViewList.size()>4&&mViewList.size()<=7){
-                vLine1.setVisibility(View.VISIBLE);
-                vLine2.setVisibility(View.VISIBLE);
-            }
-            resizeAllVideo();
         }
     }
 
-    private void resizeAllVideo(){
-        uiHandler.sendEmptyMessageDelayed(2,100);
-    }
-
-    private void resetView(View v){
-        ViewPosition click = null;
-        for(int i=0;i<mViewList.size();i++){
-            ViewPosition viewPosition  = mViewList.get(i);
-            if(v == viewPosition.getVideoPlayer()){
-                click = viewPosition;
-                bigUpid = viewPosition.getUpId();
-                StarManager.getInstance().setBigVideo(viewPosition.getUserId(),viewPosition.getUpId());
+    private void resetLayout1(){
+        switch (mPlayerList.size()){
+            case 1:{
+                StarPlayer player = mPlayerList.get(0).getVideoPlayer();
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
+                player.setLayoutParams(lp);
+                player.setY(0);
+                player.setX(0);
+                break;
             }
-            if(viewPosition.getParentView()==findViewById(R.id.view1)){
-                bigViewPosition = viewPosition;
+            case 2:
+            case 3:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH);
+                        player.setLayoutParams(lp);
+                        player.setY(0);
+                        player.setX(0);
+                    }else{
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/2);
+                        player.setLayoutParams(lp);
+                        player.setY((i-1)*borderH/2);
+                        player.setX(borderW/3*2);
+                    }
+                }
+                break;
+            }
+            case 4:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH-borderW/3*3/2);
+                        player.setLayoutParams(lp);
+                        player.setY(0);
+                        player.setX(0);
+                    }else{
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderW/3*3/2);
+                        player.setLayoutParams(lp);
+                        player.setY(borderH-borderW/3*3/2);
+                        player.setX((i-1)*borderW/3);
+                    }
+                }
+                break;
+            }
+            case 5:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH/3*2);
+                        player.setLayoutParams(lp);
+                        player.setX(0);
+                        player.setY(0);
+                    }else if(i<3){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
+                        player.setLayoutParams(lp);
+                        player.setX((i-1)*borderW/3);
+                        player.setY(borderH/3*2);
+                    }else {
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/2);
+                        player.setLayoutParams(lp);
+                        player.setX(borderW/3*2);
+                        player.setY((i-3)*borderH/2);
+                    }
+                }
+                break;
+            }
+            case 6:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i==0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH/3*2);
+                        player.setLayoutParams(lp);
+                        player.setX(0);
+                        player.setY(0);
+                    }else if(i<3){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
+                        player.setLayoutParams(lp);
+                        player.setX((i-1)*borderW/3);
+                        player.setY(borderH/3*2);
+                    }else {
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
+                        player.setLayoutParams(lp);
+                        player.setX(borderW/3*2);
+                        player.setY((i-3)*borderH/3);
+                    }
+                }
+                break;
+
+            }
+            case 7:{
+                for(int i = 0;i<mPlayerList.size();i++){
+                    if(i == 0){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW-borderW/3,borderH-borderH/4);
+                        player.setLayoutParams(lp);
+                    }else if(i>0&&i<3){
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
+                        player.setLayoutParams(lp);
+                        player.setX((i-1)*borderW/3);
+                        player.setY(borderH-borderH/4);
+                    }else{
+                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
+                        player.setLayoutParams(lp);
+                        player.setX(borderW-borderW/3);
+                        player.setY((i-3)*borderH/4);
+                    }
+                }
+                break;
             }
         }
-        int clickId = click.getUpId();
-        int mainId = bigViewPosition.getUpId();
-        StarLog.d("meeting@@","clickId"+clickId);
-        StarLog.d("meeting@@","mainId"+mainId);
-        if(clickId==-1){
-            StarManager.getInstance().setPreviewVideoView(1,bigViewPosition.getVideoPlayer());
-        }else{
-            StarManager.getInstance().setVideoView(clickId,bigViewPosition.getVideoPlayer());
-        }
-        if(mainId==-1){
-            StarManager.getInstance().setPreviewVideoView(1, click.getVideoPlayer());
-        }else{
-            StarManager.getInstance().setVideoView(mainId, click.getVideoPlayer());
-        }
-
-        int tid = click.getUpId();
-        String tUid = click.getUserId();
-        click.setUpId(bigViewPosition.getUpId());
-        click.setUserId(bigViewPosition.getUserId());
-        bigViewPosition.setUpId(tid);
-        bigViewPosition.setUserId(tUid);
-        click.getVideoPlayer().setZOrderMediaOverlay(true);
-        bigViewPosition.getVideoPlayer().setZOrderMediaOverlay(false);
-//        resizeAllVideo();
 
     }
 
     @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+    public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        MLOC.d("XHLiveManager","dispatchEvent  "+aEventID + eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_LIVE_INIT_COMPLETE:
-                if(success){
-
-                    if(StringUtils.isEmpty(createrId)){
-                        createrId = MLOC.userId;
-                    }
-
-                    StarManager.getInstance().setPreviewVideoView(1,bigViewPosition.getVideoPlayer());
-
-                    if(StringUtils.isNotEmpty(channelId)){
-                        StarLog.d("@@@@@VideoLiveActivity","使用已存在频道上传视频："+channelId);
-                        StarManager.getInstance().applyStartMeeting( new StarLiveConfig(),liveId,channelId);
-                    }else{
-                        StarLog.d("@@@@@VideoLiveActivity","申请新的会议频道上传视频");
-                        StarManager.getInstance().applyStartNewMeeting(new StarLiveConfig(),liveId,7);
-                    }
-
-                    if(StringUtils.isNotEmpty(chatroomId)){
-                        StarLog.d("@@@@@VideoLiveActivity","加入聊天室："+chatroomId);
-                        StarManager.getInstance().joinChatroom(chatroomId);
-                    }else{
-                        StarLog.d("@@@@@VideoLiveActivity","创建聊天室");
-                        StarManager.getInstance().createChatroom(liveId);
-                    }
-
-                }else{
-                    MLOC.showMsg("initEncoder ERROR!!!");
-                    finish();
-                }
-                break;
-            case AEvent.AEVENT_LIVE_JOIN_OK:
-                joinLiveOk = true;
-                channelId = (String) eventObj;
-                reportCP();
-                break;
             case AEvent.AEVENT_LIVE_ADD_UPLOADER:
-                Message msg = new Message();
-                msg.what = 0;
-                Bundle b = new Bundle();
-                b.putString("data",((JSONObject)eventObj).toString());
-                msg.setData(b);
-                uiHandler.sendMessage(msg);
-                break;
-            case AEvent.AEVENT_LIVE_REMOVE_UPLOADER:
-                Message msg2 = new Message();
-                msg2.what = 1;
-                Bundle b2 = new Bundle();
-                b2.putString("data",((JSONObject)eventObj).toString());
-                msg2.setData(b2);
-                uiHandler.sendMessage(msg2);
-                break;
-            case AEvent.AEVENT_LIVE_STOP_OK:
-                uiHandler.sendEmptyMessage(3);
-                break;
-            case AEvent.AEVENT_LIVE_RESIZE_ALL_VIDEO:
-                Message msg4 = new Message();
-                msg4.what = 4;
-                Bundle b4 = new Bundle();
-                b4.putByteArray("data", (byte[]) eventObj);
-                msg4.setData(b4);
-                uiHandler.sendMessage(msg4);
-                break;
-            case AEvent.AEVENT_LIVE_ERROR:
-                Message msg5 = new Message();
-                msg5.what = 5;
-                Bundle b5 = new Bundle();
-                b5.putString("data", (String) eventObj);
-                msg5.setData(b5);
-                uiHandler.sendMessage(msg5);
-                break;
-        }
-
-
-        String[] datas;
-        switch (aEventID){
-            case AEvent.AEVENT_CHATROOM_CREATE_OK:
-            case AEvent.AEVENT_CHATROOM_JOIN_OK:
-                datas = eventObj.toString().split(":");
-                chatroomId = datas[0];
-                maxMessageLength = Integer.parseInt(datas[1]);
-                joinChatroomOk = true;
-                reportCP();
-                break;
-            case AEvent.AEVENT_CHATROOM_CREATE_FAILED:
-            case AEvent.AEVENT_CHATROOM_JOIN_FAILED:
-                final String err = eventObj.toString();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MLOC.showMsg(VideoLiveActivity.this,err.toString());
-                    }
-                });
-                finish();
-                break;
-            case AEvent.AEVENT_CHATROOM_REV_MSG:
-                StarIMMessage revMsg = (StarIMMessage) eventObj;
-                mDatas.add(revMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG:
-                StarIMMessage revMsgPrivate = (StarIMMessage) eventObj;
-                mDatas.add(revMsgPrivate);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER:
-                onLineUserNumber = (int) eventObj;
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        vOnlineNum.setText(""+onLineUserNumber);
-//                    }
-//                });
-                break;
-            case AEvent.AEVENT_CHATROOM_ERROR:
-                final String err2 = eventObj.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(err2.equals("CHATROOM_ERRID_ROOMID_ONLINE_OUTOFLIMIT")){
-                            MLOC.showMsg(VideoLiveActivity.this,"超出人数上限");
-                        }else{
-                            MLOC.showMsg(VideoLiveActivity.this,err2.toString());
+                        try {
+                            JSONObject data = (JSONObject) eventObj;
+                            String addId = data.getString("actorID");
+                            addPlayer(addId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 });
-                finish();
                 break;
-            case AEvent.AEVENT_CHATROOM_SELF_KICKED:
+            case AEvent.AEVENT_LIVE_REMOVE_UPLOADER:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject data = (JSONObject) eventObj;
+                            String removeUserId = data.getString("actorID");
+                            deletePlayer(removeUserId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                break;
+            case AEvent.AEVENT_LIVE_APPLY_LINK:
+                //zjt 自动同意上麦
+                liveManager.agreeApplyToBroadcaster((String) eventObj);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+//                                .setTitle(eventObj+"申请上麦")
+//                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface arg0, int arg1) {
+//                                        liveManager.refuseApplyToBroadcaster((String) eventObj);
+//                                    }
+//                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface arg0, int arg1) {
+//                                        liveManager.agreeApplyToBroadcaster((String) eventObj);
+//                                    }
+//                                }
+//                        ).show();
+//                    }
+//                });
+                break;
+            case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
+                            new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                                    .setTitle("房主同意连麦，是否现在开始上麦？")
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface arg0, int arg1) {
+                                        }
+                                    }).setPositiveButton("开始", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface arg0, int arg1) {
+                                            isUploader = true;
+                                            liveManager.changeToBroadcaster();
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    vMicBtn.setSelected(true);
+                                                    vCameraBtn.setVisibility(View.VISIBLE);
+                                                    vPanelBtn.setVisibility(View.VISIBLE);
+//                                                    vCarBtn.setVisibility(View.VISIBLE);
+                                                }
+                                            });
+                                        }
+                                    }
+                            ).show();
+                        }
+                    }
+                });
+                break;
+            case AEvent.AEVENT_LIVE_INVITE_LINK:
+                //zjt 自动同意邀请
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        vMicBtn.setSelected(true);
+                        vCameraBtn.setVisibility(View.VISIBLE);
+                        vPanelBtn.setVisibility(View.VISIBLE);
+//                        vCarBtn.setVisibility(View.VISIBLE);
+                    }
+                });
+                isUploader = true;
+                liveManager.agreeInviteToBroadcaster((String) eventObj);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+//                                .setTitle(eventObj+"邀请您上麦")
+//                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface arg0, int arg1) {
+//                                        liveManager.refuseInviteToBroadcaster((String) eventObj);
+//                                    }
+//                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface arg0, int arg1) {
+//                                        runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                vMicBtn.setSelected(true);
+//                                                vCameraBtn.setVisibility(View.VISIBLE);
+//                                            }
+//                                        });
+//                                        isUploader = true;
+//                                        liveManager.agreeInviteToBroadcaster((String) eventObj);
+//                                    }
+//                                }
+//                        ).show();
+//                    }
+//                });
+                break;
+            case AEvent.AEVENT_LIVE_INVITE_LINK_RESULT:
+                XHConstants.XHLiveJoinResult result = (XHConstants.XHLiveJoinResult) eventObj;
+                switch (result){
+                    case XHLiveJoinResult_accept:
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendChatMsg("欢迎新的小伙伴上麦！！！");
+                            }
+                        });
+                        break;
+                    case XHLiveJoinResult_refuse:
+                        break;
+                    case XHLiveJoinResult_outtime:
+                        break;
+                }
+                break;
+            case AEvent.AEVENT_LIVE_GET_ONLINE_NUMBER:
+//                onLineUserNumber = (int) eventObj;
+                break;
+            case AEvent.AEVENT_LIVE_SELF_KICKED:
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoLiveActivity.this,"你已被踢出");
-                        VideoLiveActivity.this.finish();
+                        removeListener();
+                        finish();
                     }
                 });
                 break;
-            case AEvent.AEVENT_CHATROOM_SELF_BANNED:
+            case AEvent.AEVENT_LIVE_SELF_BANNED:
                 final String banTime = eventObj.toString();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -568,136 +890,69 @@ public class VideoLiveActivity extends Activity implements IEventListener {
                     }
                 });
                 break;
-            case AEvent.AEVENT_CHATROOM_KICK_OUT_OK:
+            case AEvent.AEVENT_LIVE_REV_MSG:
+                XHIMMessage revMsg = (XHIMMessage) eventObj;
+                mDatas.add(revMsg);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MLOC.showMsg(VideoLiveActivity.this,"踢人成功");
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
                 break;
-            case AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED:
+            case AEvent.AEVENT_LIVE_REV_PRIVATE_MSG:
+                XHIMMessage revMsgPrivate = (XHIMMessage) eventObj;
+                mDatas.add(revMsgPrivate);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MLOC.showMsg(VideoLiveActivity.this,"踢人失败");
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
                 break;
-            case AEvent.AEVENT_CHATROOM_BAN_USER_OK:
+            case AEvent.AEVENT_LIVE_ERROR:
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MLOC.showMsg(VideoLiveActivity.this,"禁言成功");
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_BAN_USER_FAILED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoLiveActivity.this,"禁言失败");
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_STOP_OK:
-                VideoLiveActivity.this.finish();
-                break;
-            case AEvent.AEVENT_CHATROOM_DELETE_OK:
-                VideoLiveActivity.this.finish();
-                break;
-            case AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS:
-                break;
-            case AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED:
-                break;
-        }
-
-    }
-
-    private void reportCP(){
-        if(joinLiveOk&&joinChatroomOk){
-            if(MLOC.userId.equals(createrId)){
-                InterfaceUrls.demoReportChatAndLive(channelId,chatroomId);
-            }
-        }
-    }
-
-    private Handler uiHandler = new UIHandler();
-    class UIHandler extends Handler{
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case 0:
-                    try {
-                        JSONObject data = new JSONObject(msg.getData().getString("data"));
-                        String addId = data.getString("userId");
-                        int bigW = data.getInt("bigW");
-                        int bigH = data.getInt("bigH");
-                        int smallW = data.getInt("smallW");
-                        int smallH = data.getInt("smallH");
-                        int upId = data.getInt("upId");
-                        ViewPosition vp = addNewPlayer();
-                        if(vp!=null){
-                            vp.setUserId(addId);
-                            vp.setBigW(bigW);
-                            vp.setBigH(bigH);
-                            vp.setSmallW(smallW);
-                            vp.setSmallH(smallH);
-                            vp.setUpId(upId);
-                            vp.getVideoPlayer().setZOrderMediaOverlay(true);
-                            StarPlayer newVideoView = vp.getVideoPlayer();
-                            StarManager.getInstance().meetingAddUser(newVideoView,addId,upId);
-                            newVideoView.setScalType(smallW,smallH,
-                                    StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP
-                            );
+                        String errStr = (String) eventObj;
+                        if(errStr.equals("30016")){
+                            errStr = "直播关闭";
                         }
+                        MLOC.showMsg(getApplicationContext(),errStr);
+                        removeListener();
+                        finish();
+                    }
+                });
+                break;
+            case AEvent.AEVENT_LIVE_SELF_COMMANDED_TO_STOP:
+                if(isUploader){
+                    isUploader = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            vMicBtn.setSelected(false);
+                            vCameraBtn.setVisibility(View.GONE);
+                            vPanelBtn.setVisibility(View.GONE);
+//                            vCarBtn.setVisibility(View.GONE);
+                            MLOC.showMsg(VideoLiveActivity.this,"您的表演被叫停");
+                        }
+                    });
+                }
+                break;
+            case AEvent.AEVENT_LIVE_REV_REALTIME_DATA:
+                if(success){
+                    try {
+                        JSONObject jsonObject = (JSONObject) eventObj;
+                        byte[] tData = (byte[]) jsonObject.get("data");
+                        String tUpid = jsonObject.getString("upId");
+                        vPaintPlayer.setPaintData(tData,tUpid);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    break;
-                case 1:
-                    try {
-                        JSONObject data = new JSONObject(msg.getData().getString("data"));
-                        String removeUserId = data.getString("userId");
-                        removeLeavePlayer(removeUserId);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 2:
-                    for(ViewPosition viewPosition:mViewList){
-                        viewPosition.getVideoPlayer().setScalType(
-                                viewPosition.getSmallW(),
-                                viewPosition.getSmallH(),
-                                StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP
-                        );
-                    }
-                    break;
-                case 3:
-                    finish();
-                    break;
-                case 4:
-                    byte[] config = msg.getData().getByteArray("data");
-                    for(ViewPosition info:mViewList){
-                        for(int i=0;i<config.length;i++){
-                            if(info.getUpId()==i){
-                                if(config[i]== StarLiveVideoSizeConfigType.LIVE_STREAM_CONFIG_BIG_BYTE){
-                                    info.getVideoPlayer().setScalType(info.getBigW(),info.getBigH(), StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-                                }else if(config[i]== StarLiveVideoSizeConfigType.LIVE_STREAM_CONFIG_SMALL_BYTE){
-                                    info.getVideoPlayer().setScalType(info.getSmallW(),info.getSmallH(),StarPlayerScaleType.DRAW_TYPEDRAW_TYPE_CENTER_TOP);
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case 5:
-                    String errStr = msg.getData().getString("data");
-                    MLOC.showMsg(getApplicationContext(),errStr);
-                    onBackPressed();
-            }
-            super.handleMessage(msg);
+                }
+                break;
         }
-    };
+    }
 
 
     public class MyChatroomListAdapter extends BaseAdapter {
@@ -730,47 +985,74 @@ public class VideoLiveActivity extends Activity implements IEventListener {
             final ViewHolder holder;
             if(convertView == null){
                 holder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_chatroom_msg_list,null);
-                holder.vUserName = (TextView) convertView.findViewById(R.id.item_user_name);
+                convertView = mInflater.inflate(R.layout.item_live_msg_list,null);
                 holder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
                 holder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
                 convertView.setTag(holder);
             }else{
                 holder = (ViewHolder)convertView.getTag();
             }
-
+            String msgText = mDatas.get(position).contentData;
+            holder.vMsg.setText(msgText);
             holder.vUserId.setText(mDatas.get(position).fromId);
-            holder.vMsg.setText(mDatas.get(position).contentData);
-
             return convertView;
         }
     }
 
     public class ViewHolder{
-        public TextView vUserName;
         public TextView vUserId;
         public TextView vMsg;
     }
 
 
-    private void showManagerDialog(final String userId) {
+    private void showManagerDialog(final String userId,final String msgText) {
         if(!userId.equals(MLOC.userId)){
             AlertDialog.Builder builder=new AlertDialog.Builder(this);
             if(createrId.equals(MLOC.userId)){
-                final String[] Items={"踢出房间","禁止发言","私信"};
-                builder.setItems(Items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if(i==0){
-                            StarManager.getInstance().kickOutUser(userId);
-                        }else if(i==1){
-                            StarManager.getInstance().banToSendMessage(userId,60);
-                        }else if(i==2){
-                            mPrivateMsgTargetId = userId;
-                            vEditText.setText("[私"+userId+"]");
-                        }
+                Boolean ac = false;
+                for(int i = 0 ;i<mPlayerList.size();i++){
+                    if(userId.equals(mPlayerList.get(i).getUserId())){
+                        ac = true;
+                        break;
                     }
-                });
+                }
+                if(ac){
+                    final String[] Items={"踢出房间","禁止发言","私信","下麦"};
+                    builder.setItems(Items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if(i==0){
+                                StarRtcCore.getInstance().kickOutUser(userId);
+                            }else if(i==1){
+                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                            }else if(i==2){
+                                mPrivateMsgTargetId = userId;
+                                vEditText.setText("[私"+userId+"]");
+                            }else if(i==3){
+                                liveManager.commandToAudience(userId);
+                            }
+                        }
+                    });
+                }else{
+                    final String[] Items={"踢出房间","禁止发言","私信","邀请上麦"};
+                    builder.setItems(Items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if(i==0){
+                                StarRtcCore.getInstance().kickOutUser(userId);
+                            }else if(i==1){
+                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                            }else if(i==2){
+                                mPrivateMsgTargetId = userId;
+                                vEditText.setText("[私"+userId+"]");
+                            }else if(i==3){
+                                liveManager.inviteToBroadcaster(userId);
+                            }
+                        }
+                    });
+                }
+
+
             }else{
                 final String[] Items={"私信"};
                 builder.setItems(Items, new DialogInterface.OnClickListener() {

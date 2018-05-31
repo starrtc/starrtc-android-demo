@@ -5,23 +5,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
-import com.starrtc.starrtcsdk.utils.StringUtils;
+import com.starrtc.starrtcsdk.core.utils.StringUtils;
 
 public class MessageGroupCreateActivity extends Activity {
 
-    private EditText vEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_group_create);
-        vEditText = (EditText) findViewById(R.id.id_input);
-
-        findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
+        ((TextView)findViewById(R.id.title_text)).setText("创建新群组");
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String roomName = vEditText.getText().toString();
+                finish();
+            }
+        });
+        findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String roomName = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
                 if(StringUtils.isNotEmpty(roomName)){
                     Intent intent = new Intent(MessageGroupCreateActivity.this, MessageGroupActivity.class);
                     intent.putExtra(MessageGroupActivity.TYPE,MessageGroupActivity.GROUP_NAME);
@@ -31,12 +37,7 @@ public class MessageGroupCreateActivity extends Activity {
                 }
             }
         });
-
-        findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 }
+
+

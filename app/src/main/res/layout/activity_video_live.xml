@@ -5,118 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.starrtc.staravdemo.demo.videomeeting.VideoMeetingActivity">
+    <RelativeLayout
+        android:id="@+id/view1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000">
+    </RelativeLayout>
+    <com.starrtc.starrtcsdk.core.player.StarWhitePanel
+        android:id="@+id/painter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <RelativeLayout
-                    android:id="@+id/view1"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="#000000">
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:id="@+id/line1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:background="#484848"
-                    >
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="#ffffff"
-                        android:orientation="horizontal">
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view2"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view3"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view4"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/line2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="#484848"
-                    android:visibility="gone">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="#ffffff"
-                        android:orientation="horizontal">
-
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view5"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view6"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-                        <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                            android:id="@+id/view7"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:padding="2dp"
-                            android:background="#ffffff">
-                        </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
             <ListView
                 android:id="@+id/msg_list"
-                android:layout_width="200dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="150dp"
+                android:divider="#00000000"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -126,32 +45,45 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp">
-            <EditText
-                android:id="@+id/id_input"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:paddingLeft="10dp"
-                android:background="@drawable/btn_style_white_normal"
-                android:gravity="center_vertical"
-                android:textSize="@dimen/text_size_small"
-                android:hint="来聊吧~"
-                android:layout_marginRight="5dp"
-                />
+
+                <EditText
+                    android:id="@+id/id_input"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_round_corner_grey"
+                    android:textSize="@dimen/text_size_small"
+                    android:hint="来聊吧~"
+                    android:layout_marginRight="5dp"
+                    />
+
+
             <TextView
                 android:id="@+id/send_btn"
                 android:layout_width="60dp"
                 android:layout_height="40dp"
-                android:background="@drawable/btn_style_green"
+                android:background="@drawable/bg_btn_orange"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_small"
+                android:textSize="16sp"
                 android:text="发送"
                 android:gravity="center"
                 />
+            <ImageView
+                android:id="@+id/mic_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_link_mic"
+                android:layout_marginLeft="5dp"/>
+            <ImageView
+                android:id="@+id/switch_camera"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/icon_switch_camera_pink"
+                android:layout_marginLeft="5dp"/>
         </LinearLayout>
     </LinearLayout>
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -169,5 +101,24 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="10dp"
-        android:background="@drawable/btn_back"/>
+        android:background="@drawable/btn_back_white"/>
+    <ImageView
+        android:id="@+id/panel_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/btn_panel"/>
+    <ImageView
+        android:id="@+id/clean_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/btn_xp"
+        android:visibility="invisible"/>
 </RelativeLayout>

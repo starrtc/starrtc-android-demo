@@ -10,7 +10,7 @@ import android.widget.EditText;
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.StarManager;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 public class EchoTestActivity extends Activity implements IEventListener {
 
@@ -22,7 +22,7 @@ public class EchoTestActivity extends Activity implements IEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_echo_test);
-        StarManager.getInstance().voipEchoTest();
+        StarRtcCore.getInstance().voipEchoTest();
         traceBox = (EditText) findViewById(R.id.trace_box);
         clearBtn = findViewById(R.id.clear_btn);
         backBtn = findViewById(R.id.back_btn);

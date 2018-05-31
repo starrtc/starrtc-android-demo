@@ -3,41 +3,54 @@ package com.starrtc.staravdemo.demo.videomeeting;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.MLOC;
-import com.starrtc.starrtcsdk.utils.StringUtils;
+import com.starrtc.starrtcsdk.api.XHConstants;
 
 public class VideoMeetingCreateActivity extends Activity {
-
-    private EditText vEditText;
-    private String meetingId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_meeting_create);
-        vEditText = (EditText) findViewById(R.id.id_input);
-        meetingId = "meeting_"+ MLOC.userId;
-        vEditText.setText(meetingId);
-
-        findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String meetingName = vEditText.getText().toString();
-                if(StringUtils.isNotEmpty(meetingName)){
-                    Intent intent = new Intent(VideoMeetingCreateActivity.this, VideoMeetingActivity.class);
-                    intent.putExtra(VideoMeetingActivity.MEETING_ID,meetingName);
-                    startActivity(intent);
-                }
-            }
-        });
-
-        findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+        ((TextView)findViewById(R.id.title_text)).setText("创建视频会议");
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        findViewById(R.id.switch_type).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.switch_type).setSelected(!findViewById(R.id.switch_type).isSelected());
+            }
+        });
+        findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
+//                XHConstants.XHMeetingType type =
+//                        findViewById(R.id.switch_type).isSelected()?
+//                                XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic:
+//                                XHConstants.XHMeetingType.XHMeetingTypeLoginPublic;
+                XHConstants.XHMeetingType type = XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic;
+
+                if(TextUtils.isEmpty(inputId)){
+                    MLOC.showMsg(VideoMeetingCreateActivity.this,"id不能为空");
+                }else{
+                    Intent intent = new Intent(VideoMeetingCreateActivity.this, VideoMeetingActivity.class);
+                    intent.putExtra(VideoMeetingActivity.MEETING_NAME,inputId);
+                    intent.putExtra(VideoMeetingActivity.MEETING_CREATER,MLOC.userId);
+                    intent.putExtra(VideoMeetingActivity.MEETING_TYPE,type);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
     }

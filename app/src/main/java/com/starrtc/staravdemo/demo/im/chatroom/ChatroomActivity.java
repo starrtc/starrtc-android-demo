@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,98 +14,101 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.listener.XHChatroomManagerListener;
+import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
+import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
+import com.starrtc.staravdemo.utils.ColorUtils;
+import com.starrtc.staravdemo.utils.DensityUtils;
 import com.starrtc.staravdemo.utils.IEventListener;
-import com.starrtc.starrtcsdk.StarManager;
-import com.starrtc.starrtcsdk.im.message.StarIMMessage;
-import com.starrtc.starrtcsdk.im.message.StarIMMessageBuilder;
-import com.starrtc.starrtcsdk.utils.StarLog;
+import com.starrtc.starrtcsdk.api.XHChatroomManager;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.core.utils.StarLog;
 
 public class ChatroomActivity extends Activity implements IEventListener {
     public static String TYPE = "TYPE";
     public static String CHATROOM_NAME = "CHATROOM_NAME";
+    public static String CHATROOM_TYPE = "CHATROOM_TYPE";
     public static String CHATROOM_ID = "CHATROOM_ID";
     public static String CREATER_ID = "CREATER_ID";
 
+    private XHChatroomManager chatroomManager;
+
     private EditText vEditText;
-    private TextView vRoomName;
-    private TextView vOnlineNum;
-    private TextView vMaxNum;
     private ListView vMsgList;
     private View vSendBtn;
 
     private String mRoomId;
     private String mRoomName;
+    private XHConstants.XHChatroomType createType;
     private String mCreaterId;
     private String mPrivateMsgTargetId;
-    private int maxUserNumber = 100;
-    private int maxMessageLength = 0;
     private int onLineUserNumber;
-    private List<StarIMMessage> mDatas;
+    private List<XHIMMessage> mDatas;
     private MyChatroomListAdapter mAdapter ;
     private Timer onLineTimer;
     private TimerTask onLineTimerTask;
 
     private String type;
     private boolean joinOk = false;
+    private HashMap<String,Integer> colors = new HashMap<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_chatroom);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        chatroomManager = XHClient.getInstance().getChatroomManager();
+        chatroomManager.addListener(new XHChatroomManagerListener());
 
-        vRoomName = (TextView) findViewById(R.id.chatroom_name);
-        vOnlineNum = (TextView) findViewById(R.id.user_number);
-        vMaxNum = (TextView) findViewById(R.id.user_max_number);
+        findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
+        addListener();
         type = getIntent().getStringExtra(TYPE);
         if(type.equals(CHATROOM_ID)){
             mRoomId = getIntent().getStringExtra(CHATROOM_ID);
             mRoomName = getIntent().getStringExtra(CHATROOM_NAME);
             mCreaterId = getIntent().getStringExtra(CREATER_ID);
-            vRoomName.setText(mRoomName);
-            StarManager.getInstance().joinChatroom(mRoomId);
+            joinChatroom();
         }else if(type.equals(CHATROOM_NAME)){
             mRoomName = getIntent().getStringExtra(CHATROOM_NAME);
+            createType = (XHConstants.XHChatroomType) getIntent().getSerializableExtra(CHATROOM_TYPE);
             mCreaterId = MLOC.userId;
-            StarManager.getInstance().createChatroom(mRoomName);
-            vRoomName.setText(mRoomName);
+            createChatroom();
         }
 
-        if(mCreaterId.equals(MLOC.userId)){
-            findViewById(R.id.delete_btn).setVisibility(View.VISIBLE);
-            findViewById(R.id.delete_btn).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StarManager.getInstance().deleteChatRoom();
-                }
-            });
-        }else{
-            findViewById(R.id.delete_btn).setVisibility(View.INVISIBLE);
-        }
-
+        ((TextView)findViewById(R.id.title_text)).setText(mRoomName);
         vEditText = (EditText) findViewById(R.id.id_input);
         mDatas = new ArrayList<>();
         mAdapter = new MyChatroomListAdapter();
 
         vMsgList = (ListView) findViewById(R.id.msg_list);
-
         vMsgList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        vMsgList.setStackFromBottom(true);
-
+//        vMsgList.setStackFromBottom(true);
         mAdapter = new MyChatroomListAdapter();
         vMsgList.setAdapter(mAdapter);
         vMsgList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -126,10 +130,57 @@ public class ChatroomActivity extends Activity implements IEventListener {
                 }
             }
         });
+    }
 
-        findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+    private void createChatroom(){
+        chatroomManager.createChatroom(mRoomName,createType, new IXHCallback() {
             @Override
-            public void onClick(View v) {
+            public void success(final Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRoomId = data.toString();
+                        InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
+                        joinChatroom();
+                    }
+                });
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                final String err = errMsg;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(ChatroomActivity.this,err.toString());
+                    }
+                });
+                finish();
+            }
+        });
+    }
+    private void joinChatroom(){
+        chatroomManager.joinChatroom(mRoomId, new IXHCallback() {
+            @Override
+            public void success(final Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRoomId = data.toString();
+                        joinOk = true;
+                    }
+                });
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                final String err = errMsg;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(ChatroomActivity.this,err.toString());
+                    }
+                });
                 finish();
             }
         });
@@ -137,59 +188,45 @@ public class ChatroomActivity extends Activity implements IEventListener {
 
     private void sendChatMsg(String msg){
         if(TextUtils.isEmpty(mPrivateMsgTargetId)){
-            StarIMMessage imMessage = StarManager.getInstance().sendChatroomMessage(mRoomId,msg);
+            XHIMMessage imMessage = chatroomManager.sendMessage(msg,null);
+            if(colors.get(imMessage.fromId)==null){
+                colors.put(imMessage.fromId,  ColorUtils.randomColor(200,200,200));
+            }
             mDatas.add(imMessage);
         }else{
-            StarIMMessage imMessage = StarManager.getInstance().sendChatroomPrivateMessage(mPrivateMsgTargetId,mRoomId,msg);
+            XHIMMessage imMessage = chatroomManager.sendPrivateMessage(msg,mPrivateMsgTargetId,null);
+            if(colors.get(imMessage.fromId)==null){
+                colors.put(imMessage.fromId, ColorUtils.randomColor(200,200,200));
+            }
             mDatas.add(imMessage);
         }
         mAdapter.notifyDataSetChanged();
         mPrivateMsgTargetId = "";
     }
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_CREATE_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_CREATE_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_JOIN_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_JOIN_FAILED,this);
+
+    public void addListener(){
+
         AEvent.addListener(AEvent.AEVENT_CHATROOM_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_ERROR,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_SELF_KICKED,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_SELF_BANNED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_KICK_OUT_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_BAN_USER_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_BAN_USER_FAILED,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_STOP_OK,this);
         AEvent.addListener(AEvent.AEVENT_CHATROOM_DELETE_OK,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED,this);
     }
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_CREATE_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_CREATE_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_JOIN_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_JOIN_FAILED,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_ERROR,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_SELF_KICKED,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_SELF_BANNED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_KICK_OUT_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_BAN_USER_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_BAN_USER_FAILED,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_STOP_OK,this);
         AEvent.removeListener(AEvent.AEVENT_CHATROOM_DELETE_OK,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED,this);
-        StarManager.getInstance().exitChatroom();
+
         super.onStop();
     }
 
@@ -202,6 +239,12 @@ public class ChatroomActivity extends Activity implements IEventListener {
             onLineTimerTask = null;
         }
         super.onPause();
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        addListener();
     }
 
     @Override
@@ -218,46 +261,35 @@ public class ChatroomActivity extends Activity implements IEventListener {
             @Override
             public void run() {
                 if(joinOk){
-                    StarManager.getInstance().queryRoomOnlineNumber(mRoomId);
+                    StarRtcCore.getInstance().queryRoomOnlineNumber(mRoomId);
                 }
             }
         };
         onLineTimer.schedule(onLineTimerTask,1000,10000);
-
     }
 
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        chatroomManager.exitChatroom(mRoomId, new IXHCallback() {
+            @Override
+            public void success(Object data) {
+            }
+            @Override
+            public void failed(String errMsg) {
+            }
+        });
+    }
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         StarLog.d("IM_CHATROOM",aEventID+"||"+eventObj);
-        String[] datas;
         switch (aEventID){
-            case AEvent.AEVENT_CHATROOM_CREATE_OK:
-            case AEvent.AEVENT_CHATROOM_JOIN_OK:
-                datas = eventObj.toString().split(":");
-                mRoomId = datas[0];
-                maxMessageLength = Integer.parseInt(datas[1]);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        vMaxNum.setText(""+maxUserNumber);
-                    }
-                });
-                joinOk = true;
-                break;
-            case AEvent.AEVENT_CHATROOM_CREATE_FAILED:
-            case AEvent.AEVENT_CHATROOM_JOIN_FAILED:
-                final String err = eventObj.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,err.toString());
-                    }
-                });
-                finish();
-                break;
             case AEvent.AEVENT_CHATROOM_REV_MSG:
-                StarIMMessage revMsg = (StarIMMessage) eventObj;
+                XHIMMessage revMsg = (XHIMMessage) eventObj;
+                if(colors.get(revMsg.fromId)==null){
+                    colors.put(revMsg.fromId, ColorUtils.randomColor(200,200,200));
+                }
                 mDatas.add(revMsg);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -267,7 +299,10 @@ public class ChatroomActivity extends Activity implements IEventListener {
                 });
                 break;
             case AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG:
-                StarIMMessage revMsgPrivate = (StarIMMessage) eventObj;
+                XHIMMessage revMsgPrivate = (XHIMMessage) eventObj;
+                if(colors.get(revMsgPrivate.fromId)==null){
+                    colors.put(revMsgPrivate.fromId, ColorUtils.randomColor(200,200,200));
+                }
                 mDatas.add(revMsgPrivate);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -281,7 +316,7 @@ public class ChatroomActivity extends Activity implements IEventListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        vOnlineNum.setText(""+onLineUserNumber);
+                        ((TextView)findViewById(R.id.title_text)).setText(mRoomName+"("+onLineUserNumber+")");
                     }
                 });
                 break;
@@ -290,12 +325,7 @@ public class ChatroomActivity extends Activity implements IEventListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(err2.equals("CHATROOM_ERRID_ROOMID_ONLINE_OUTOFLIMIT")){
-                            MLOC.showMsg(ChatroomActivity.this,"超出人数上限");
-                        }else{
-                            MLOC.showMsg(ChatroomActivity.this,err2.toString());
-                        }
-
+                        MLOC.showMsg(ChatroomActivity.this,err2.toString());
                     }
                 });
                 finish();
@@ -318,47 +348,11 @@ public class ChatroomActivity extends Activity implements IEventListener {
                     }
                 });
                 break;
-            case AEvent.AEVENT_CHATROOM_KICK_OUT_OK:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"踢人成功");
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_KICK_OUT_FAILED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"踢人失败");
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_BAN_USER_OK:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"禁言成功");
-                    }
-                });
-                break;
-            case AEvent.AEVENT_CHATROOM_BAN_USER_FAILED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"禁言失败");
-                    }
-                });
-                break;
             case AEvent.AEVENT_CHATROOM_STOP_OK:
                 ChatroomActivity.this.finish();
                 break;
             case AEvent.AEVENT_CHATROOM_DELETE_OK:
                 ChatroomActivity.this.finish();
-                break;
-            case AEvent.AEVENT_CHATROOM_SEND_MSG_SUCCESS:
-                break;
-            case AEvent.AEVENT_CHATROOM_SEND_MSG_FAILED:
                 break;
         }
     }
@@ -389,30 +383,71 @@ public class ChatroomActivity extends Activity implements IEventListener {
         }
 
         @Override
+        public int getViewTypeCount(){
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position){
+            return mDatas.get(position).fromId.equals(MLOC.userId)?0:1;
+        }
+
+        @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-            if(convertView == null){
-                holder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_chatroom_msg_list,null);
-                holder.vUserName = (TextView) convertView.findViewById(R.id.item_user_name);
-                holder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
-                holder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
-                convertView.setTag(holder);
-            }else{
-                holder = (ViewHolder)convertView.getTag();
+            int currLayoutType = getItemViewType(position);
+            if(currLayoutType == 0){ //自己的信息
+                final ViewHolder itemSelfHolder;
+                if(convertView == null){
+                    itemSelfHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_chat_msg_list_right,null);
+                    itemSelfHolder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
+                    itemSelfHolder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
+                    itemSelfHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
+                    itemSelfHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
+                    itemSelfHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
+                    convertView.setTag(itemSelfHolder);
+                }else{
+                    itemSelfHolder = (ViewHolder)convertView.getTag();
+                }
+                itemSelfHolder.vUserId.setText(mDatas.get(position).fromId);
+                itemSelfHolder.vMsg.setText(mDatas.get(position).contentData);
+                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(ChatroomActivity.this,mDatas.get(position).fromId));
+                itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                int cint = DensityUtils.dip2px(ChatroomActivity.this,20);
+                itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+            }else if(currLayoutType == 1){//别人的信息
+                final ViewHolder itemOtherHolder;
+                if(convertView == null){
+                    itemOtherHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_chat_msg_list_left,null);
+                    itemOtherHolder.vUserId = (TextView) convertView.findViewById(R.id.item_user_id);
+                    itemOtherHolder.vMsg = (TextView) convertView.findViewById(R.id.item_msg);
+                    itemOtherHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
+                    itemOtherHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
+                    itemOtherHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
+                    itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                    int cint = DensityUtils.dip2px(ChatroomActivity.this,20);
+                    itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                    itemOtherHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+                    convertView.setTag(itemOtherHolder);
+                }else{
+                    itemOtherHolder = (ViewHolder)convertView.getTag();
+                }
+                itemOtherHolder.vUserId.setText(mDatas.get(position).fromId);
+                itemOtherHolder.vMsg.setText(mDatas.get(position).contentData);
+                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(ChatroomActivity.this,mDatas.get(position).fromId));
             }
-
-            holder.vUserId.setText(mDatas.get(position).fromId);
-            holder.vMsg.setText(mDatas.get(position).contentData);
-
             return convertView;
         }
     }
 
     public class ViewHolder{
-            public TextView vUserName;
-            public TextView vUserId;
-            public TextView vMsg;
+        public TextView vUserId;
+        public TextView vMsg;
+        public View vHeadBg;
+        public CircularCoverView vHeadCover;
+        public ImageView vHeadImage;
     }
 
 
@@ -425,9 +460,50 @@ public class ChatroomActivity extends Activity implements IEventListener {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(i==0){
-                            StarManager.getInstance().kickOutUser(userId);
+                            chatroomManager.kickMember(mRoomId, userId, new IXHCallback() {
+                                @Override
+                                public void success(Object data) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            MLOC.showMsg(ChatroomActivity.this,"踢人成功");
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void failed(final String errMsg) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            MLOC.showMsg(ChatroomActivity.this,"踢人失败:"+errMsg);
+                                        }
+                                    });
+                                    finish();
+                                }
+                            });
                         }else if(i==1){
-                            StarManager.getInstance().banToSendMessage(userId,60);
+                            chatroomManager.muteMember(mRoomId, userId,60, new IXHCallback() {
+                                @Override
+                                public void success(Object data) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            MLOC.showMsg(ChatroomActivity.this,"禁言成功");
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void failed(final String errMsg) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            MLOC.showMsg(ChatroomActivity.this,"禁言失败:"+errMsg);
+                                        }
+                                    });
+                                }
+                            });
                         }else if(i==2){
                             mPrivateMsgTargetId = userId;
                             vEditText.setText("[私"+userId+"]");

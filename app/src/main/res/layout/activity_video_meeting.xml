@@ -16,91 +16,6 @@
             android:layout_weight="1"
             android:background="#000000">
         </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/line1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:background="#484848"
-            >
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:orientation="horizontal">
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/line2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#484848"
-            android:visibility="gone">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:orientation="horizontal">
-
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view6"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-                <com.starrtc.staravdemo.demo.ui.SquareRelativeLayout
-                    android:id="@+id/view7"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="2dp"
-                    android:background="#ffffff">
-                </com.starrtc.staravdemo.demo.ui.SquareRelativeLayout>
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -116,8 +31,16 @@
     </LinearLayout>
     <ImageView
         android:id="@+id/back_btn"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/btn_back_white"/>
+    <ImageView
+        android:id="@+id/switch_camera"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/btn_back"/>
+        android:src="@drawable/icon_switch_camera_white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"/>
 </RelativeLayout>

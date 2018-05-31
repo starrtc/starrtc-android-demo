@@ -1,74 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
-    tools:context="com.starrtc.staravdemo.demo.videomeeting.VideoMeetingListActivity">
-    <LinearLayout
+    android:orientation="vertical"
+    android:background="#ffffff"
+    >
+    <include layout="@layout/ui_title_bar"/>
+
+    <RelativeLayout
+        android:id="@+id/c2c_btn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:text="IM"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:textColor="#ffffff"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
-            <ImageView
-                android:id="@+id/back_btn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/btn_back"/>
-        </RelativeLayout>
-        <View
+        android:layout_height="130dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:background="@drawable/bg_im_c2c">
+
+        <ImageView
+            android:layout_width="77dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="42dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="1000dp"
+            android:maxWidth="1000dp"
+            android:src="@drawable/icon_im_c2c" />
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:visibility="gone"/>
-        <Button
-            android:id="@+id/c2c_btn"
+            android:layout_marginLeft="150dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:text="一对一"
+                android:shadowColor="#ff000000"
+                android:shadowRadius="1"
+                android:shadowDx="1"
+                android:shadowDy="1"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="ONE TO ONE"/>
+        </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/chatroom_btn"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="@drawable/bg_im_chatroom"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp">
+        <ImageView
+            android:layout_width="77dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="42dp"
+            android:src="@drawable/icon_im_chatroom"
+            android:maxHeight="1000dp"
+            android:maxWidth="1000dp"
+            android:adjustViewBounds="true"
+            />
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/btn_style_green"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_size_small"
-            android:text="一对一"/>
-        <Button
-            android:id="@+id/chatroom_btn"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="150dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:text="聊天室"
+                android:shadowColor="#ff000000"
+                android:shadowRadius="1"
+                android:shadowDx="1"
+                android:shadowDy="1"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="CHATROOM"/>
+        </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/group_btn"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:background="@drawable/bg_im_group"
+        >
+        <ImageView
+            android:layout_width="77dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="42dp"
+            android:src="@drawable/icon_im_group"
+            android:maxHeight="1000dp"
+            android:maxWidth="1000dp"
+            android:adjustViewBounds="true"
+            />
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/btn_style_green"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_size_small"
-            android:text="聊天室"/>
-        <Button
-            android:id="@+id/group_btn"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/btn_style_green"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_size_small"
-            android:text="群组"/>
-    </LinearLayout>
-</RelativeLayout>
+            android:layout_height="match_parent"
+            android:layout_marginLeft="150dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:text="群组"
+                android:shadowColor="#ff000000"
+                android:shadowRadius="1"
+                android:shadowDx="1"
+                android:shadowDy="1"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="GROUP"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
