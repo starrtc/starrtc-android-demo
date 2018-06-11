@@ -49,6 +49,7 @@ public class AEvent {
 
     //事件类型在这里定义
     public static final String AEVENT_LOGIN                     = "AEVENT_LOGIN";
+    public static final String AEVENT_RESET                     = "AEVENT_RESET";
 
     public static final String AEVENT_MEETING_GOT_LIST          = "AEVENT_MEETING_GOT_LIST";
     public static final String AEVENT_LIVE_GOT_LIST             = "AEVENT_LIVE_GOT_LIST";

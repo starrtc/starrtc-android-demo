@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.im.chatroom;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,10 +20,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.listener.XHChatroomManagerListener;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
@@ -32,16 +30,14 @@ import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.utils.StarLog;
 
-public class ChatroomActivity extends Activity implements IEventListener {
+public class ChatroomActivity extends BaseActivity {
     public static String TYPE = "TYPE";
     public static String CHATROOM_NAME = "CHATROOM_NAME";
     public static String CHATROOM_TYPE = "CHATROOM_TYPE";
@@ -62,8 +58,7 @@ public class ChatroomActivity extends Activity implements IEventListener {
     private int onLineUserNumber;
     private List<XHIMMessage> mDatas;
     private MyChatroomListAdapter mAdapter ;
-    private Timer onLineTimer;
-    private TimerTask onLineTimerTask;
+
 
     private String type;
     private boolean joinOk = false;
@@ -230,42 +225,11 @@ public class ChatroomActivity extends Activity implements IEventListener {
         super.onStop();
     }
 
-    @Override
-    public void onPause(){
-        if(onLineTimer!=null){
-            onLineTimer.cancel();
-            onLineTimerTask.cancel();
-            onLineTimer = null;
-            onLineTimerTask = null;
-        }
-        super.onPause();
-    }
 
     @Override
     public void onRestart(){
         super.onRestart();
         addListener();
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(onLineTimer!=null){
-            onLineTimer.cancel();
-            onLineTimerTask.cancel();
-            onLineTimer = null;
-            onLineTimerTask = null;
-        }
-        onLineTimer = new Timer();
-        onLineTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if(joinOk){
-                    StarRtcCore.getInstance().queryRoomOnlineNumber(mRoomId);
-                }
-            }
-        };
-        onLineTimer.schedule(onLineTimerTask,1000,10000);
     }
 
     @Override
@@ -283,6 +247,7 @@ public class ChatroomActivity extends Activity implements IEventListener {
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         StarLog.d("IM_CHATROOM",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_REV_MSG:
@@ -316,7 +281,7 @@ public class ChatroomActivity extends Activity implements IEventListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ((TextView)findViewById(R.id.title_text)).setText(mRoomName+"("+onLineUserNumber+")");
+                        ((TextView)findViewById(R.id.title_text)).setText(mRoomName+"("+onLineUserNumber+"人在线)");
                     }
                 });
                 break;

@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.im.group;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,22 +16,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.staravdemo.utils.StarListUtil;
 
-public class MessageGroupListActivity extends Activity implements IEventListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class MessageGroupListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private ListView vList;
     private MyListAdapter myListAdapter;
-    private ArrayList<MessageGroupInfo> mDatas;
+    private ArrayList<HistoryBean> mDatas;
     private LayoutInflater mInflater;
     private SwipeRefreshLayout refreshLayout;
     @Override
@@ -91,6 +93,7 @@ public class MessageGroupListActivity extends Activity implements IEventListener
     @Override
     public void onResume(){
         super.onResume();
+        MLOC.hasNewGroupMsg = false;
         InterfaceUrls.demoRequestGroupList(MLOC.userId);
     }
     @Override
@@ -113,26 +116,77 @@ public class MessageGroupListActivity extends Activity implements IEventListener
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_GROUP_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
                 if(success){
                     ArrayList<MessageGroupInfo> res = (ArrayList<MessageGroupInfo>) eventObj;
-                    mDatas.addAll(res);
+                    List<HistoryBean> historyList = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_GROUP);
+                    //删除已经不再的群
+                    for(int i=historyList.size()-1;i>0;i--){
+                        HistoryBean historyBean = historyList.get(i);
+                        Boolean needRemove = true;
+                        for(int j = 0;j<res.size();j++){
+                            if(historyBean.getConversationId().equals(res.get(j).groupId)){
+                                needRemove = false;
+                                break;
+                            }
+                        }
+                        if(needRemove){
+                            historyList.remove(i);
+                        }
+                    }
+                    //添加新加的群
+                    for(int i=0;i<res.size();i++){
+                        MessageGroupInfo groupInfo = res.get(i);
+                        boolean needAdd = true;
+                        for(int j = 0;j<historyList.size();j++){
+                            if(groupInfo.groupId.equals(historyList.get(j).getConversationId())){
+                                needAdd = false;
+                                break;
+                            }
+                        }
+                        if(needAdd){
+                            HistoryBean historyBean = new HistoryBean();
+                            historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
+                            historyBean.setNewMsgCount(0);
+                            historyBean.setConversationId(res.get(i).groupId);
+                            historyBean.setGroupName(res.get(i).groupName);
+                            historyBean.setGroupCreaterId(res.get(i).createrId);
+                            historyBean.setLastMsg("");
+                            historyBean.setLastTime("");
+                            MLOC.setHistory(historyBean,true);
+                            historyList.add(historyBean);
+                        }
+                    }
+                    mDatas.addAll(historyList);
                 }
-                myListAdapter.notifyDataSetChanged();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        myListAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                break;
+            default:
+                onResume();
                 break;
         }
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MessageGroupInfo clickInfo = mDatas.get(position);
+        HistoryBean clickInfo = mDatas.get(position);
+
+        MLOC.setHistory(clickInfo,true);
+
         Intent intent = new Intent(MessageGroupListActivity.this, MessageGroupActivity.class);
         intent.putExtra(MessageGroupActivity.TYPE,MessageGroupActivity.GROUP_ID);
-        intent.putExtra(MessageGroupActivity.GROUP_ID,clickInfo.groupId);
-        intent.putExtra(MessageGroupActivity.GROUP_NAME,clickInfo.groupName);
-        intent.putExtra(MessageGroupActivity.CREATER_ID,clickInfo.createrId);
+        intent.putExtra(MessageGroupActivity.GROUP_ID,clickInfo.getConversationId());
+        intent.putExtra(MessageGroupActivity.GROUP_NAME,clickInfo.getGroupName());
+        intent.putExtra(MessageGroupActivity.CREATER_ID,clickInfo.getGroupCreaterId());
         startActivity(intent);
     }
 
@@ -163,9 +217,11 @@ public class MessageGroupListActivity extends Activity implements IEventListener
             final MyListAdapter.ViewHolder viewIconImg;
             if(convertView == null){
                 viewIconImg = new MyListAdapter.ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_all_list,null);
+                convertView = mInflater.inflate(R.layout.item_group_list,null);
                 viewIconImg.vRoomName = (TextView)convertView.findViewById(R.id.item_id);
                 viewIconImg.vCreaterId = (TextView)convertView.findViewById(R.id.item_creater_id);
+                viewIconImg.vTime = (TextView) convertView.findViewById(R.id.item_time);
+                viewIconImg.vCount = (TextView) convertView.findViewById(R.id.item_count);
                 viewIconImg.vHeadBg =  convertView.findViewById(R.id.head_bg);
                 viewIconImg.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
                 viewIconImg.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
@@ -173,18 +229,29 @@ public class MessageGroupListActivity extends Activity implements IEventListener
             }else{
                 viewIconImg = (MyListAdapter.ViewHolder)convertView.getTag();
             }
-            viewIconImg.vRoomName.setText(mDatas.get(position).groupName);
-            viewIconImg.vCreaterId.setText(mDatas.get(position).createrId);
-            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupListActivity.this,mDatas.get(position).groupId));
+            viewIconImg.vRoomName.setText(mDatas.get(position).getGroupName());
+            viewIconImg.vCreaterId.setText(mDatas.get(position).getGroupCreaterId());
+            viewIconImg.vTime.setText(mDatas.get(position).getLastTime());
+            viewIconImg.vCount.setText(""+mDatas.get(position).getNewMsgCount());
+            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupListActivity.this,mDatas.get(position).getConversationId()));
             viewIconImg.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(MessageGroupListActivity.this,28);
             viewIconImg.vHeadCover.setRadians(cint, cint, cint, cint,0);
             viewIconImg.vHeadImage.setImageResource(R.drawable.icon_im_group_item);
+
+            if(mDatas.get(position).getNewMsgCount()==0){
+                viewIconImg.vCount.setVisibility(View.INVISIBLE);
+            }else{
+                viewIconImg.vCount.setText(""+mDatas.get(position).getNewMsgCount());
+                viewIconImg.vCount.setVisibility(View.VISIBLE);
+            }
             return convertView;
         }
 
         class  ViewHolder{
             private TextView vRoomName;
+            public TextView vTime;
+            public TextView vCount;
             private TextView vCreaterId;
             public View vHeadBg;
             public CircularCoverView vHeadCover;

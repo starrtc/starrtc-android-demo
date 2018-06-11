@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.im.group;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -22,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.im.c2c.C2CActivity;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
@@ -30,7 +30,6 @@ import com.starrtc.staravdemo.demo.voip.VoipActivity;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHGroupManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
@@ -40,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageGroupSettingActivity extends Activity implements IEventListener {
+public class MessageGroupSettingActivity extends BaseActivity{
 
     private XHGroupManager groupManager;
 
@@ -166,6 +165,7 @@ public class MessageGroupSettingActivity extends Activity implements IEventListe
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         MLOC.d("IM_GROUP",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
@@ -303,13 +303,11 @@ public class MessageGroupSettingActivity extends Activity implements IEventListe
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     if(i==0){
-                        MLOC.saveVoipUserId(MessageGroupSettingActivity.this,userId);
                         Intent intent = new Intent(MessageGroupSettingActivity.this,VoipActivity.class);
                         intent.putExtra("targetId",userId);
                         intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);
                         startActivity(intent);
                     }else if(i==1){
-                        MLOC.saveC2CUserId(MessageGroupSettingActivity.this,userId);
                         Intent intent = new Intent(MessageGroupSettingActivity.this,C2CActivity.class);
                         intent.putExtra("targetId",userId);
                         startActivity(intent);

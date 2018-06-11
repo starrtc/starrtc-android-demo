@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.im.group;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,9 +7,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.starrtcsdk.core.utils.StringUtils;
 
-public class MessageGroupCreateActivity extends Activity {
+public class MessageGroupCreateActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

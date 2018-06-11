@@ -9,13 +9,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.test.EchoTestActivity;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.core.utils.StarLog;
 
-public class SettingActivity extends Activity implements View.OnClickListener {
+public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class SettingActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.opensl_switch).setOnClickListener(this);
+        findViewById(R.id.btn_about).setOnClickListener(this);
     }
     @Override
     public void onResume(){
@@ -89,6 +91,9 @@ public class SettingActivity extends Activity implements View.OnClickListener {
             case R.id.opensl_switch:
                 StarRtcCore.getInstance().setOpenSLESEnable(StarRtcCore.openSLESEnable ?false:true);
                 findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
+                break;
+            case R.id.btn_about:
+                startActivity(new Intent(this,AboutActivity.class));
                 break;
         }
     }

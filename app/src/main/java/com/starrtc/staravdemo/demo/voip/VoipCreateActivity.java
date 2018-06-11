@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.voip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,9 +8,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 
-public class VoipCreateActivity extends Activity {
+public class VoipCreateActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,6 @@ public class VoipCreateActivity extends Activity {
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VoipCreateActivity.this,"id不能为空");
                 }else{
-                    MLOC.saveVoipUserId(VoipCreateActivity.this,inputId);
                     Intent intent = new Intent(VoipCreateActivity.this,VoipActivity.class);
                     intent.putExtra("targetId",inputId);
                     intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);

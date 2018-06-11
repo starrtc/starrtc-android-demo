@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.im.callback.IStarCallback;
 
-public class EchoTestActivity extends Activity implements IEventListener {
+public class EchoTestActivity extends BaseActivity{
 
     private EditText traceBox;
     private View clearBtn;
@@ -22,7 +24,20 @@ public class EchoTestActivity extends Activity implements IEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_echo_test);
-        StarRtcCore.getInstance().voipEchoTest();
+        StarRtcCore.getInstance().voipEchoTest(new IStarCallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, final String data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msgStr = data;
+                        if(traceBox!=null){
+                            traceBox.append(msgStr+"\n");
+                        }
+                    }
+                });
+            }
+        });
         traceBox = (EditText) findViewById(R.id.trace_box);
         clearBtn = findViewById(R.id.clear_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -40,42 +55,7 @@ public class EchoTestActivity extends Activity implements IEventListener {
         });
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        AEvent.addListener(AEvent.AEVENT_ECHO_FIN,this);
-    }
-
-    @Override
-    public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_ECHO_FIN,this);
-        super.onStop();
-
-    }
 
 
-    @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
-        Message msg2 = new Message();
-        msg2.what = 0;
-        Bundle b2 = new Bundle();
-        b2.putString("data",(String)eventObj);
-        msg2.setData(b2);
-        uiHandler.sendMessage(msg2);
-    }
-
-    private Handler uiHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                   String msgStr = msg.getData().getString("data");
-                    if(traceBox!=null){
-                        traceBox.append(msgStr+"\n");
-                    }
-                    break;
-            }
-        }
-    };
 
 }

@@ -1,15 +1,26 @@
 package com.starrtc.staravdemo.demo.listener;
 
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.starrtcsdk.apiInterface.IXHVoipManagerListener;
 import com.starrtc.starrtcsdk.socket.StarErrorCode;
 
+import java.text.SimpleDateFormat;
+
 public class XHVoipManagerListener implements IXHVoipManagerListener {
     @Override
     public void onCalling(String fromID) {
+
+        HistoryBean historyBean = new HistoryBean();
+        historyBean.setType(CoreDB.HISTORY_TYPE_VOIP);
+        historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        historyBean.setConversationId(fromID);
+        historyBean.setNewMsgCount(1);
+        MLOC.setHistory(historyBean,false);
+
         AEvent.notifyListener(AEvent.AEVENT_VOIP_REV_CALLING,true,fromID);
-        MLOC.saveVoipUserId(MLOC.appContext,fromID);
     }
 
     @Override

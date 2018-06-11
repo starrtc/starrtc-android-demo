@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.listener.XHLiveManagerListener;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
@@ -48,7 +49,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideoLiveActivity extends Activity implements IEventListener {
+public class VideoLiveActivity extends BaseActivity {
 
     public static String CREATER_ID         = "CREATER_ID";          //创建者ID
     public static String LIVE_TYPE          = "LIVE_TYPE";           //创建信息
@@ -382,8 +383,14 @@ public class VideoLiveActivity extends Activity implements IEventListener {
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        MLOC.canPickupVoip = false;
+    }
+    @Override
     public void onPause(){
         super.onPause();
+        MLOC.canPickupVoip = true;
     }
 
     @Override
@@ -418,7 +425,7 @@ public class VideoLiveActivity extends Activity implements IEventListener {
     @Override
     public void onBackPressed(){
         new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
-                .setTitle("是否停止直播?")
+                .setTitle("是否要退出?")
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
@@ -725,6 +732,7 @@ public class VideoLiveActivity extends Activity implements IEventListener {
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         MLOC.d("XHLiveManager","dispatchEvent  "+aEventID + eventObj);
         switch (aEventID){
             case AEvent.AEVENT_LIVE_ADD_UPLOADER:

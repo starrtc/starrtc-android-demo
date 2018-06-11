@@ -53,6 +53,13 @@
                 android:textSize="13sp"
                 android:text="ONE TO ONE"/>
         </LinearLayout>
+        <ImageView
+            android:id="@+id/c2c_new"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_new_w"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/chatroom_btn"
@@ -144,5 +151,12 @@
                 android:textSize="13sp"
                 android:text="GROUP"/>
         </LinearLayout>
+        <ImageView
+            android:id="@+id/group_new"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_new_w"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"/>
     </RelativeLayout>
 </LinearLayout>

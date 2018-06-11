@@ -24,28 +24,14 @@ import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.staravdemo.demo.listener.XHChatManagerListener;
-import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.staravdemo.demo.listener.XHGroupManagerListener;
 import com.starrtc.staravdemo.demo.listener.XHLoginManagerListener;
-import com.starrtc.starrtcsdk.api.XHConstants;
-import com.starrtc.starrtcsdk.api.XHGroupManager;
-import com.starrtc.starrtcsdk.api.XHLiveManager;
-import com.starrtc.starrtcsdk.api.XHMeetingManager;
 import com.starrtc.starrtcsdk.api.XHSDKConfig;
 import com.starrtc.staravdemo.demo.listener.XHVoipManagerListener;
-import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
-import com.starrtc.starrtcsdk.apiInterface.IXHChatroomManagerListener;
-import com.starrtc.starrtcsdk.apiInterface.IXHGroupManager;
-import com.starrtc.starrtcsdk.apiInterface.IXHGroupManagerListener;
-import com.starrtc.starrtcsdk.apiInterface.IXHLiveManagerListener;
-import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManagerListener;
-import com.starrtc.starrtcsdk.apiInterface.IXHVoipManagerListener;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
-import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -61,7 +47,7 @@ public class SplashActivity extends Activity implements IEventListener {
 
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
         if(MLOC.userId.equals("")){
-            MLOC.userId = "VIP"+ new Random().nextInt(100)+ new Random().nextInt(100);
+            MLOC.userId = ""+(new Random().nextInt(900000)+100000);
             MLOC.saveSharedData(getApplicationContext(),"userId",MLOC.userId);
         }
 

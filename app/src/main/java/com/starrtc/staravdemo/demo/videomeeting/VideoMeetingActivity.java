@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.demo.listener.XHMeetingManagerListener;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
@@ -35,7 +36,7 @@ import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
-public class VideoMeetingActivity extends Activity implements IEventListener {
+public class VideoMeetingActivity extends BaseActivity{
 
     public static String MEETING_ID         = "MEETING_ID";          //会议ID
     public static String MEETING_NAME       = "MEETING_NAME";         //会议名称
@@ -207,10 +208,15 @@ public class VideoMeetingActivity extends Activity implements IEventListener {
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        MLOC.canPickupVoip = false;
+    }
+    @Override
     public void onPause(){
         super.onPause();
+        MLOC.canPickupVoip = true;
     }
-
     @Override
     public void onRestart(){
         super.onRestart();
@@ -447,6 +453,7 @@ public class VideoMeetingActivity extends Activity implements IEventListener {
     }
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MEETING_ADD_UPLOADER:
                 runOnUiThread(new Runnable() {

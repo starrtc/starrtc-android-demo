@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.im.c2c;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,24 +11,23 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.StatusBarUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class C2CListActivity extends Activity {
+public class C2CListActivity extends BaseActivity {
     private String mTargetId;
-    private List<Map<String, String>> mHistoryList;
+    private List<HistoryBean> mHistoryList;
     private ListView vHistoryList;
     private MyListAdapter listAdapter;
 
@@ -61,8 +59,8 @@ public class C2CListActivity extends Activity {
         vHistoryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTargetId = (String) mHistoryList.get(position).get("id");
-                MLOC.saveC2CUserId(C2CListActivity.this,mTargetId);
+                MLOC.setHistory(mHistoryList.get(position),true);
+                mTargetId = (String) mHistoryList.get(position).getConversationId();
                 Intent intent = new Intent(C2CListActivity.this,C2CActivity.class);
                 intent.putExtra("targetId",mTargetId);
                 startActivity(intent);
@@ -72,18 +70,28 @@ public class C2CListActivity extends Activity {
     @Override
     public void onResume(){
         super.onResume();
+        MLOC.hasNewC2CMsg = false;
         mHistoryList.clear();
-        String history = MLOC.loadSharedData(this,"c2cHistory");
-        if(history.length()>0){
-            String[] arr = history.split(",,");
-            for (int i = 0;i<arr.length;i++){
-                Map<String,String> map = new HashMap<String , String >();
-                map.put("id",arr[i]);
-                mHistoryList.add(map);
-            }
-        }
-        listAdapter.notifyDataSetChanged();
+       List<HistoryBean> list = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_C2C);
+       if(list!=null&&list.size()>0){
+            mHistoryList.addAll(list);
+       }
+       runOnUiThread(new Runnable() {
+           @Override
+           public void run() {
+               listAdapter.notifyDataSetChanged();
+           }
+       });
+
     }
+
+    @Override
+    public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
+        onResume();
+    }
+
+
 
     public class MyListAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
@@ -118,8 +126,11 @@ public class C2CListActivity extends Activity {
             final ViewHolder itemSelfHolder;
             if(convertView == null){
                 itemSelfHolder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_history,null);
+                convertView = mInflater.inflate(R.layout.item_c2c_history,null);
                 itemSelfHolder.vUserId = (TextView) convertView.findViewById(R.id.item_id);
+                itemSelfHolder.vTime = (TextView) convertView.findViewById(R.id.item_time);
+                itemSelfHolder.vMessage = (TextView) convertView.findViewById(R.id.item_msg);
+                itemSelfHolder.vCount = (TextView) convertView.findViewById(R.id.item_count);
                 itemSelfHolder.vHeadBg =  convertView.findViewById(R.id.head_bg);
                 itemSelfHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
                 itemSelfHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
@@ -127,19 +138,33 @@ public class C2CListActivity extends Activity {
             }else{
                 itemSelfHolder = (ViewHolder)convertView.getTag();
             }
-            String userId = mHistoryList.get(position).get("id");
+
+            HistoryBean historyBean = mHistoryList.get(position);
+            String userId = historyBean.getConversationId();
             itemSelfHolder.vUserId.setText(userId);
             itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(C2CListActivity.this,userId));
             itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(C2CListActivity.this,28);
             itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-            itemSelfHolder.vHeadImage.setImageResource(R.drawable.icon_im_c2c);
+            itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+
+            itemSelfHolder.vTime.setText(historyBean.getLastTime());
+            itemSelfHolder.vMessage.setText(historyBean.getLastMsg());
+            if(historyBean.getNewMsgCount()==0){
+                itemSelfHolder.vCount.setVisibility(View.INVISIBLE);
+            }else{
+                itemSelfHolder.vCount.setText(""+historyBean.getNewMsgCount());
+                itemSelfHolder.vCount.setVisibility(View.VISIBLE);
+            }
             return convertView;
         }
     }
 
     public class ViewHolder{
         public TextView vUserId;
+        public TextView vTime;
+        public TextView vMessage;
+        public TextView vCount;
         public View vHeadBg;
         public CircularCoverView vHeadCover;
         public ImageView vHeadImage;

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:gravity="center_horizontal">
+    <include layout="@layout/ui_title_bar"/>
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/starfox_500"
+        android:layout_marginTop="60dp"
+        />
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="v0.0.0"
+        android:gravity="center"
+        android:layout_marginTop="20dp"/>
+    <View
+        android:layout_width="10dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="www.StarRTC.com\n星盒科技(北京)有限公司\n手机:186-1294-6552     微信:starRTC"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="12sp"
+        android:layout_marginBottom="10dp"/>
+</LinearLayout>

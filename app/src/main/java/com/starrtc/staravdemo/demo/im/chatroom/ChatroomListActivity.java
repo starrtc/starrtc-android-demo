@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
@@ -27,7 +28,7 @@ import com.starrtc.staravdemo.utils.DensityUtils;
 import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.staravdemo.utils.StarListUtil;
 
-public class ChatroomListActivity extends Activity implements IEventListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ChatroomListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private ListView vList;
     private MyListAdapter myListAdapter;
@@ -112,6 +113,7 @@ public class ChatroomListActivity extends Activity implements IEventListener, Ad
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_GOT_LIST:
                 refreshLayout.setRefreshing(false);

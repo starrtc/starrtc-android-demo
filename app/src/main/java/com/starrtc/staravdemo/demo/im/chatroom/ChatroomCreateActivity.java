@@ -9,10 +9,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
 
-public class ChatroomCreateActivity extends Activity {
+public class ChatroomCreateActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

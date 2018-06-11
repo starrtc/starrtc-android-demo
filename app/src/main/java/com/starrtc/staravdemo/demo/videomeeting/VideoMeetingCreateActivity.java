@@ -9,10 +9,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
 
-public class VideoMeetingCreateActivity extends Activity {
+public class VideoMeetingCreateActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

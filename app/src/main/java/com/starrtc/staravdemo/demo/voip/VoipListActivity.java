@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.voip;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,21 +15,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class VoipListActivity extends Activity {
+public class VoipListActivity extends BaseActivity {
 
     private EditText vEditText;
     private String mTargetId;
-    private List<Map<String, String>> mHistoryList;
+    private List<HistoryBean> mHistoryList;
     private ListView vHistoryList;
     private MyListAdapter myListAdapter;
 
@@ -63,7 +63,7 @@ public class VoipListActivity extends Activity {
         vHistoryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTargetId = (String) mHistoryList.get(position).get("id");
+                mTargetId = (String) mHistoryList.get(position).getConversationId();
                 MLOC.saveVoipUserId(VoipListActivity.this,mTargetId);
                 Intent intent = new Intent(VoipListActivity.this,VoipActivity.class);
                 intent.putExtra("targetId",mTargetId);
@@ -76,17 +76,19 @@ public class VoipListActivity extends Activity {
     @Override
     public void onResume(){
         super.onResume();
+        MLOC.hasNewVoipMsg = false;
         mHistoryList.clear();
-        String history = MLOC.loadSharedData(this,"voipHistory");
-        if(history.length()>0){
-            String[] arr = history.split(",,");
-            for (int i = 0;i<arr.length;i++){
-                Map<String,String> map = new HashMap<String , String >();
-                map.put("id",arr[i]);
-                mHistoryList.add(map);
-            }
+
+        List<HistoryBean> list = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_VOIP);
+        if(list!=null&&list.size()>0){
+            mHistoryList.addAll(list);
         }
-        myListAdapter.notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     public class MyListAdapter extends BaseAdapter {
@@ -122,8 +124,10 @@ public class VoipListActivity extends Activity {
             final ViewHolder itemSelfHolder;
             if(convertView == null){
                 itemSelfHolder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.item_history,null);
+                convertView = mInflater.inflate(R.layout.item_voip_list,null);
                 itemSelfHolder.vUserId = (TextView) convertView.findViewById(R.id.item_id);
+                itemSelfHolder.vTime = (TextView) convertView.findViewById(R.id.item_time);
+                itemSelfHolder.vCount = (TextView) convertView.findViewById(R.id.item_count);
                 itemSelfHolder.vHeadBg =  convertView.findViewById(R.id.head_bg);
                 itemSelfHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
                 itemSelfHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
@@ -131,19 +135,30 @@ public class VoipListActivity extends Activity {
             }else{
                 itemSelfHolder = (ViewHolder)convertView.getTag();
             }
-            String userId = mHistoryList.get(position).get("id");
+            String userId = mHistoryList.get(position).getConversationId();
             itemSelfHolder.vUserId.setText(userId);
+            itemSelfHolder.vTime.setText(mHistoryList.get(position).getLastTime());
             itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(VoipListActivity.this,userId));
             itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(VoipListActivity.this,28);
             itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
             itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+
+            if(mHistoryList.get(position).getNewMsgCount()==0){
+                itemSelfHolder.vCount.setVisibility(View.INVISIBLE);
+            }else{
+                itemSelfHolder.vCount.setText(""+mHistoryList.get(position).getNewMsgCount());
+                itemSelfHolder.vCount.setVisibility(View.VISIBLE);
+            }
+
             return convertView;
         }
     }
 
     public class ViewHolder{
         public TextView vUserId;
+        public TextView vTime;
+        public TextView vCount;
         public View vHeadBg;
         public CircularCoverView vHeadCover;
         public ImageView vHeadImage;

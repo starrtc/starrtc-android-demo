@@ -16,11 +16,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
+import com.starrtc.staravdemo.demo.database.MessageBean;
 import com.starrtc.staravdemo.demo.serverAPI.InterfaceUrls;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
@@ -32,7 +37,7 @@ import com.starrtc.starrtcsdk.api.XHGroupManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
-public class MessageGroupActivity extends Activity implements IEventListener {
+public class MessageGroupActivity extends Activity implements IEventListener{
     public static String TYPE = "TYPE";
     public static String GROUP_NAME = "GROUP_NAME";
     public static String GROUP_ID = "GROUP_ID";
@@ -47,7 +52,7 @@ public class MessageGroupActivity extends Activity implements IEventListener {
     private String mGroupId;
     private String mGroupName;
     private String mCreaterId;
-    private List<XHIMMessage> mDatas;
+    private List<MessageBean> mDatas;
     private MyChatroomListAdapter mAdapter ;
 
     private String type;
@@ -113,7 +118,7 @@ public class MessageGroupActivity extends Activity implements IEventListener {
 
         vMsgList = (ListView) findViewById(R.id.msg_list);
         vMsgList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        vMsgList.setStackFromBottom(true);
+//        vMsgList.setStackFromBottom(true);
 
         mAdapter = new MyChatroomListAdapter();
         vMsgList.setAdapter(mAdapter);
@@ -132,17 +137,24 @@ public class MessageGroupActivity extends Activity implements IEventListener {
     }
 
     private void sendMsg(String msg){
-        XHIMMessage imMessage = groupManager.sendMessage(mGroupId, new ArrayList<String>(), msg, new IXHCallback() {
-            @Override
-            public void success(Object data) {
+        XHIMMessage imMessage = groupManager.sendMessage(mGroupId, new ArrayList<String>(), msg, null);
 
-            }
-            @Override
-            public void failed(String errMsg) {
+        HistoryBean historyBean = new HistoryBean();
+        historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
+        historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        historyBean.setLastMsg(imMessage.contentData);
+        historyBean.setConversationId(imMessage.targetId);
+        historyBean.setNewMsgCount(1);
+        MLOC.setHistory(historyBean,true);
 
-            }
-        });
-        mDatas.add(imMessage);
+        MessageBean messageBean = new MessageBean();
+        messageBean.setConversationId(imMessage.targetId);
+        messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        messageBean.setMsg(imMessage.contentData);
+        messageBean.setFromId(imMessage.fromId);
+        MLOC.saveMessage(messageBean);
+
+        mDatas.add(messageBean);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -150,6 +162,12 @@ public class MessageGroupActivity extends Activity implements IEventListener {
     public void onResume(){
         super.onResume();
         InterfaceUrls.demoRequestGroupMembers(mGroupId);
+        mDatas.clear();
+        List<MessageBean> list =  MLOC.getMessageList(mGroupId);
+        if(list!=null&&list.size()>0){
+            mDatas.addAll(list);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     private void addListener(){
@@ -179,14 +197,30 @@ public class MessageGroupActivity extends Activity implements IEventListener {
                 if(!success)finish();
                 break;
             case AEvent.AEVENT_GROUP_REV_MSG:
-                XHIMMessage revMsg = (XHIMMessage) eventObj;
-                mDatas.add(revMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                final XHIMMessage revMsg = (XHIMMessage) eventObj;
+                if(revMsg.targetId.equals(mGroupId)){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            HistoryBean historyBean = new HistoryBean();
+                            historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
+                            historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                            historyBean.setLastMsg(revMsg.contentData);
+                            historyBean.setConversationId(revMsg.targetId);
+                            historyBean.setNewMsgCount(1);
+                            MLOC.setHistory(historyBean,true);
+
+                            MessageBean messageBean = new MessageBean();
+                            messageBean.setConversationId(revMsg.fromId);
+                            messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                            messageBean.setMsg(revMsg.contentData);
+                            messageBean.setFromId(revMsg.fromId);
+
+                            mDatas.add(messageBean);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
                 break;
         }
     }
@@ -223,7 +257,7 @@ public class MessageGroupActivity extends Activity implements IEventListener {
 
         @Override
         public int getItemViewType(int position){
-            return mDatas.get(position).fromId.equals(MLOC.userId)?0:1;
+            return mDatas.get(position).getFromId().equals(MLOC.userId)?0:1;
         }
 
         @Override
@@ -243,9 +277,9 @@ public class MessageGroupActivity extends Activity implements IEventListener {
                 }else{
                     itemSelfHolder = (ViewHolder)convertView.getTag();
                 }
-                itemSelfHolder.vUserId.setText(mDatas.get(position).fromId);
-                itemSelfHolder.vMsg.setText(mDatas.get(position).contentData);
-                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).fromId));
+                itemSelfHolder.vUserId.setText(mDatas.get(position).getFromId());
+                itemSelfHolder.vMsg.setText(mDatas.get(position).getMsg());
+                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).getFromId()));
                 itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
                 int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
                 itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
@@ -268,9 +302,9 @@ public class MessageGroupActivity extends Activity implements IEventListener {
                 }else{
                     itemOtherHolder = (ViewHolder)convertView.getTag();
                 }
-                itemOtherHolder.vUserId.setText(mDatas.get(position).fromId);
-                itemOtherHolder.vMsg.setText(mDatas.get(position).contentData);
-                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).fromId));
+                itemOtherHolder.vUserId.setText(mDatas.get(position).getFromId());
+                itemOtherHolder.vMsg.setText(mDatas.get(position).getMsg());
+                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).getFromId()));
             }
             return convertView;
         }

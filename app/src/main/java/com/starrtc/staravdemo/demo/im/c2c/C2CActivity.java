@@ -15,11 +15,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.starrtc.staravdemo.R;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
+import com.starrtc.staravdemo.demo.database.MessageBean;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
@@ -37,7 +41,7 @@ public class C2CActivity extends Activity implements IEventListener {
     private View vSendBtn;
 
     private String mTargetId;
-    private List<XHIMMessage> mDatas;
+    private List<MessageBean> mDatas;
     private MyChatroomListAdapter mAdapter ;
 
 
@@ -82,8 +86,24 @@ public class C2CActivity extends Activity implements IEventListener {
 
     private void sendMsg(String msg){
         XHIMMessage message = StarRtcCore.getInstance().sendMessage(mTargetId,msg);
+
+        HistoryBean historyBean = new HistoryBean();
+        historyBean.setType(CoreDB.HISTORY_TYPE_C2C);
+        historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        historyBean.setLastMsg(message.contentData);
+        historyBean.setConversationId(message.targetId);
+        historyBean.setNewMsgCount(1);
+        MLOC.setHistory(historyBean,true);
+
+        MessageBean messageBean = new MessageBean();
+        messageBean.setConversationId(message.targetId);
+        messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        messageBean.setMsg(message.contentData);
+        messageBean.setFromId(message.fromId);
+        MLOC.saveMessage(messageBean);
+
         ColorUtils.getColor(this,message.fromId);
-        mDatas.add(message);
+        mDatas.add(messageBean);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -102,6 +122,17 @@ public class C2CActivity extends Activity implements IEventListener {
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        mDatas.clear();
+        List<MessageBean> list =  MLOC.getMessageList(mTargetId);
+        if(list!=null&&list.size()>0){
+            mDatas.addAll(list);
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onStop(){
         AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS,this);
@@ -116,13 +147,28 @@ public class C2CActivity extends Activity implements IEventListener {
         StarLog.d("IM_C2C",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_C2C_REV_MSG:
-                XHIMMessage revMsg = (XHIMMessage) eventObj;
+                final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 if(revMsg.fromId.equals(mTargetId)){
-                    ColorUtils.getColor(C2CActivity.this,revMsg.fromId);
-                    mDatas.add(revMsg);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            HistoryBean historyBean = new HistoryBean();
+                            historyBean.setType(CoreDB.HISTORY_TYPE_C2C);
+                            historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                            historyBean.setLastMsg(revMsg.contentData);
+                            historyBean.setConversationId(revMsg.fromId);
+                            historyBean.setNewMsgCount(1);
+                            MLOC.setHistory(historyBean,true);
+
+                            MessageBean messageBean = new MessageBean();
+                            messageBean.setConversationId(revMsg.fromId);
+                            messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                            messageBean.setMsg(revMsg.contentData);
+                            messageBean.setFromId(revMsg.fromId);
+
+                            mDatas.add(messageBean);
+
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -166,7 +212,7 @@ public class C2CActivity extends Activity implements IEventListener {
 
         @Override
         public int getItemViewType(int position){
-            return mDatas.get(position).fromId.equals(MLOC.userId)?0:1;
+            return mDatas.get(position).getFromId().equals(MLOC.userId)?0:1;
         }
 
         @Override
@@ -186,9 +232,9 @@ public class C2CActivity extends Activity implements IEventListener {
                 }else{
                     itemSelfHolder = (ViewHolder)convertView.getTag();
                 }
-                itemSelfHolder.vUserId.setText(mDatas.get(position).fromId);
-                itemSelfHolder.vMsg.setText(mDatas.get(position).contentData);
-                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(C2CActivity.this,mDatas.get(position).fromId));
+                itemSelfHolder.vUserId.setText(mDatas.get(position).getFromId());
+                itemSelfHolder.vMsg.setText(mDatas.get(position).getMsg());
+                itemSelfHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(C2CActivity.this,mDatas.get(position).getFromId()));
                 itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
                 int cint = DensityUtils.dip2px(C2CActivity.this,20);
                 itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
@@ -211,9 +257,9 @@ public class C2CActivity extends Activity implements IEventListener {
                 }else{
                     itemOtherHolder = (ViewHolder)convertView.getTag();
                 }
-                itemOtherHolder.vUserId.setText(mDatas.get(position).fromId);
-                itemOtherHolder.vMsg.setText(mDatas.get(position).contentData);
-                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(C2CActivity.this,mDatas.get(position).fromId));
+                itemOtherHolder.vUserId.setText(mDatas.get(position).getFromId());
+                itemOtherHolder.vMsg.setText(mDatas.get(position).getMsg());
+                itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(C2CActivity.this,mDatas.get(position).getFromId()));
             }
             return convertView;
         }

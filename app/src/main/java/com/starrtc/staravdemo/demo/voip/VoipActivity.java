@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.voip;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,8 +7,6 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
@@ -21,12 +18,14 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
@@ -34,7 +33,9 @@ import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.ScreenRecorder;
 
-public class VoipActivity extends Activity implements IEventListener, View.OnClickListener {
+import java.text.SimpleDateFormat;
+
+public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private XHVoipManager voipManager;
 
@@ -140,6 +141,7 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
     }
 
     public void removeListener(){
+        MLOC.canPickupVoip = true;
         AEvent.removeListener(AEvent.AEVENT_VOIP_INIT_COMPLETE,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_BUSY,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_REFUSED,this);
@@ -149,15 +151,32 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        MLOC.canPickupVoip = false;
+        HistoryBean historyBean = new HistoryBean();
+        historyBean.setType(CoreDB.HISTORY_TYPE_VOIP);
+        historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        historyBean.setConversationId(targetId);
+        historyBean.setNewMsgCount(1);
+        MLOC.setHistory(historyBean,true);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+    }
+
+    @Override
     public void onRestart(){
         super.onRestart();
         addListener();
     }
 
     @Override
-    public void onStop(){
-        super.onStop();
+    public void onDestroy(){
         removeListener();
+        super.onDestroy();
     }
 
     @Override
@@ -198,6 +217,7 @@ public class VoipActivity extends Activity implements IEventListener, View.OnCli
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_VOIP_REV_BUSY:
                 runOnUiThread(new Runnable() {

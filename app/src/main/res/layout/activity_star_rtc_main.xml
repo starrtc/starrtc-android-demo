@@ -99,6 +99,13 @@
                     android:maxWidth="1000dp"
                     android:adjustViewBounds="true"
                     />
+                <ImageView
+                    android:id="@+id/im_new"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/icon_new_w"
+                    android:layout_alignParentRight="true"
+                    android:visibility="invisible"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/btn_main_meeting"
@@ -210,6 +217,13 @@
                     android:maxWidth="1000dp"
                     android:adjustViewBounds="true"
                     />
+                <ImageView
+                    android:id="@+id/voip_new"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/icon_new_w"
+                    android:layout_alignParentRight="true"
+                    android:visibility="invisible"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/btn_main_live"

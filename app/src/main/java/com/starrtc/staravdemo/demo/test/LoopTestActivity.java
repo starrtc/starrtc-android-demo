@@ -12,10 +12,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
-public class LoopTestActivity extends Activity implements View.OnClickListener {
+public class LoopTestActivity extends BaseActivity implements View.OnClickListener {
 
     private StarPlayer selfPlayer;
     private StarPlayer selfSmallPlayer;

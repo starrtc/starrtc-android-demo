@@ -10,10 +10,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
 import com.starrtc.staravdemo.utils.StatusBarUtils;
 
-public class C2CCreateActivity extends Activity {
+public class C2CCreateActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

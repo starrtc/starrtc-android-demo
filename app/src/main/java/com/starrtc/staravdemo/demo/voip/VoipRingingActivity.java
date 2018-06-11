@@ -1,6 +1,5 @@
 package com.starrtc.staravdemo.demo.voip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,17 +8,20 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.starrtc.staravdemo.R;
+import com.starrtc.staravdemo.demo.BaseActivity;
 import com.starrtc.staravdemo.demo.MLOC;
+import com.starrtc.staravdemo.demo.database.CoreDB;
+import com.starrtc.staravdemo.demo.database.HistoryBean;
 import com.starrtc.staravdemo.demo.ui.CircularCoverView;
 import com.starrtc.staravdemo.utils.AEvent;
 import com.starrtc.staravdemo.utils.ColorUtils;
 import com.starrtc.staravdemo.utils.DensityUtils;
-import com.starrtc.staravdemo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
-public class VoipRingingActivity extends Activity implements IEventListener, View.OnClickListener {
+import java.text.SimpleDateFormat;
+
+public class VoipRingingActivity extends BaseActivity implements View.OnClickListener {
 
     private String targetId;
 
@@ -40,6 +42,13 @@ public class VoipRingingActivity extends Activity implements IEventListener, Vie
         int cint = DensityUtils.dip2px(VoipRingingActivity.this,45);
         ((CircularCoverView)findViewById(R.id.head_cover)).setRadians(cint, cint, cint, cint,0);
 
+        HistoryBean historyBean = new HistoryBean();
+        historyBean.setType(CoreDB.HISTORY_TYPE_VOIP);
+        historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+        historyBean.setConversationId(targetId);
+        historyBean.setNewMsgCount(1);
+        MLOC.setHistory(historyBean,true);
+
     }
 
     public void addListener(){
@@ -54,6 +63,7 @@ public class VoipRingingActivity extends Activity implements IEventListener, Vie
 
     @Override
     public void dispatchEvent(final String aEventID, boolean success, final Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
