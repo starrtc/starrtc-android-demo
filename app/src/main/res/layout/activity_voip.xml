@@ -34,7 +34,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="100dp"
                 >
-                <com.starrtc.staravdemo.demo.ui.CircularCoverView
+                <com.starrtc.demo.demo.ui.CircularCoverView
                     android:id="@+id/head_cover"
                     android:layout_width="90dp"
                     android:layout_height="90dp"

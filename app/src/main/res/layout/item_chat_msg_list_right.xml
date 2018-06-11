@@ -54,7 +54,7 @@
             android:layout_margin="16dp"
             android:orientation="vertical"
             android:gravity="center">
-            <com.starrtc.staravdemo.demo.ui.CircularCoverView
+            <com.starrtc.demo.demo.ui.CircularCoverView
                 android:id="@+id/head_cover"
                 android:layout_width="56dp"
                 android:layout_height="56dp"

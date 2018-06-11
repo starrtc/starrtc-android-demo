@@ -1,0 +1,68 @@
+package com.starrtc.demo.demo.listener;
+
+import com.starrtc.demo.utils.AEvent;
+import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManagerListener;
+import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class XHMeetingManagerListener implements IXHMeetingManagerListener {
+    @Override
+    public void onJoined(String meetingID, String userID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meetingID",meetingID);
+            jsonObject.put("userID",userID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_ADD_UPLOADER,true,jsonObject);
+    }
+
+    @Override
+    public void onLeft(String meetingID, String userID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("meetingID",meetingID);
+            jsonObject.put("userID",userID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_REMOVE_UPLOADER,true,jsonObject);
+    }
+
+    @Override
+    public void onMeetingError(String meetingID, String error) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_ERROR,true,error);
+    }
+
+    @Override
+    public void onMembersUpdated(int membersNumber) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_GET_ONLINE_NUMBER,true,membersNumber);
+    }
+
+    @Override
+    public void onSelfKicked() {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_SELF_KICKED,true,"");
+    }
+
+    @Override
+    public void onSelfMuted(int seconds) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_SELF_BANNED,true,seconds);
+    }
+
+    @Override
+    public void onReceivedMessage(XHIMMessage message) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_REV_MSG,true,message);
+    }
+
+    @Override
+    public void onReceivePrivateMessage(XHIMMessage message) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_REV_PRIVATE_MSG,true,message);
+    }
+
+    @Override
+    public void onReceiveRealtimeData(byte[] data, String upId) {
+    }
+}
