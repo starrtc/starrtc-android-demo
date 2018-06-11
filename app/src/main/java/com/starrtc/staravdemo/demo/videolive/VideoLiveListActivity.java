@@ -82,13 +82,13 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
         });
-        InterfaceUrls.demoRequestLiveList();
     }
 
     @Override
     public void onResume(){
         super.onResume();
         AEvent.addListener(AEvent.AEVENT_LIVE_GOT_LIST,this);
+        InterfaceUrls.demoRequestLiveList();
     }
     @Override
     public void onPause(){

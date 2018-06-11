@@ -66,7 +66,7 @@ public class CoreDB implements IEventListener {
 
 
     public List<HistoryBean> getHistory(String type){
-        Cursor cursor = coreDBM.rawQuery("select * from "+HISTORY_TABLE+" where type=?",new String[]{type});
+        Cursor cursor = coreDBM.rawQuery("select * from "+HISTORY_TABLE+" where type=? order by id desc",new String[]{type});
         List<HistoryBean> list = new ArrayList<HistoryBean>();
         while (cursor != null && cursor.moveToNext()) {
             HistoryBean bean = new HistoryBean();

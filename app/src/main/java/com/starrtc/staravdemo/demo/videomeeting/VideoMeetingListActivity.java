@@ -83,13 +83,13 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
         });
-        InterfaceUrls.demoRequestMeetingList();
     }
 
     @Override
-    public void onRestart(){
-        super.onRestart();
+    public void onResume(){
+        super.onResume();
         AEvent.addListener(AEvent.AEVENT_MEETING_GOT_LIST,this);
+        InterfaceUrls.demoRequestMeetingList();
     }
 
     @Override
