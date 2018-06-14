@@ -96,10 +96,13 @@ public class CoreDB implements IEventListener {
                 historyBean.setNewMsgCount(0);
             }
             if (cursor != null) cursor.close();
-            coreDBM.execSQL("update " + HISTORY_TABLE + " set newMsg=?,lastMsg=?,lastTime=? where type=? and conversationId=?",
-                    new Object[]{historyBean.getNewMsgCount(), historyBean.getLastMsg(),
-                            historyBean.getLastTime(),historyBean.getType(),
-                            historyBean.getConversationId()});
+            coreDBM.execSQL("delete from " + HISTORY_TABLE + " where type=? and conversationId=?",
+                    new Object[]{historyBean.getType(),historyBean.getConversationId()});
+            coreDBM.execSQL("insert into " + HISTORY_TABLE + "(type,conversationId,newMsg,lastMsg,lastTime,groupName,groupCreaterId) values(?,?,?,?,?,?,?)",
+                    new Object[]{historyBean.getType(), historyBean.getConversationId(),
+                            historyBean.getNewMsgCount(), historyBean.getLastMsg(),
+                            historyBean.getLastTime(),historyBean.getGroupName(),
+                            historyBean.getGroupCreaterId()});
         }else{
             if(hasRead){
                 historyBean.setNewMsgCount(0);

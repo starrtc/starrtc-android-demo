@@ -25,7 +25,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:gravity="bottom"
-            android:visibility="invisible">
+            android:visibility="visible">
             <RelativeLayout
                 android:id="@+id/head_bg"
                 android:layout_width="90dp"
@@ -77,8 +77,6 @@
                     android:id="@+id/calling_hangup"
                     android:layout_width="66dp"
                     android:layout_height="66dp"
-                    android:layout_marginRight="44dp"
-                    android:layout_marginLeft="44dp"
                     android:src="@drawable/icon_hangup"/>
                 <TextView
                     android:layout_width="wrap_content"

@@ -1,9 +1,11 @@
 package com.starrtc.demo.demo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.demo.voip.VoipRingingActivity;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.IEventListener;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
@@ -43,7 +45,7 @@ public class BaseActivity extends Activity implements IEventListener {
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         switch (aEventID){
             case AEvent.AEVENT_VOIP_REV_CALLING:
-                if(success&&!MLOC.canPickupVoip){
+                if(!MLOC.canPickupVoip){
                     MLOC.hasNewVoipMsg = true;
                     runOnUiThread(new Runnable() {
                         @Override
@@ -59,6 +61,10 @@ public class BaseActivity extends Activity implements IEventListener {
                             }
                         }
                     });
+                }else{
+                    Intent intent = new Intent(BaseActivity.this,VoipRingingActivity.class);
+                    intent.putExtra("targetId",eventObj.toString());
+                    startActivity(intent);
                 }
                 break;
             case AEvent.AEVENT_C2C_REV_MSG:
@@ -68,6 +74,9 @@ public class BaseActivity extends Activity implements IEventListener {
                     public void run() {
                         if(findViewById(R.id.c2c_new)!=null){
                             findViewById(R.id.c2c_new).setVisibility(MLOC.hasNewC2CMsg?View.VISIBLE:View.INVISIBLE);
+                        }
+                        if(findViewById(R.id.im_new)!=null) {
+                            findViewById(R.id.im_new).setVisibility((MLOC.hasNewC2CMsg || MLOC.hasNewGroupMsg) ? View.VISIBLE : View.INVISIBLE);
                         }
                         try {
                             XHIMMessage revMsg = (XHIMMessage) eventObj;
@@ -90,7 +99,9 @@ public class BaseActivity extends Activity implements IEventListener {
                         if(findViewById(R.id.group_new)!=null){
                             findViewById(R.id.group_new).setVisibility(MLOC.hasNewGroupMsg?View.VISIBLE:View.INVISIBLE);
                         }
-
+                        if(findViewById(R.id.im_new)!=null) {
+                            findViewById(R.id.im_new).setVisibility((MLOC.hasNewC2CMsg || MLOC.hasNewGroupMsg) ? View.VISIBLE : View.INVISIBLE);
+                        }
                         try {
                             XHIMMessage revMsg = (XHIMMessage) eventObj;
                             JSONObject alertData = new JSONObject();

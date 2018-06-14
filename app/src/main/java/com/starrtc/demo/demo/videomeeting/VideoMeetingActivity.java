@@ -35,6 +35,7 @@ import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
+import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 
 public class VideoMeetingActivity extends BaseActivity{
 
@@ -361,6 +362,8 @@ public class VideoMeetingActivity extends BaseActivity{
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     isRuning = false;
+                    clickPlayer.setScalType(StarPlayerScaleType.DRAW_TYPE_CENTER);
+                    mainPlayer.setScalType(StarPlayerScaleType.DRAW_TYPE_CENTER);
                 }
 
                 @Override

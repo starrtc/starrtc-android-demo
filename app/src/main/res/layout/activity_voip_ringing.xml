@@ -56,6 +56,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="26dp"
         android:gravity="bottom">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -63,8 +67,6 @@
                 android:id="@+id/ring_hangoff"
                 android:layout_width="66dp"
                 android:layout_height="66dp"
-                android:layout_marginRight="44dp"
-                android:layout_marginLeft="44dp"
                 android:src="@drawable/icon_hangup"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -88,8 +90,6 @@
                 android:id="@+id/ring_pickup"
                 android:layout_width="66dp"
                 android:layout_height="66dp"
-                android:layout_marginRight="44dp"
-                android:layout_marginLeft="44dp"
                 android:src="@drawable/icon_pickup"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -101,6 +101,9 @@
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"/>
         </RelativeLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
     </LinearLayout>
 </RelativeLayout>

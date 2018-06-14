@@ -3,7 +3,6 @@ package com.starrtc.demo.demo;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,18 +16,11 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.database.CoreDB;
 import com.starrtc.demo.demo.database.HistoryBean;
 import com.starrtc.demo.demo.database.MessageBean;
-import com.starrtc.demo.demo.im.c2c.C2CActivity;
-import com.starrtc.demo.demo.im.c2c.C2CListActivity;
-import com.starrtc.demo.demo.im.group.MessageGroupListActivity;
-import com.starrtc.demo.demo.voip.VoipListActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -194,7 +186,7 @@ public class MLOC {
             final String farId = data.getString("farId");// 对方ID
             String msg = data.getString("msg");// 提示消息
 
-            if(dialogs[0]==null){
+            if(dialogs[0]==null||dialogs[0].isShowing()==false){
                 dialogs[0] = new Dialog(context, R.style.dialog_notify);
                 dialogs[0].setContentView(R.layout.dialog_new_msg);
                 Window win = dialogs[0].getWindow();

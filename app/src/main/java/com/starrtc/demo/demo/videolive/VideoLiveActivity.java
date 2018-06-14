@@ -40,6 +40,7 @@ import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
@@ -576,6 +577,8 @@ public class VideoLiveActivity extends BaseActivity {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     isRuning = false;
+                    clickPlayer.setScalType(StarPlayerScaleType.DRAW_TYPE_CENTER);
+                    mainPlayer.setScalType(StarPlayerScaleType.DRAW_TYPE_CENTER);
                 }
 
                 @Override
@@ -609,7 +612,8 @@ public class VideoLiveActivity extends BaseActivity {
     }
 
     private void resetLayout1(){
-        switch (mPlayerList.size()){
+
+       switch (mPlayerList.size()){
             case 1:{
                 StarPlayer player = mPlayerList.get(0).getVideoPlayer();
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
@@ -619,7 +623,9 @@ public class VideoLiveActivity extends BaseActivity {
                 break;
             }
             case 2:
-            case 3:{
+            case 3:
+            case 4:
+                {
                 for(int i = 0;i<mPlayerList.size();i++){
                     if(i==0){
                         StarPlayer player = mPlayerList.get(i).getVideoPlayer();
@@ -629,81 +635,16 @@ public class VideoLiveActivity extends BaseActivity {
                         player.setX(0);
                     }else{
                         StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/2);
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
                         player.setLayoutParams(lp);
-                        player.setY((i-1)*borderH/2);
+                        player.setY((i-1)*borderH/3);
                         player.setX(borderW/3*2);
                     }
                 }
                 break;
             }
-            case 4:{
-                for(int i = 0;i<mPlayerList.size();i++){
-                    if(i==0){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH-borderW/3*3/2);
-                        player.setLayoutParams(lp);
-                        player.setY(0);
-                        player.setX(0);
-                    }else{
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderW/3*3/2);
-                        player.setLayoutParams(lp);
-                        player.setY(borderH-borderW/3*3/2);
-                        player.setX((i-1)*borderW/3);
-                    }
-                }
-                break;
-            }
-            case 5:{
-                for(int i = 0;i<mPlayerList.size();i++){
-                    if(i==0){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH/3*2);
-                        player.setLayoutParams(lp);
-                        player.setX(0);
-                        player.setY(0);
-                    }else if(i<3){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
-                        player.setLayoutParams(lp);
-                        player.setX((i-1)*borderW/3);
-                        player.setY(borderH/3*2);
-                    }else {
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/2);
-                        player.setLayoutParams(lp);
-                        player.setX(borderW/3*2);
-                        player.setY((i-3)*borderH/2);
-                    }
-                }
-                break;
-            }
-            case 6:{
-                for(int i = 0;i<mPlayerList.size();i++){
-                    if(i==0){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH/3*2);
-                        player.setLayoutParams(lp);
-                        player.setX(0);
-                        player.setY(0);
-                    }else if(i<3){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
-                        player.setLayoutParams(lp);
-                        player.setX((i-1)*borderW/3);
-                        player.setY(borderH/3*2);
-                    }else {
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
-                        player.setLayoutParams(lp);
-                        player.setX(borderW/3*2);
-                        player.setY((i-3)*borderH/3);
-                    }
-                }
-                break;
-
-            }
+            case 5:
+            case 6:
             case 7:{
                 for(int i = 0;i<mPlayerList.size();i++){
                     if(i == 0){
@@ -714,14 +655,14 @@ public class VideoLiveActivity extends BaseActivity {
                         StarPlayer player = mPlayerList.get(i).getVideoPlayer();
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
                         player.setLayoutParams(lp);
-                        player.setX((i-1)*borderW/3);
-                        player.setY(borderH-borderH/4);
+                        player.setX(borderW-borderW/3);
+                        player.setY((i-1)*borderH/4);
                     }else{
                         StarPlayer player = mPlayerList.get(i).getVideoPlayer();
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
                         player.setLayoutParams(lp);
-                        player.setX(borderW-borderW/3);
-                        player.setY((i-3)*borderH/4);
+                        player.setX((i-3)*borderW/3);
+                        player.setY(borderH-borderH/4);
                     }
                 }
                 break;
@@ -764,27 +705,25 @@ public class VideoLiveActivity extends BaseActivity {
                 });
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK:
-                //zjt 自动同意上麦
-                liveManager.agreeApplyToBroadcaster((String) eventObj);
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
-//                                .setTitle(eventObj+"申请上麦")
-//                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface arg0, int arg1) {
-//                                        liveManager.refuseApplyToBroadcaster((String) eventObj);
-//                                    }
-//                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface arg0, int arg1) {
-//                                        liveManager.agreeApplyToBroadcaster((String) eventObj);
-//                                    }
-//                                }
-//                        ).show();
-//                    }
-//                });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                                .setTitle(eventObj+"申请上麦")
+                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        liveManager.refuseApplyToBroadcaster((String) eventObj);
+                                    }
+                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        liveManager.agreeApplyToBroadcaster((String) eventObj);
+                                    }
+                                }
+                        ).show();
+                    }
+                });
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
                 runOnUiThread(new Runnable() {
@@ -829,35 +768,34 @@ public class VideoLiveActivity extends BaseActivity {
 //                        vCarBtn.setVisibility(View.VISIBLE);
                     }
                 });
-                isUploader = true;
-                liveManager.agreeInviteToBroadcaster((String) eventObj);
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
-//                                .setTitle(eventObj+"邀请您上麦")
-//                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface arg0, int arg1) {
-//                                        liveManager.refuseInviteToBroadcaster((String) eventObj);
-//                                    }
-//                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface arg0, int arg1) {
-//                                        runOnUiThread(new Runnable() {
-//                                            @Override
-//                                            public void run() {
-//                                                vMicBtn.setSelected(true);
-//                                                vCameraBtn.setVisibility(View.VISIBLE);
-//                                            }
-//                                        });
-//                                        isUploader = true;
-//                                        liveManager.agreeInviteToBroadcaster((String) eventObj);
-//                                    }
-//                                }
-//                        ).show();
-//                    }
-//                });
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(VideoLiveActivity.this).setCancelable(true)
+                                .setTitle(eventObj+"邀请您上麦")
+                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        liveManager.refuseInviteToBroadcaster((String) eventObj);
+                                    }
+                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                vMicBtn.setSelected(true);
+                                                vCameraBtn.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                        isUploader = true;
+                                        liveManager.agreeInviteToBroadcaster((String) eventObj);
+                                    }
+                                }
+                        ).show();
+                    }
+                });
                 break;
             case AEvent.AEVENT_LIVE_INVITE_LINK_RESULT:
                 XHConstants.XHLiveJoinResult result = (XHConstants.XHLiveJoinResult) eventObj;
