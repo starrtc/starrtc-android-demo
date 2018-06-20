@@ -44,6 +44,7 @@ import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHVoipManagerListener;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.socket.StarSocket;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class SplashActivity extends Activity implements IEventListener {
             MLOC.init(getApplicationContext());
             addListener();
             XHClient.getInstance().initSDK(this, new XHSDKConfig(MLOC.agentId),MLOC.userId);
+            //StarSocket.setServerUrl("aisee.f3322.org");
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
