@@ -11,9 +11,11 @@
 
 ![StarRTC_demo 安装包](android.png)
 
-联系我们
+Contact
 =====
 QQ ： 2162-498-688
+
+QQ群: 807-242-783
 
 邮箱：<a href="mailto:support@starRTC.com">support@starRTC.com</a>
 
