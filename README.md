@@ -7,7 +7,7 @@
 =====
 如果不想自己编译，可直接下载apk进行测试：
 
-[StarRTC_demo 安装包](https://docs.starrtc.com/download/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
+[StarRTC_demo 安装包](https://github.com/starrtc/android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
 
 ![StarRTC_demo 安装包](android.png)
 
