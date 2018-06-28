@@ -29,7 +29,7 @@
         android:id="@+id/us"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="www.StarRTC.com\n星盒科技(北京)有限公司\n手机:186-1294-6552     微信:starRTC"
+        android:text="www.StarRTC.com\n手机:186-1294-6552     微信:starRTC"
         android:gravity="center"
         android:layout_marginTop="20dp"
         android:textSize="12sp"
