@@ -1,5 +1,6 @@
 # android-demo
 
+starRTC demo for Android
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
@@ -22,8 +23,6 @@ IM测试时，除了app之间可以互发消息，app也可以和这个页面互
 Contact
 =====
 QQ ： 2162-498-688
-
-QQ群: 807-242-783
 
 邮箱：<a href="mailto:support@starRTC.com">support@starRTC.com</a>
 
