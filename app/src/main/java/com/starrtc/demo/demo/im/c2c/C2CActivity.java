@@ -144,7 +144,7 @@ public class C2CActivity extends Activity implements IEventListener {
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
-        StarLog.d("IM_C2C",aEventID+"||"+eventObj);
+        MLOC.d("IM_C2C",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_C2C_REV_MSG:
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
@@ -175,7 +175,7 @@ public class C2CActivity extends Activity implements IEventListener {
                 }
                 break;
             case AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS:
-                StarLog.d("IM_C2C","消息序号："+eventObj);
+                MLOC.d("IM_C2C","消息序号："+eventObj);
                 break;
         }
     }

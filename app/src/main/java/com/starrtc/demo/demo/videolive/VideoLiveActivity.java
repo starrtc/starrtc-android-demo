@@ -2,15 +2,14 @@ package com.starrtc.demo.demo.videolive;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,7 +31,6 @@ import com.starrtc.demo.demo.ui.CircularCoverView;
 import com.starrtc.demo.demo.videomeeting.ViewPosition;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.DensityUtils;
-import com.starrtc.demo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
@@ -84,6 +82,8 @@ public class VideoLiveActivity extends BaseActivity {
 
     private StarWhitePanel vPaintPlayer;
 
+    private Boolean isPortrait = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +93,13 @@ public class VideoLiveActivity extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_live);
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        if(dm.heightPixels>dm.widthPixels){
+            isPortrait = true;
+        }else{
+            isPortrait = false;
+        }
 
         createrId = getIntent().getStringExtra(CREATER_ID);
         liveName = getIntent().getStringExtra(LIVE_NAME);
@@ -481,7 +488,7 @@ public class VideoLiveActivity extends BaseActivity {
                 changeLayout(v);
             }
         });
-        resetLayout1();
+        resetLayout();
         player.setZOrderMediaOverlay(true);
 
         if(mPlayerList.size()==1){
@@ -603,7 +610,7 @@ public class VideoLiveActivity extends BaseActivity {
                 if (temp.getUserId().equals(removeUserId)) {
                     ViewPosition remove = mPlayerList.remove(i);
                     vPlayerView.removeView(remove.getVideoPlayer());
-                    resetLayout1();
+                    resetLayout();
                     liveManager.changeToBig(mPlayerList.get(0).getUserId());
                     break;
                 }
@@ -611,63 +618,123 @@ public class VideoLiveActivity extends BaseActivity {
         }
     }
 
-    private void resetLayout1(){
-
-       switch (mPlayerList.size()){
-            case 1:{
-                StarPlayer player = mPlayerList.get(0).getVideoPlayer();
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
-                player.setLayoutParams(lp);
-                player.setY(0);
-                player.setX(0);
-                break;
-            }
-            case 2:
-            case 3:
-            case 4:
+    private void resetLayout(){
+        if(isPortrait){
+            switch (mPlayerList.size()){
+                case 1:{
+                    StarPlayer player = mPlayerList.get(0).getVideoPlayer();
+                    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
+                    player.setLayoutParams(lp);
+                    player.setY(0);
+                    player.setX(0);
+                    break;
+                }
+                case 2:
+                case 3:
+                case 4:
                 {
-                for(int i = 0;i<mPlayerList.size();i++){
-                    if(i==0){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH);
-                        player.setLayoutParams(lp);
-                        player.setY(0);
-                        player.setX(0);
-                    }else{
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
-                        player.setLayoutParams(lp);
-                        player.setY((i-1)*borderH/3);
-                        player.setX(borderW/3*2);
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(i==0){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3*2,borderH);
+                            player.setLayoutParams(lp);
+                            player.setY(0);
+                            player.setX(0);
+                        }else{
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/3);
+                            player.setLayoutParams(lp);
+                            player.setY((i-1)*borderH/3);
+                            player.setX(borderW/3*2);
+                        }
                     }
+                    break;
                 }
-                break;
+                case 5:
+                case 6:
+                case 7:{
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(i == 0){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW-borderW/3,borderH-borderH/4);
+                            player.setLayoutParams(lp);
+                        }else if(i>0&&i<3){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
+                            player.setLayoutParams(lp);
+                            player.setX(borderW-borderW/3);
+                            player.setY((i-1)*borderH/4);
+                        }else{
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
+                            player.setLayoutParams(lp);
+                            player.setX((i-3)*borderW/3);
+                            player.setY(borderH-borderH/4);
+                        }
+                    }
+                    break;
+                }
             }
-            case 5:
-            case 6:
-            case 7:{
-                for(int i = 0;i<mPlayerList.size();i++){
-                    if(i == 0){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW-borderW/3,borderH-borderH/4);
-                        player.setLayoutParams(lp);
-                    }else if(i>0&&i<3){
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
-                        player.setLayoutParams(lp);
-                        player.setX(borderW-borderW/3);
-                        player.setY((i-1)*borderH/4);
-                    }else{
-                        StarPlayer player = mPlayerList.get(i).getVideoPlayer();
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/3,borderH/4);
-                        player.setLayoutParams(lp);
-                        player.setX((i-3)*borderW/3);
-                        player.setY(borderH-borderH/4);
-                    }
+        }else{
+            switch (mPlayerList.size()){
+                case 1:{
+                    StarPlayer player = mPlayerList.get(0).getVideoPlayer();
+                    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW,borderH);
+                    player.setLayoutParams(lp);
+                    player.setY(0);
+                    player.setX(0);
+                    break;
                 }
-                break;
+                case 2:
+                case 3:
+                case 4:
+                {
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(i==0){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/4*3,borderH);
+                            player.setLayoutParams(lp);
+                            player.setY(0);
+                            player.setX(0);
+                        }else{
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/4,borderH/3);
+                            player.setLayoutParams(lp);
+                            player.setY((i-1)*borderH/3);
+                            player.setX(borderW/4*3);
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                case 6:
+                case 7:{
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(i==0){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/4*2,borderH);
+                            player.setLayoutParams(lp);
+                            player.setY(0);
+                            player.setX(0);
+                        }else if(i>0&&i<3){
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/4,borderH/3);
+                            player.setLayoutParams(lp);
+                            player.setY((i-1)*borderH/3);
+                            player.setX(borderW/4*2);
+                        }else{
+                            StarPlayer player = mPlayerList.get(i).getVideoPlayer();
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(borderW/4,borderH/3);
+                            player.setLayoutParams(lp);
+                            player.setY((i-3)*borderH/3);
+                            player.setX(borderW/4*3);
+                        }
+                    }
+                    break;
+                }
             }
         }
+
 
     }
 

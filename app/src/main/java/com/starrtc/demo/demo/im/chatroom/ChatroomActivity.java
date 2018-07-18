@@ -248,7 +248,7 @@ public class ChatroomActivity extends BaseActivity {
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
-        StarLog.d("IM_CHATROOM",aEventID+"||"+eventObj);
+        MLOC.d("IM_CHATROOM",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_REV_MSG:
                 XHIMMessage revMsg = (XHIMMessage) eventObj;

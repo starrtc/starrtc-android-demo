@@ -12,6 +12,7 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.test.EchoTestActivity;
+import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.core.utils.StarLog;
@@ -33,6 +34,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
         findViewById(R.id.btn_test_speed).setOnClickListener(this);
         findViewById(R.id.btn_video_size).setOnClickListener(this);
+        findViewById(R.id.btn_video_rotation).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.opensl_switch).setOnClickListener(this);
@@ -46,6 +48,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
         findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
         ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+        ((TextView)findViewById(R.id.video_rotation_text)).setText("("+ StarRtcCore.defaultVideoRotation +")");
     }
     @Override
     public void onClick(View v) {
@@ -67,9 +70,32 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                                 selected = e;
                             }
                         }
-                        StarLog.d("Setting","Setting selected "+ selected.toString());
-                        StarRtcCore.setVideoSizeConfig(selected);
-                        ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+                        if(StarRtcCore.setVideoSizeConfig(selected)){
+                            MLOC.d("Setting","Setting selected "+ selected.toString());
+                            ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+                        }else{
+                            MLOC.showMsg(SettingActivity.this,"固定配置无法修改");
+                        }
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                break;
+            }
+            case R.id.btn_video_rotation:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(new String[]{"0", "90", "180", "270"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int selectRotation = i*90;
+                        XHClient.getInstance().setDefConfigCameraRotation(selectRotation);
+                        if(StarRtcCore.setVideoSizeConfig(StarRtcCore.cropTypeEnum)){
+                            MLOC.d("Setting","Setting rotation "+ i*90);
+                            ((TextView)findViewById(R.id.video_rotation_text)).setText("("+ selectRotation +")");
+                        }else{
+                            MLOC.showMsg(SettingActivity.this,"配置无法修改");
+                        }
                     }
                 });
                 builder.setCancelable(true);

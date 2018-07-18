@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -27,10 +27,12 @@ import com.starrtc.demo.demo.listener.XHChatManagerListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.demo.demo.listener.XHGroupManagerListener;
 import com.starrtc.demo.demo.listener.XHLoginManagerListener;
+import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHSDKConfig;
 import com.starrtc.demo.demo.listener.XHVoipManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.utils.StarLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,7 @@ public class SplashActivity extends Activity implements IEventListener {
         }else{
             MLOC.init(getApplicationContext());
             addListener();
+            //初始化
             XHClient.getInstance().initSDK(this, new XHSDKConfig(MLOC.agentId),MLOC.userId);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
@@ -83,7 +86,7 @@ public class SplashActivity extends Activity implements IEventListener {
                     requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
                             REQUEST_PHONE_PERMISSIONS);
                 }else{
-                    new android.support.v7.app.AlertDialog.Builder(this)
+                    new AlertDialog.Builder(this)
                             .setCancelable(true)
                             .setTitle("提示")
                             .setMessage("获取不到授权，APP将无法正常使用，请允许APP获取权限！")
@@ -113,7 +116,7 @@ public class SplashActivity extends Activity implements IEventListener {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,  final String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         checkPermission();
     }

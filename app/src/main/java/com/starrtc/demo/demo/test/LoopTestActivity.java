@@ -1,11 +1,9 @@
 package com.starrtc.demo.demo.test;
 
-import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -28,11 +26,17 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
     private TextView vMediaConfigText;
     private int encodeLevel = 1;
     private float beautyLevel = 0f;
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loop_test);
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        if(dm.heightPixels>dm.widthPixels){
+            setContentView(R.layout.activity_loop_p);
+        }else{
+            setContentView(R.layout.activity_loop_l);
+        }
+
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
