@@ -306,7 +306,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         showTalkingView();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -341,18 +340,22 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     MLOC.showMsg(this,"需要打开硬编模式");
                     return;
                 }
-                if(mMediaProjectionManager==null){
-                    mMediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-                }
-                if (mRecorder != null) {
-//                    ((TextView)findViewById(R.id.screen_btn)).setText("屏");
-                    findViewById(R.id.screen_btn).setSelected(false);
-                    mRecorder.quit();
-                    mRecorder = null;
-                    StarRtcCore.getInstance().voipShareCamera();
-                } else {
-                    Intent captureIntent = mMediaProjectionManager.createScreenCaptureIntent();
-                    startActivityForResult(captureIntent, REQUEST_CODE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if(mMediaProjectionManager==null){
+                        mMediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+                    }
+                    if (mRecorder != null) {
+    //                    ((TextView)findViewById(R.id.screen_btn)).setText("屏");
+                        findViewById(R.id.screen_btn).setSelected(false);
+                        mRecorder.quit();
+                        mRecorder = null;
+                        StarRtcCore.getInstance().voipShareCamera();
+                    } else {
+                        Intent captureIntent = mMediaProjectionManager.createScreenCaptureIntent();
+                        startActivityForResult(captureIntent, REQUEST_CODE);
+                    }
+                }else{
+                    MLOC.showMsg(this,"系统版本过低，无法使用录屏功能");
                 }
                 break;
         }

@@ -42,7 +42,7 @@ public class IMDemoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 //                startActivity(new Intent(IMDemoActivity.this, MessageGroupListActivity.class));
-                MLOC.showMsg(IMDemoActivity.this,"Coming soon...");
+                MLOC.showMsg(IMDemoActivity.this,"群服务未启动");
             }
         });
     }

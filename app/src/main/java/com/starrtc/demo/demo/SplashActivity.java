@@ -60,6 +60,7 @@ public class SplashActivity extends Activity implements IEventListener {
             MLOC.init(getApplicationContext());
             addListener();
             //初始化
+//            XHClient.getInstance().setLogLevel(0,0);
             XHClient.getInstance().initSDK(this, new XHSDKConfig(MLOC.agentId),MLOC.userId);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());

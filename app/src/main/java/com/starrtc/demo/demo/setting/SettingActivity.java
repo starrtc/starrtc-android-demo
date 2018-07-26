@@ -37,7 +37,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_video_rotation).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
-        findViewById(R.id.opensl_switch).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
     }
     @Override
@@ -45,7 +44,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         super.onResume();
 
         findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
-        findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
         findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
         ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
         ((TextView)findViewById(R.id.video_rotation_text)).setText("("+ StarRtcCore.defaultVideoRotation +")");
@@ -113,10 +111,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 }else{
                     MLOC.showMsg(SettingActivity.this,"设置失败");
                 }
-                break;
-            case R.id.opensl_switch:
-                StarRtcCore.getInstance().setOpenSLESEnable(StarRtcCore.openSLESEnable ?false:true);
-                findViewById(R.id.opensl_switch).setSelected(StarRtcCore.openSLESEnable);
                 break;
             case R.id.btn_about:
                 startActivity(new Intent(this,AboutActivity.class));
