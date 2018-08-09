@@ -34,6 +34,8 @@ public class MLOC {
     public static String authKey;
     public static String userId;
 
+    public static Boolean hasLogout = false;
+
     public static boolean hasNewC2CMsg = false;
     public static boolean hasNewGroupMsg = false;
     public static boolean hasNewVoipMsg = false;

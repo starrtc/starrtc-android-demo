@@ -1,6 +1,5 @@
 package com.starrtc.demo.demo.setting;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import com.starrtc.demo.demo.test.EchoTestActivity;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.api.XHConstants;
-import com.starrtc.starrtcsdk.core.utils.StarLog;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
@@ -38,6 +36,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
+        findViewById(R.id.btn_logout).setOnClickListener(this);
     }
     @Override
     public void onResume(){
@@ -114,6 +113,11 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_about:
                 startActivity(new Intent(this,AboutActivity.class));
+                break;
+            case R.id.btn_logout:
+                XHClient.getInstance().getLoginManager().logout();
+                MLOC.hasLogout = true;
+                finish();
                 break;
         }
     }

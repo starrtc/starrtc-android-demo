@@ -31,14 +31,13 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
 
         ((TextView)findViewById(R.id.userinfo_id)).setText(MLOC.userId);
-        findViewById(R.id.btn_video_size).setOnClickListener(this);
+        findViewById(R.id.btn_main_im).setOnClickListener(this);
         findViewById(R.id.btn_main_voip).setOnClickListener(this);
         findViewById(R.id.btn_main_meeting).setOnClickListener(this);
         findViewById(R.id.btn_main_live).setOnClickListener(this);
         findViewById(R.id.btn_main_loop).setOnClickListener(this);
         findViewById(R.id.btn_main_logout).setOnClickListener(this);
-        findViewById(R.id.btn_test_speed).setOnClickListener(this);
-
+        findViewById(R.id.btn_main_setting).setOnClickListener(this);
     }
 
     @Override
@@ -49,6 +48,10 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onResume(){
         super.onResume();
+        if(MLOC.hasLogout){
+            finish();
+            return;
+        }
         if(MLOC.userId==null){
             startActivity(new Intent(StarAvDemoActivity.this,SplashActivity.class));
             finish();
@@ -106,11 +109,11 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
                 removeListener();
                 finish();
                 break;
-            case R.id.btn_test_speed:
+            case R.id.btn_main_setting:
                 Intent intent6 = new Intent(this, SettingActivity.class);
                 startActivity(intent6);
                 break;
-            case R.id.btn_video_size:
+            case R.id.btn_main_im:
                 Intent intent7= new Intent(this, IMDemoActivity.class);
                 startActivity(intent7);
                 break;

@@ -68,7 +68,7 @@
             android:layout_marginRight="4dp"
             >
             <RelativeLayout
-                android:id="@+id/btn_video_size"
+                android:id="@+id/btn_main_im"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="134"
@@ -260,7 +260,7 @@
                     />
             </RelativeLayout>
             <RelativeLayout
-                android:id="@+id/btn_test_speed"
+                android:id="@+id/btn_main_setting"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="123"
