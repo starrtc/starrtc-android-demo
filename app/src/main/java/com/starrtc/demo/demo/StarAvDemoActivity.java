@@ -50,6 +50,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         if(MLOC.hasLogout){
             finish();
+			MLOC.hasLogout = false;
             return;
         }
         if(MLOC.userId==null){
