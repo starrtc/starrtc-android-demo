@@ -73,6 +73,7 @@ public class VideoMeetingActivity extends BaseActivity{
         }
 
         meetingManager = XHClient.getInstance().getMeetingManager(this);
+        meetingManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         meetingManager.addListener(new XHMeetingManagerListener());
 
         addListener();
@@ -100,7 +101,7 @@ public class VideoMeetingActivity extends BaseActivity{
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                meetingManager.switchCamera(VideoMeetingActivity.this);
+                meetingManager.switchCamera();
             }
         });
 

@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.im.IMDemoActivity;
+import com.starrtc.demo.demo.service.FloatWindowsService;
 import com.starrtc.demo.demo.setting.SettingActivity;
 import com.starrtc.demo.demo.test.LoopTestActivity;
 import com.starrtc.demo.demo.videolive.VideoLiveListActivity;
@@ -50,7 +51,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         if(MLOC.hasLogout){
             finish();
-			MLOC.hasLogout = false;
+            MLOC.hasLogout = false;
             return;
         }
         if(MLOC.userId==null){
@@ -107,6 +108,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.btn_main_logout:
                 XHClient.getInstance().getLoginManager().logout();
+                stopService(new Intent(StarAvDemoActivity.this, FloatWindowsService.class));
                 removeListener();
                 finish();
                 break;

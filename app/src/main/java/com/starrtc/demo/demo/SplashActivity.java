@@ -109,11 +109,33 @@ public class SplashActivity extends Activity implements IEventListener {
             }else{
                 startAnimation();
                 InterfaceUrls.demoLogin(MLOC.userId);
+//                loginPublicTest();
             }
         }else{
             startAnimation();
             InterfaceUrls.demoLogin(MLOC.userId);
+//            loginPublicTest();
         }
+    }
+
+    private void loginPublicTest(){
+        XHClient.getInstance().getLoginManager().loginPublic( new IXHCallback() {
+            @Override
+            public void success(Object data) {
+                isLogin = true;
+            }
+
+            @Override
+            public void failed(final String errMsg) {
+                MLOC.d("",errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(SplashActivity.this,errMsg);
+                    }
+                });
+            }
+        });
     }
 
     @Override

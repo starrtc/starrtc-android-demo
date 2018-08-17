@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
@@ -24,8 +26,6 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
     private TextView vVideoSizeText;
     private TextView vVideoFpsText;
     private TextView vMediaConfigText;
-    private int encodeLevel = 1;
-    private float beautyLevel = 0f;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,42 +58,9 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StarRtcCore.getInstance().switchCamera(LoopTestActivity.this);
+                StarRtcCore.getInstance().switchCamera();
             }
         });
-        findViewById(R.id.encode_lvl).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(encodeLevel<3){
-                    encodeLevel++;
-                }else{
-                    encodeLevel = 1;
-                }
-                StarRtcCore.getInstance().encodeLevelDown(encodeLevel);
-                ((TextView)findViewById(R.id.encode_lvl)).setText("lv_"+encodeLevel);
-            }
-        });
-        ((TextView)findViewById(R.id.encode_lvl)).setText("lv_"+encodeLevel);
-
-        findViewById(R.id.beauty_lvl).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(beautyLevel<1){
-                    beautyLevel+= 0.1f;
-                }else{
-                    beautyLevel = 0f;
-                }
-                if(beautyLevel==0f){
-                    StarRtcCore.getInstance().setBeautyOff();
-                }else{
-                    StarRtcCore.getInstance().setBeautyLevel(beautyLevel);
-                    StarRtcCore.getInstance().setBrightLevel(beautyLevel);
-                    StarRtcCore.getInstance().setBeautyOn();
-                }
-                ((TextView)findViewById(R.id.beauty_lvl)).setText("美"+beautyLevel);
-            }
-        });
-        ((TextView)findViewById(R.id.beauty_lvl)).setText("美"+beautyLevel);
 
         vVideoSizeText = (TextView) findViewById(R.id.video_size);
         vVideoFpsText = (TextView) findViewById(R.id.video_fps);
@@ -149,28 +116,42 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
 
         targetPlayer.setVideoSize(StarRtcCore.bigVideoW, StarRtcCore.bigVideoH);
         selfPlayer.setVideoSize(StarRtcCore.bigVideoW, StarRtcCore.bigVideoH);
+
         if(StarRtcCore.smallVideoH ==0|| StarRtcCore.smallVideoW ==0){
             selfSmallPlayer.setVisibility(View.GONE);
             targetSmallPlayer.setVisibility(View.GONE);
-
             StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
-                    selfPlayer,2);
-
+                    selfPlayer,2, XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         }else{
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) selfSmallPlayer.getLayoutParams();
-            lp.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
-            selfSmallPlayer.setLayoutParams(lp);
-            selfSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
-            RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) targetSmallPlayer.getLayoutParams();
-            lp2.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
-            targetSmallPlayer.setLayoutParams(lp2);
-            targetSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
+            if(dm.heightPixels>dm.widthPixels){
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) selfSmallPlayer.getLayoutParams();
+                lp.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
+                selfSmallPlayer.setLayoutParams(lp);
+                selfSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
+
+                RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) targetSmallPlayer.getLayoutParams();
+                lp2.height = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW*lp.width);
+                targetSmallPlayer.setLayoutParams(lp2);
+                targetSmallPlayer.setVideoSize(StarRtcCore.smallVideoW, StarRtcCore.smallVideoH);
+            }else{
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) selfSmallPlayer.getLayoutParams();
+                lp.width = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW *lp.height);
+                selfSmallPlayer.setLayoutParams(lp);
+                selfSmallPlayer.setVideoSize(StarRtcCore.smallVideoH, StarRtcCore.smallVideoW);
+
+                RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) targetSmallPlayer.getLayoutParams();
+                lp2.width = (int)((float) StarRtcCore.smallVideoH/(float) StarRtcCore.smallVideoW *lp2.height);
+                targetSmallPlayer.setLayoutParams(lp2);
+                targetSmallPlayer.setVideoSize(StarRtcCore.smallVideoH, StarRtcCore.smallVideoW);
+            }
+
             StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
                     targetSmallPlayer,1,
                     selfPlayer,2,
-                    selfSmallPlayer,3);
+                    selfSmallPlayer,3,
+                    XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         }
 
     }

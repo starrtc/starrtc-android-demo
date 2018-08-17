@@ -123,6 +123,7 @@ public class VideoLiveActivity extends BaseActivity {
         }
 
         liveManager = XHClient.getInstance().getLiveManager(this);
+        liveManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         liveManager.addListener(new XHLiveManagerListener());
 
 
@@ -236,7 +237,7 @@ public class VideoLiveActivity extends BaseActivity {
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StarRtcCore.getInstance().switchCamera(VideoLiveActivity.this);
+                StarRtcCore.getInstance().switchCamera();
             }
         });
 

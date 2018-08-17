@@ -27,6 +27,7 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
@@ -59,6 +60,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
+        voipManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");
@@ -68,7 +70,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         selfPlayer = (StarPlayer) findViewById(R.id.voip_surface_self);
         selfPlayer.setZOrderMediaOverlay(true);
         timer = (Chronometer) findViewById(R.id.timer);
-
         targetPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +90,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                voipManager.switchCamera(VoipActivity.this);
+                voipManager.switchCamera();
             }
         });
         findViewById(R.id.screen_btn).setOnClickListener(this);

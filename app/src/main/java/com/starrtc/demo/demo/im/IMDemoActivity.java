@@ -41,8 +41,7 @@ public class IMDemoActivity extends BaseActivity {
         findViewById(R.id.group_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(IMDemoActivity.this, MessageGroupListActivity.class));
-                MLOC.showMsg(IMDemoActivity.this,"群服务未启动");
+                startActivity(new Intent(IMDemoActivity.this, MessageGroupListActivity.class));
             }
         });
     }

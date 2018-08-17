@@ -3,20 +3,28 @@ package com.starrtc.demo.demo.setting;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.demo.service.FloatWindowsService;
 import com.starrtc.demo.demo.test.EchoTestActivity;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.api.XHConstants;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
-
+    /***
+     * 请求悬浮窗权限
+     * */
+    public static final int REQUEST_WINDOW_GRANT = 201;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,8 +40,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
         findViewById(R.id.btn_test_speed).setOnClickListener(this);
         findViewById(R.id.btn_video_size).setOnClickListener(this);
-        findViewById(R.id.btn_video_rotation).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
+        findViewById(R.id.log_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_logout).setOnClickListener(this);
@@ -43,10 +51,25 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         super.onResume();
 
         findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
+        findViewById(R.id.log_switch).setSelected(FloatWindowsService.runing);
         findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
         ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
-        ((TextView)findViewById(R.id.video_rotation_text)).setText("("+ StarRtcCore.defaultVideoRotation +")");
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_WINDOW_GRANT:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(SettingActivity.this)) {
+                        Toast.makeText(SettingActivity.this, "没有打开悬浮权限~，", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+    }
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -80,29 +103,30 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 dialog.show();
                 break;
             }
-            case R.id.btn_video_rotation:{
-                AlertDialog.Builder builder=new AlertDialog.Builder(this);
-                builder.setItems(new String[]{"0", "90", "180", "270"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        int selectRotation = i*90;
-                        XHClient.getInstance().setDefConfigCameraRotation(selectRotation);
-                        if(StarRtcCore.setVideoSizeConfig(StarRtcCore.cropTypeEnum)){
-                            MLOC.d("Setting","Setting rotation "+ i*90);
-                            ((TextView)findViewById(R.id.video_rotation_text)).setText("("+ selectRotation +")");
-                        }else{
-                            MLOC.showMsg(SettingActivity.this,"配置无法修改");
-                        }
-                    }
-                });
-                builder.setCancelable(true);
-                AlertDialog dialog=builder.create();
-                dialog.show();
-                break;
-            }
+
             case R.id.opengl_switch:
                 StarRtcCore.getInstance().setOpenGLESEnable(StarRtcCore.openGLESEnable ?false:true);
                 findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
+                break;
+            case R.id.log_switch:
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    // 动态申请悬浮窗权限
+                    if (!Settings.canDrawOverlays(SettingActivity.this)) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, REQUEST_WINDOW_GRANT);
+                        return;
+                    }
+                }
+
+                if(FloatWindowsService.runing){
+                    findViewById(R.id.log_switch).setSelected(false);
+                    stopService(new Intent(SettingActivity.this, FloatWindowsService.class));
+                }else{
+                    findViewById(R.id.log_switch).setSelected(true);
+                    startService(new Intent(SettingActivity.this, FloatWindowsService.class));
+                }
                 break;
             case R.id.hard_encode_switch:
                 if(StarRtcCore.setHardEncodeEnable(StarRtcCore.hardEncode?false:true)){
@@ -116,6 +140,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_logout:
                 XHClient.getInstance().getLoginManager().logout();
+                stopService(new Intent(SettingActivity.this, FloatWindowsService.class));
                 MLOC.hasLogout = true;
                 finish();
                 break;

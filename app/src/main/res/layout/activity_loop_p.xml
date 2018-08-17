@@ -64,19 +64,6 @@
             android:background="@drawable/btn_overturn"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"/>
-        <TextView
-            android:id="@+id/encode_lvl"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="60dp"
-            android:textColor="#ffffff"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:background="@drawable/icon_bg"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"/>
         <ImageView
             android:id="@+id/info_btn"
             android:layout_width="40dp"
@@ -86,25 +73,12 @@
             android:background="@drawable/icon_info"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"/>
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/beauty_lvl"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="60dp"
-            android:textColor="#ffffff"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:background="@drawable/icon_bg"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"/>
         <LinearLayout
             android:id="@+id/info_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="100dp"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
             android:visibility="invisible">
             <TextView
@@ -117,7 +91,7 @@
                 android:paddingLeft="5dp"
                 android:background="#88000000"/>
             <TextView
-                android:id="@+id/video_fps"
+                android:id="@+id/media_config"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"
@@ -126,7 +100,7 @@
                 android:paddingLeft="5dp"
                 android:background="#88000000"/>
             <TextView
-                android:id="@+id/media_config"
+                android:id="@+id/video_fps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"

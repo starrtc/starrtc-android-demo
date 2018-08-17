@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -31,7 +32,7 @@
 
         <!-- starAvSdk -->
         <!-- 【必须】消息收发service -->
-        <service
+<!--        <service
             android:name="com.starrtc.starrtcsdk.core.service.StarService"
             android:exported="true">
             <intent-filter>
@@ -44,9 +45,13 @@
             <intent-filter>
                 <action android:name="cn.starav.staravsdk.service.StarAssistService" />
             </intent-filter>
-        </service>
+        </service>-->
 
         <!-- starAvSdk -->
+        <service
+            android:name=".demo.service.FloatWindowsService"
+            android:exported="false">
+        </service>-->
         <activity
             android:name=".demo.voip.VoipListActivity"
             android:screenOrientation="portrait" />
@@ -64,7 +69,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".demo.videomeeting.VideoMeetingActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".demo.videomeeting.VideoMeetingListActivity"
             android:screenOrientation="portrait" />
@@ -76,7 +81,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".demo.test.LoopTestActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".demo.setting.SettingActivity"
             android:screenOrientation="portrait" />

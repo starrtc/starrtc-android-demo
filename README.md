@@ -29,3 +29,7 @@ QQ ： 2162-498-688
 手机: 186-1294-6552
 
 微信：starRTC
+
+更新记录
+===
+https://github.com/starrtc/android-demo/wiki/Changelog

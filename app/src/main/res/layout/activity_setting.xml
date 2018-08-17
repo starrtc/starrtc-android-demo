@@ -121,44 +121,6 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
-
-            <LinearLayout
-                android:id="@+id/btn_video_rotation"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:gravity="center_vertical"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:text="画面旋转角度"/>
-
-                <TextView
-                    android:id="@+id/video_rotation_text"
-                    android:layout_width="299dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="#cccccc"
-                    android:textSize="12sp"
-                    android:gravity="right"/>
-                <ImageView
-                    android:layout_width="6dp"
-                    android:layout_height="10dp"
-                    android:src="@drawable/icon_right"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:background="#CCCCCC"/>
-
             <LinearLayout
                 android:id="@+id/btn_opengl"
                 android:layout_width="match_parent"
@@ -179,6 +141,38 @@
                     android:layout_weight="1"/>
                 <ImageView
                     android:id="@+id/opengl_switch"
+                    android:layout_width="48dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/btn_style_switch_orange"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
+                android:id="@+id/btn_logtxt"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="日志浮窗"/>
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/log_switch"
                     android:layout_width="48dp"
                     android:layout_height="25dp"
                     android:src="@drawable/btn_style_switch_orange"
