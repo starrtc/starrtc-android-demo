@@ -4,7 +4,7 @@ starRTC demo for Android
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
-下载
+APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
 
@@ -19,6 +19,11 @@ IM测试时，除了app之间可以互发消息，app也可以和这个页面互
 一对一视频等功能也可以和这个页面测试：
 
 [H5测试](https://www.starrtc.com/demo/h5/)
+
+SDK下载
+===
+
+https://github.com/starrtc/android-sdk
 
 Contact
 =====
