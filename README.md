@@ -7,7 +7,7 @@ starRTC demo for Android
 互动直播
 ==
 ![live](live.jpg)
-视频会议
+多人会议
 ==
 ![meeting](meeting.png)
 
