@@ -1,12 +1,11 @@
-# android-demo
-
-starRTC demo for Android
+# starRTC demo for Android
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
 互动直播
 ==
 ![live](live.jpg)
+
 多人会议
 ==
 ![meeting](meeting.png)
