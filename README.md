@@ -31,6 +31,10 @@ SDK下载
 
 https://github.com/starrtc/android-sdk
 
+更多示例
+==
+测试小车，人脸识别，在线教育等请参见：https://docs.starrtc.com/download/
+
 Contact
 =====
 QQ ： 2162498688
