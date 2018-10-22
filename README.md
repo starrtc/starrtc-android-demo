@@ -44,7 +44,7 @@ https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
 
 https://github.com/starrtc/android-demo/raw/master/arm_hdmi.jpg
 
-https://github.com/starrtc/android-demo/raw/master/arm_hdmi_screen .jpg
+https://github.com/starrtc/android-demo/raw/master/arm_hdmi_screen.jpg
 
 电视盒子
 ==
