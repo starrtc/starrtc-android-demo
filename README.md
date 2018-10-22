@@ -13,9 +13,9 @@
 在线教育
 ==
 
-![edu_pdf](edu_pdf.png)
+![edu_pdf](edu_pdf.jpg)
 
-![edu_whiteboard](edu_whiteboard.png)
+![edu_whiteboard](edu_whiteboard.jpg)
 
 P2P直连
 ==
