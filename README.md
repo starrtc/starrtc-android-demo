@@ -10,6 +10,11 @@
 ==
 ![meeting](meeting.png)
 
+在线教育
+==
+https://github.com/starrtc/android-demo/raw/master/edu_pdf.jpg
+
+https://github.com/starrtc/android-demo/raw/master/edu_whiteboard.jpg
 APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
