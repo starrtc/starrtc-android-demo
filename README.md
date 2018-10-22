@@ -2,16 +2,17 @@
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
-互动直播
+互动连麦直播
 ==
 ![live](live.jpg)
 
-多人会议
+多人视频会议
 ==
 ![meeting](meeting.png)
 
 在线教育
 ==
+pdf文档上传标记直播，白板
 
 ![edu_pdf](edu_pdf.jpg)
 
@@ -19,6 +20,7 @@
 
 P2P直连
 ==
+不经过服务器直连：
 
 ![p2p](p2p.jpg)
 
