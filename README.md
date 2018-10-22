@@ -18,6 +18,11 @@ pdf文档上传标记直播，白板
 
 ![edu_whiteboard](edu_whiteboard.jpg)
 
+IM演示
+==
+轻量级IM，安卓,ios和web互通，支持一对一聊天，群聊，聊天室，公有云免费！
+
+![im](im.jpg)
 P2P直连
 ==
 不经过服务器直连：
