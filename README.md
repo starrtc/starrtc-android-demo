@@ -16,6 +16,14 @@ https://github.com/starrtc/android-demo/raw/master/edu_pdf.jpg
 
 https://github.com/starrtc/android-demo/raw/master/edu_whiteboard.jpg
 
+P2P直连
+==
+https://github.com/starrtc/android-demo/raw/master/p2p.jpg
+
+
+https://github.com/starrtc/android-demo/raw/master/p2p_calling.jpg
+
+
 APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
