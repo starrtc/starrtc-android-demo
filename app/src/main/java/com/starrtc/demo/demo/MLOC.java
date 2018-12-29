@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -13,9 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.starrtc.demo.R;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.database.MessageBean;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.database.MessageBean;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,9 +32,25 @@ import java.util.TimerTask;
 
 public class MLOC {
     public static Context appContext;
-    public static String agentId = "BjR6QV3vUJ4d";
-    public static String authKey;
-    public static String userId;
+    public static String agentId = "starrtc181228";
+//    public static String agentId = "BjR6QV3vUJ4d";
+    public static String authKey = "";
+    public static String userId = "";
+
+    public static String STAR_LOGIN_URL = "ips2.starrtc.com";
+    public static String IM_SCHEDULE_URL = "ips2.starrtc.com";
+    public static String LIVE_SRC_SCHEDULE_URL = "ips2.starrtc.com";
+    public static String LIVE_VDN_SCHEDULE_URL = "ips2.starrtc.com";
+    public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com";
+    public static String VOIP_SERVER_URL = "voip2.starrtc.com";
+
+//    public static String STAR_LOGIN_URL             = "192.168.0.1";
+//    public static String IM_SCHEDULE_URL            = "192.168.0.1";
+//    public static String LIVE_SRC_SCHEDULE_URL      = "192.168.0.1";
+//    public static String LIVE_VDN_SCHEDULE_URL      = "192.168.0.1";
+//    public static String CHAT_ROOM_SCHEDULE_URL     = "192.168.0.1";
+//    public static String VOIP_SERVER_URL            = "192.168.0.1";
+
 
     public static Boolean hasLogout = false;
 
@@ -41,15 +59,36 @@ public class MLOC {
     public static boolean hasNewVoipMsg = false;
     public static boolean canPickupVoip = true;
 
+
     private static CoreDB coreDB;
 
     public static void init(Context context){
         appContext = context;
         coreDB = new CoreDB();
+        userId = loadSharedData(context,"userId",userId);
+        agentId = loadSharedData(context,"agentId",agentId);
+        InterfaceUrls.setBaseUrl(loadSharedData(context,"workServer","https://api.starrtc.com/demo20181228"));
+        STAR_LOGIN_URL = loadSharedData(context,"STAR_LOGIN_URL",STAR_LOGIN_URL);
+        IM_SCHEDULE_URL = loadSharedData(context,"IM_SCHEDULE_URL",IM_SCHEDULE_URL);
+        LIVE_SRC_SCHEDULE_URL = loadSharedData(context,"LIVE_SRC_SCHEDULE_URL",LIVE_SRC_SCHEDULE_URL);
+        LIVE_VDN_SCHEDULE_URL = loadSharedData(context,"LIVE_VDN_SCHEDULE_URL",LIVE_VDN_SCHEDULE_URL);
+        CHAT_ROOM_SCHEDULE_URL = loadSharedData(context,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
+        VOIP_SERVER_URL = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
+    }
+
+    private static Boolean debug = true;
+    public static void setDebug(Boolean b){
+        debug = b;
     }
 
     public static void d(String tag,String msg){
-        Log.d("starSDK_demo_"+tag,msg);
+        if(debug){
+            Log.d("starSDK_demo_"+tag,msg);
+        }
+    }
+
+    public static void e(String tag,String msg){
+        Log.e("starSDK_demo_"+tag,msg);
     }
 
     private static Toast mToast;
@@ -80,7 +119,6 @@ public class MLOC {
             e.printStackTrace();
         }
     }
-
 
     public static List<HistoryBean> getHistoryList(String type){
         if(coreDB!=null){
@@ -120,6 +158,55 @@ public class MLOC {
     public static String loadSharedData(Context context,String key){
         SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
         return sp.getString(key,"");
+    }
+
+    public static String loadSharedData(Context context,String key,String defValue){
+        SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
+        return sp.getString(key,defValue);
+    }
+
+    public static void saveWorkServer(String host){
+        InterfaceUrls.BASE_URL = host;
+        MLOC.saveSharedData(appContext,"workServer",InterfaceUrls.BASE_URL);
+    }
+
+    public static void saveUserId(String id){
+        MLOC.userId = id;
+        MLOC.saveSharedData(appContext,"userId",MLOC.userId);
+    }
+    public static void saveAgentId(String id){
+        MLOC.agentId = id;
+        saveSharedData(appContext,"agentId",id);
+    }
+
+    public static void saveLoginServerUrl(String loginServerUrl){
+        MLOC.STAR_LOGIN_URL = loginServerUrl;
+        saveSharedData(appContext,"STAR_LOGIN_URL",STAR_LOGIN_URL);
+    }
+
+    public static void saveIMSchduleUrl(String imSchduleUrl){
+        MLOC.IM_SCHEDULE_URL = imSchduleUrl;
+        saveSharedData(appContext,"IM_SCHEDULE_URL",IM_SCHEDULE_URL);
+    }
+
+    public static void saveSrcSchduleUrl(String srcSchduleUrl){
+        MLOC.LIVE_SRC_SCHEDULE_URL = srcSchduleUrl;
+        saveSharedData(appContext,"LIVE_SRC_SCHEDULE_URL",LIVE_SRC_SCHEDULE_URL);
+    }
+
+    public static void saveVdnSchduleUrl(String vdnSchduleUrl){
+        MLOC.LIVE_VDN_SCHEDULE_URL = vdnSchduleUrl;
+        saveSharedData(appContext,"LIVE_VDN_SCHEDULE_URL",LIVE_VDN_SCHEDULE_URL);
+    }
+
+    public static void saveChatroomSchduleUrl(String chatroomSchduleUrl){
+        MLOC.CHAT_ROOM_SCHEDULE_URL = chatroomSchduleUrl;
+        saveSharedData(appContext,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
+    }
+
+    public static void saveVoipServerUrl(String voipServerUrl){
+        MLOC.VOIP_SERVER_URL = voipServerUrl;
+        saveSharedData(appContext,"VOIP_SERVER_URL",VOIP_SERVER_URL);
     }
 
     public static void saveC2CUserId(Context context,String uid){
@@ -177,7 +264,6 @@ public class MLOC {
     public static void cleanVoipUserId(Context context){
         MLOC.saveSharedData(context,"voipHistory","");
     }
-
 
     static Dialog[] dialogs = new Dialog[1];
     static Timer dialogTimer ;
@@ -246,6 +332,30 @@ public class MLOC {
 
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static int[] mHeadIconIds ;
+    public static int getHeadImage(Context context,String userID){
+        if(mHeadIconIds==null){
+            TypedArray ar = context.getResources().obtainTypedArray(R.array.head_images);
+            int len = ar.length();
+            mHeadIconIds = new int[len];
+            for (int i = 0; i < len; i++) {
+                mHeadIconIds[i] = ar.getResourceId(i, 0);
+            }
+            ar.recycle();
+        }
+
+        if(userID.isEmpty()){
+            return mHeadIconIds[70];
+        }else{
+            int intId = 0;
+            char[] chars = userID.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                intId+=(int)chars[i];
+            }
+            return mHeadIconIds[intId%70];
         }
     }
 

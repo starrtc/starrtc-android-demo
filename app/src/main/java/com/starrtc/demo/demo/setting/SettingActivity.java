@@ -1,22 +1,29 @@
 package com.starrtc.demo.demo.setting;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.demo.p2p.VoipP2PDemoActivity;
 import com.starrtc.demo.demo.service.FloatWindowsService;
-import com.starrtc.demo.demo.test.EchoTestActivity;
+import com.starrtc.demo.demo.test.LoopTestActivity;
 import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.api.XHConstants;
 
@@ -38,9 +45,18 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         });
         ((TextView)findViewById(R.id.title_text)).setText("设置");
 
-        findViewById(R.id.btn_test_speed).setOnClickListener(this);
+        findViewById(R.id.btn_server_set).setOnClickListener(this);
+        findViewById(R.id.btn_test_loop).setOnClickListener(this);
+        findViewById(R.id.btn_test_p2p).setOnClickListener(this);
         findViewById(R.id.btn_video_size).setOnClickListener(this);
+        findViewById(R.id.btn_video_config_big).setOnClickListener(this);
+        findViewById(R.id.btn_video_config_small).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
+        findViewById(R.id.opensl_switch).setOnClickListener(this);
+        findViewById(R.id.dy_bt_fp_switch).setOnClickListener(this);
+        findViewById(R.id.voip_p2p_switch).setOnClickListener(this);
+        findViewById(R.id.audio_process_switch).setOnClickListener(this);
+        findViewById(R.id.audio_process_qulity_switch).setOnClickListener(this);
         findViewById(R.id.log_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
@@ -49,11 +65,23 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onResume(){
         super.onResume();
-
-        findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
+        if(MLOC.hasLogout){
+            finish();
+            MLOC.hasLogout = true;
+            return;
+        }
+        findViewById(R.id.opengl_switch).setSelected(XHCustomConfig.getInstance().getOpenGLESEnable());
         findViewById(R.id.log_switch).setSelected(FloatWindowsService.runing);
-        findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
-        ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+        findViewById(R.id.hard_encode_switch).setSelected(XHCustomConfig.getInstance().getHardwareEnable());
+        ((TextView)findViewById(R.id.video_size_text)).setText("("+ XHCustomConfig.getInstance().getVideoSizeName() +")");
+        findViewById(R.id.opensl_switch).setSelected(XHCustomConfig.getInstance().getOpenSLESEnable());
+        findViewById(R.id.dy_bt_fp_switch).setSelected(XHCustomConfig.getInstance().getDynamicBitrateAndFpsEnable());
+        findViewById(R.id.voip_p2p_switch).setSelected(XHCustomConfig.getInstance().getVoipP2PEnable());
+        findViewById(R.id.audio_process_switch).setSelected(XHCustomConfig.getInstance().getAudioProcessEnable());
+        findViewById(R.id.audio_process_qulity_switch).setSelected(XHCustomConfig.getInstance().getAECConfigQulity() ==
+                XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
+        ((TextView)findViewById(R.id.video_config_big_text)).setText("("+ XHCustomConfig.getInstance().getBigVideoFPS() +"/"+XHCustomConfig.getInstance().getBigVideoBitrate()+")");
+        ((TextView)findViewById(R.id.video_config_small_text)).setText("("+ XHCustomConfig.getInstance().getSmallVideoFPS() +"/"+XHCustomConfig.getInstance().getSmallVideoBitrate()+")");
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -73,28 +101,37 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btn_main_logout:
-                finish();
+            case R.id.btn_server_set:
+                startActivity(new Intent(this,SetupServerHostActivity.class));
                 break;
-            case R.id.btn_test_speed:
-                startActivity(new Intent(this,EchoTestActivity.class));
+            case R.id.btn_test_loop:
+                startActivity(new Intent(this,LoopTestActivity.class));
+                break;
+            case R.id.btn_test_p2p:
+                startActivity(new Intent(this,VoipP2PDemoActivity.class));
+                break;
+            case R.id.btn_video_config_big:
+                showAddDialog(true);
+                break;
+            case R.id.btn_video_config_small:
+                showAddDialog(false);
                 break;
             case R.id.btn_video_size:{
                 AlertDialog.Builder builder=new AlertDialog.Builder(this);
                 builder.setItems(XHConstants.XHCropTypeEnumName, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        XHConstants.XHCropTypeEnum selected = StarRtcCore.cropTypeEnum;
+                        XHConstants.XHCropTypeEnum selected = XHCustomConfig.getInstance().getVideoSize();
                         for (XHConstants.XHCropTypeEnum e : XHConstants.XHCropTypeEnum.values()) {
                             if(i==e.ordinal()) {
                                 selected = e;
                             }
                         }
-                        if(StarRtcCore.setVideoSizeConfig(selected)){
+                        if(XHCustomConfig.getInstance().setDefConfigVideoSize(selected)){
                             MLOC.d("Setting","Setting selected "+ selected.toString());
-                            ((TextView)findViewById(R.id.video_size_text)).setText("("+ StarRtcCore.videoConfig_videoSize +")");
+                            ((TextView)findViewById(R.id.video_size_text)).setText("("+ XHCustomConfig.getInstance().getVideoSizeName() +")");
                         }else{
-                            MLOC.showMsg(SettingActivity.this,"固定配置无法修改");
+                            MLOC.showMsg(SettingActivity.this,"设备无法支持所选配置");
                         }
                     }
                 });
@@ -105,8 +142,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             }
 
             case R.id.opengl_switch:
-                StarRtcCore.getInstance().setOpenGLESEnable(StarRtcCore.openGLESEnable ?false:true);
-                findViewById(R.id.opengl_switch).setSelected(StarRtcCore.openGLESEnable);
+                XHCustomConfig.getInstance().setDefConfigOpenGLESEnable(XHCustomConfig.getInstance().getOpenGLESEnable() ?false:true);
+                findViewById(R.id.opengl_switch).setSelected(XHCustomConfig.getInstance().getOpenGLESEnable());
                 break;
             case R.id.log_switch:
 
@@ -129,8 +166,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.hard_encode_switch:
-                if(StarRtcCore.setHardEncodeEnable(StarRtcCore.hardEncode?false:true)){
-                    findViewById(R.id.hard_encode_switch).setSelected(StarRtcCore.hardEncode);
+                if(XHCustomConfig.getInstance().setHardwareEnable(XHCustomConfig.getInstance().getHardwareEnable()?false:true)){
+                    findViewById(R.id.hard_encode_switch).setSelected(XHCustomConfig.getInstance().getHardwareEnable());
                 }else{
                     MLOC.showMsg(SettingActivity.this,"设置失败");
                 }
@@ -144,6 +181,108 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 MLOC.hasLogout = true;
                 finish();
                 break;
+            case R.id.opensl_switch:
+                XHCustomConfig.getInstance().setDefConfigOpenSLESEnable(XHCustomConfig.getInstance().getOpenSLESEnable() ?false:true);
+                findViewById(R.id.opensl_switch).setSelected(XHCustomConfig.getInstance().getOpenSLESEnable());
+                break;
+            case R.id.dy_bt_fp_switch:
+                XHCustomConfig.getInstance().setDefConfigDynamicBitrateAndFpsEnable(XHCustomConfig.getInstance().getDynamicBitrateAndFpsEnable() ?false:true);
+                findViewById(R.id.dy_bt_fp_switch).setSelected(XHCustomConfig.getInstance().getDynamicBitrateAndFpsEnable());
+                break;
+            case R.id.voip_p2p_switch:
+                XHCustomConfig.getInstance().setDefConfigVoipP2PEnable(XHCustomConfig.getInstance().getVoipP2PEnable() ?false:true);
+                findViewById(R.id.voip_p2p_switch).setSelected(XHCustomConfig.getInstance().getVoipP2PEnable());
+                break;
+            case R.id.audio_process_switch:
+                XHCustomConfig.getInstance().setDefConfigAudioProcessEnable(XHCustomConfig.getInstance().getAudioProcessEnable() ?false:true);
+                findViewById(R.id.audio_process_switch).setSelected(XHCustomConfig.getInstance().getAudioProcessEnable());
+                break;
+            case R.id.audio_process_qulity_switch:
+                XHCustomConfig.getInstance().setDefConfigAECConfigQulity(
+                        XHCustomConfig.getInstance().getAECConfigQulity() ==
+                                XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY
+                                ?XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY
+                                :XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY);
+                findViewById(R.id.audio_process_qulity_switch).setSelected(XHCustomConfig.getInstance().getAECConfigQulity() ==
+                        XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
+                break;
         }
     }
+
+
+    private void showAddDialog(final Boolean isbig){
+        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
+        dialog.setContentView(R.layout.dialog_video_config_setting);
+        Window win = dialog.getWindow();
+        win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        win.setGravity(Gravity.CENTER);
+        dialog.setCanceledOnTouchOutside(true);
+
+        final TextView fpsTxt = (TextView) dialog.findViewById(R.id.fps_txt);
+        final SeekBar fpsSeekBar = (SeekBar) dialog.findViewById(R.id.fps_seekbar);
+        final TextView bitrateTxt = (TextView) dialog.findViewById(R.id.bitrate_txt);
+        final SeekBar bitrateSeekBar = (SeekBar) dialog.findViewById(R.id.bitrate_seekbar);
+
+        if(isbig){
+            fpsSeekBar.setMax(20);
+            fpsSeekBar.setProgress(XHCustomConfig.getInstance().getBigVideoFPS());
+            fpsTxt.setText("帧率:"+XHCustomConfig.getInstance().getBigVideoFPS());
+            bitrateSeekBar.setMax(2000);
+            bitrateSeekBar.setProgress(XHCustomConfig.getInstance().getBigVideoBitrate());
+            bitrateTxt.setText("码率:"+XHCustomConfig.getInstance().getBigVideoBitrate());
+        }else{
+            fpsSeekBar.setMax(10);
+            fpsSeekBar.setProgress(XHCustomConfig.getInstance().getSmallVideoFPS());
+            fpsTxt.setText("帧率:"+XHCustomConfig.getInstance().getSmallVideoFPS());
+            bitrateSeekBar.setMax(200);
+            bitrateSeekBar.setProgress(XHCustomConfig.getInstance().getSmallVideoBitrate());
+            bitrateTxt.setText("码率:"+XHCustomConfig.getInstance().getSmallVideoBitrate());
+        }
+
+        fpsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                fpsTxt.setText("帧率:"+progress);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        bitrateSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                bitrateTxt.setText("码率:"+progress);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+
+        dialog.findViewById(R.id.btn_yes).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isbig){
+                    XHCustomConfig.getInstance().setDefConfiBigVideoConfig(fpsSeekBar.getProgress(),bitrateSeekBar.getProgress());
+                    ((TextView)findViewById(R.id.video_config_big_text)).setText("("+ XHCustomConfig.getInstance().getBigVideoFPS() +"/"+XHCustomConfig.getInstance().getBigVideoBitrate()+")");
+                }else{
+                    XHCustomConfig.getInstance().setDefConfiSmallVideoConfig(fpsSeekBar.getProgress(),bitrateSeekBar.getProgress());
+                    ((TextView)findViewById(R.id.video_config_small_text)).setText("("+ XHCustomConfig.getInstance().getSmallVideoFPS() +"/"+XHCustomConfig.getInstance().getSmallVideoBitrate()+")");
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.btn_no).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
 }

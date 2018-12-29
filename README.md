@@ -107,3 +107,7 @@ QQ群：807242783
 更新记录
 ===
 https://github.com/starrtc/android-demo/wiki/Changelog
+
+对比
+===
+webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/webRTC_vs_starRTC.mp4

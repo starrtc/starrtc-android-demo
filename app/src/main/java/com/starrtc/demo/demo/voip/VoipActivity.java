@@ -15,26 +15,29 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.ScreenRecorder;
 
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
@@ -51,16 +54,27 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
     private String targetId;
     private Boolean isTalking = false;
 
+    private StarRTCAudioManager starRTCAudioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        starRTCAudioManager = StarRTCAudioManager.create(this.getApplicationContext());
+        starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
+            @Override
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+                MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
+            }
+        });
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
         voipManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
+        voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");
@@ -94,8 +108,8 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
         findViewById(R.id.screen_btn).setOnClickListener(this);
-        voipManager.setupView(this,selfPlayer, targetPlayer, new IXHCallback() {
-//        voipManager.setupView(this,null, targetPlayer, new IXHCallback() {
+        voipManager.setupView(this,selfPlayer, targetPlayer, new IXHResultCallback() {
+//        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
@@ -104,7 +118,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     public void run() {
                         if(action.equals(CALLING)){
                             MLOC.d("newVoip","call");
-                            voipManager.call(targetId, new IXHCallback() {
+                            voipManager.call(targetId, new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
                                     MLOC.d("newVoip","call success");
@@ -112,10 +126,9 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                                 @Override
                                 public void failed(String errMsg) {
                                     MLOC.d("newVoip","call failed");
-                                    VoipActivity.this.finish();
+                                    stopAndFinish();
                                 }
                             });
-                            showCallingView();
                         }else{
                             MLOC.d("newVoip","onPickup");
                             onPickup();
@@ -127,9 +140,12 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void failed(String errMsg) {
                 MLOC.d("newVoip","setupView failed");
-                VoipActivity.this.finish();
+                stopAndFinish();
             }
         });
+        if(action.equals(CALLING)){
+            showCallingView();
+        }
     }
 
     public void addListener(){
@@ -193,11 +209,11 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         timer.stop();
-                        voipManager.hangup(new IXHCallback() {
+                        voipManager.hangup(new IXHResultCallback() {
                             @Override
                             public void success(Object data) {
                                 removeListener();
-                                finish();
+                                stopAndFinish();
                             }
 
                             @Override
@@ -226,7 +242,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     public void run() {
                         MLOC.d("","对方线路忙");
                         MLOC.showMsg(VoipActivity.this,"对方线路忙");
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -236,7 +252,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     public void run() {
                         MLOC.d("","对方拒绝通话");
                         MLOC.showMsg(VoipActivity.this,"对方拒绝通话");
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -247,7 +263,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                         MLOC.d("","对方已挂断");
                         MLOC.showMsg(VoipActivity.this,"对方已挂断");
                         timer.stop();
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -260,7 +276,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void run() {
                         MLOC.d("",(String) eventObj);
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -269,13 +285,8 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
 
     private void showCallingView(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.calling_view).setVisibility(View.VISIBLE);
-            }
-        });
-
+        findViewById(R.id.calling_view).setVisibility(View.VISIBLE);
+        findViewById(R.id.talking_view).setVisibility(View.INVISIBLE);
     }
 
     private void showTalkingView(){
@@ -285,15 +296,17 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 isTalking = true;
                 findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
                 findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
+                FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
+                flp.width = findViewById(R.id.calling_view).getWidth();
+                findViewById(R.id.talking_view).setLayoutParams(flp);
                 timer.setBase(SystemClock.elapsedRealtime());
                 timer.start();
             }
         });
-
     }
 
     private void onPickup(){
-        voipManager.accept(targetId, new IXHCallback() {
+        voipManager.accept(targetId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","onPickup OK ");
@@ -301,7 +314,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void failed(String errMsg) {
                 MLOC.d("newVoip","onPickup failed ");
-                VoipActivity.this.finish();
+                stopAndFinish();
             }
         });
         showTalkingView();
@@ -311,28 +324,28 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.calling_hangup:
-                voipManager.cancel(new IXHCallback() {
+                voipManager.cancel(new IXHResultCallback() {
                     @Override
                     public void success(Object data) {
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
 
                     @Override
                     public void failed(String errMsg) {
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
             case R.id.talking_hangup:
-                voipManager.hangup(new IXHCallback() {
+                voipManager.hangup(new IXHResultCallback() {
                     @Override
                     public void success(Object data) {
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
 
                     @Override
                     public void failed(String errMsg) {
-                        VoipActivity.this.finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -385,7 +398,13 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         final int dpi = metrics.densityDpi;
         mRecorder = new ScreenRecorder(width, height, bitrate, dpi, mediaProjection);
         StarRtcCore.getInstance().voipShareScreen(mRecorder);
+    }
 
+    private void stopAndFinish(){
+        if(starRTCAudioManager !=null){
+            starRTCAudioManager.stop();
+        }
+        VoipActivity.this.finish();
     }
 
 }

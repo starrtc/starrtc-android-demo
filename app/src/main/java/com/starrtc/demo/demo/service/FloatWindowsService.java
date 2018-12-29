@@ -18,8 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.ui.LineChartView;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,6 +45,8 @@ public class FloatWindowsService extends Service {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
     private TextView vLogText;
     private View vCloseBtn;
+    private LineChartView vLineChart;
+    private ArrayList<LineChartView.LineData> lines = new ArrayList<>();
     private RelativeLayout floatView;
     private RelativeLayout floatViewBall;
     private Timer refreshTimer;
@@ -64,6 +69,24 @@ public class FloatWindowsService extends Service {
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         params.width = RelativeLayout.LayoutParams.WRAP_CONTENT;
         params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+
+        vLineChart = (LineChartView) floatView.findViewById(R.id.line_chart);
+        LineChartView.LineData netLine = new LineChartView.LineData();
+        netLine.name = "net";
+        netLine.color = 0xFFFF0000;
+        netLine.datas = new ArrayList<>();
+        lines.add(netLine);
+        LineChartView.LineData netLine2 = new LineChartView.LineData();
+        netLine2.name = "net";
+        netLine2.color = 0xFF0000FF;
+        netLine2.datas = new ArrayList<>();
+        lines.add(netLine2);
+        LineChartView.LineData farNetLine = new LineChartView.LineData();
+        farNetLine.name = "net";
+        farNetLine.color = 0xFF00FFFF;
+        farNetLine.datas = new ArrayList<>();
+        lines.add(farNetLine);
+
         vLogText = (TextView) floatView.findViewById(R.id.log_txt);
         vCloseBtn = floatView.findViewById(R.id.log_close);
         vCloseBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,9 +131,31 @@ public class FloatWindowsService extends Service {
                         handler.post(new Runnable(){
                             public void run(){
                                 StringBuffer stringBuffer = new StringBuffer();
-                                stringBuffer.append("网络质量："+ StarRtcCore.currentNetworkQuality+"\n");
-                                stringBuffer.append("上传速度："+ StarRtcCore.currentUploadSpeed+" kb/s\n");
+                                stringBuffer.append("Interval："+ StarRtcCore.currentNetIQInterval+"\n");
+                                stringBuffer.append("上传速度："+ StarRtcCore.currentUploadSpeed+" kb/s "+ StarRtcCore.currentUploadSpeed2+" kb/s\n");
                                 stringBuffer.append("下载速度："+ StarRtcCore.currentDownloadSpeed+" kb/s\n");
+                                stringBuffer.append("---------------------------------\n");
+                                if(StarRtcCore.videoTotalBytes>0){
+                                    stringBuffer.append("视频丢包率："
+                                            +  new BigDecimal((float)StarRtcCore.videoDropBytes/StarRtcCore.videoTotalBytes).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue()*100
+                                            +"%("+StarRtcCore.videoDropBytes+"/"+StarRtcCore.videoTotalBytes+")\n");
+                                }else{
+                                    stringBuffer.append("视频丢包率：0.0%(0/0)\n");
+                                }
+                                if(StarRtcCore.audioTotalBytes>0){
+                                    stringBuffer.append("音频丢包率："
+                                            +  new BigDecimal((float)StarRtcCore.audioDropBytes/StarRtcCore.audioTotalBytes).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue()*100
+                                            +"%("+StarRtcCore.audioDropBytes+"/"+StarRtcCore.audioTotalBytes+")\n");
+                                }else{
+                                    stringBuffer.append("音频丢包率：0.0%(0/0)\n");
+                                }
+                                if(StarRtcCore.realTimeTotalBytes>0){
+                                    stringBuffer.append("白板丢包率："
+                                            +  new BigDecimal((float)StarRtcCore.realTimeDropBytes/StarRtcCore.realTimeTotalBytes).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue()*100
+                                            +"%("+StarRtcCore.realTimeDropBytes+"/"+StarRtcCore.realTimeTotalBytes+")\n");
+                                }else{
+                                    stringBuffer.append("白板丢包率：0.0%(0/0)\n");
+                                }
                                 stringBuffer.append("---------------------------------\n");
                                 stringBuffer.append("分辨率大："+ StarRtcCore.currentVideoWidth+"x"+StarRtcCore.currentVideoHeight+"\n");
                                 stringBuffer.append("码率大："+ StarRtcCore.currentBitRate+" kbps\n");
@@ -120,6 +165,20 @@ public class FloatWindowsService extends Service {
                                 stringBuffer.append("码率小："+ StarRtcCore.currentBitRateSmall+" kbps\n");
                                 stringBuffer.append("帧率小："+ StarRtcCore.currentFPSSmall+" fps\n");
                                 vLogText.setText(stringBuffer.toString());
+
+                                if(lines.get(0).datas.size()>30){
+                                    lines.get(0).datas.remove(0);
+                                }
+                                if(lines.get(1).datas.size()>30){
+                                    lines.get(1).datas.remove(0);
+                                }
+                                lines.get(1).datas.add((float) StarRtcCore.currentUploadSpeed);
+
+                                if(lines.get(2).datas.size()>30){
+                                    lines.get(2).datas.remove(0);
+                                }
+                                lines.get(2).datas.add((float) StarRtcCore.currentUploadSpeed2);
+                                vLineChart.refreshData(lines);
                             }
                         });
                     }

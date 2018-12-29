@@ -1,8 +1,6 @@
 package com.starrtc.demo.demo.im.c2c;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,7 +10,6 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.utils.StatusBarUtils;
 
 public class C2CCreateActivity extends BaseActivity {
 

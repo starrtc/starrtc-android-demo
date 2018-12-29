@@ -10,7 +10,7 @@
             android:layout_height="52dp"
             android:orientation="vertical"
             android:gravity="center">
-                <com.starrtc.demo.demo.ui.CircularCoverView
+                <com.starrtc.demo.ui.CircularCoverView
                     android:id="@+id/head_cover"
                     android:layout_width="52dp"
                     android:layout_height="52dp"

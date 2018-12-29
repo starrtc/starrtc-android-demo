@@ -11,10 +11,13 @@ import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
-import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
+
+import java.util.Set;
 
 public class LoopTestActivity extends BaseActivity implements View.OnClickListener {
 
@@ -26,16 +29,26 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
     private TextView vVideoSizeText;
     private TextView vVideoFpsText;
     private TextView vMediaConfigText;
+
+    private StarRTCAudioManager starRTCAudioManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         DisplayMetrics dm = getResources().getDisplayMetrics();
         if(dm.heightPixels>dm.widthPixels){
             setContentView(R.layout.activity_loop_p);
         }else{
             setContentView(R.layout.activity_loop_l);
         }
+
+        starRTCAudioManager = StarRTCAudioManager.create(this.getApplicationContext());
+        starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
+            @Override
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+                MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
+            }
+        });
+
 
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
@@ -145,7 +158,6 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
                 targetSmallPlayer.setLayoutParams(lp2);
                 targetSmallPlayer.setVideoSize(StarRtcCore.smallVideoH, StarRtcCore.smallVideoW);
             }
-
             StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
                     targetSmallPlayer,1,
@@ -153,13 +165,15 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
                     selfSmallPlayer,3,
                     XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         }
-
     }
 
     @Override
     public void onBackPressed() {
         StarRtcCore.getInstance().stopLoopTest();
         StarRtcCore.stopKeepWatch();
+        if(starRTCAudioManager!=null){
+            starRTCAudioManager.stop();
+        }
         finish();
     }
 

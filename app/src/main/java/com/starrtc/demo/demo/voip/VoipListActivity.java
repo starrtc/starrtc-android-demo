@@ -1,6 +1,8 @@
 package com.starrtc.demo.demo.voip;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,9 +19,9 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 
@@ -56,7 +58,6 @@ public class VoipListActivity extends BaseActivity {
         });
 
         mHistoryList = new ArrayList<>();
-
         myListAdapter = new MyListAdapter();
         vHistoryList = (ListView) findViewById(R.id.list);
         vHistoryList.setAdapter(myListAdapter);
@@ -65,10 +66,29 @@ public class VoipListActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mTargetId = (String) mHistoryList.get(position).getConversationId();
                 MLOC.saveVoipUserId(VoipListActivity.this,mTargetId);
-                Intent intent = new Intent(VoipListActivity.this,VoipActivity.class);
-                intent.putExtra("targetId",mTargetId);
-                intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);
-                startActivity(intent);
+
+                AlertDialog.Builder builder=new AlertDialog.Builder(VoipListActivity.this);
+                builder.setItems(new String[]{"视频通话","音频通话"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(i==0){
+                            Intent intent = new Intent(VoipListActivity.this,VoipActivity.class);
+                            intent.putExtra("targetId",mTargetId);
+                            intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);
+                            startActivity(intent);
+                        }else if(i==1){
+                            Intent intent = new Intent(VoipListActivity.this,VoipAudioActivity.class);
+                            intent.putExtra("targetId",mTargetId);
+                            intent.putExtra(VoipAudioActivity.ACTION,VoipAudioActivity.CALLING);
+                            startActivity(intent);
+                        }
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+
+
             }
         });
     }
@@ -142,7 +162,7 @@ public class VoipListActivity extends BaseActivity {
             itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(VoipListActivity.this,28);
             itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-            itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+            itemSelfHolder.vHeadImage.setImageResource(MLOC.getHeadImage(VoipListActivity.this,userId));
 
             if(mHistoryList.get(position).getNewMsgCount()==0){
                 itemSelfHolder.vCount.setVisibility(View.INVISIBLE);

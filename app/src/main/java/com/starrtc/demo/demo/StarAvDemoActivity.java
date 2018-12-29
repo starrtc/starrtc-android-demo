@@ -4,13 +4,14 @@ package com.starrtc.demo.demo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.demo.audiolive.AudioLiveListActivity;
 import com.starrtc.demo.demo.im.IMDemoActivity;
-import com.starrtc.demo.demo.service.FloatWindowsService;
+import com.starrtc.demo.demo.miniclass.MiniClassListActivity;
 import com.starrtc.demo.demo.setting.SettingActivity;
-import com.starrtc.demo.demo.test.LoopTestActivity;
 import com.starrtc.demo.demo.videolive.VideoLiveListActivity;
 import com.starrtc.demo.demo.videomeeting.VideoMeetingListActivity;
 import com.starrtc.demo.demo.voip.VoipListActivity;
@@ -27,18 +28,17 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_rtc_main);
         ((TextView)findViewById(R.id.title_text)).setText(R.string.app_name);
-        MLOC.init(getApplicationContext());
-        addListener();
+//        MLOC.initSDK(getApplicationContext());
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
-
+        ((ImageView)findViewById(R.id.userinfo_head)).setImageResource(MLOC.getHeadImage(this,MLOC.userId));
         ((TextView)findViewById(R.id.userinfo_id)).setText(MLOC.userId);
         findViewById(R.id.btn_main_im).setOnClickListener(this);
         findViewById(R.id.btn_main_voip).setOnClickListener(this);
         findViewById(R.id.btn_main_meeting).setOnClickListener(this);
         findViewById(R.id.btn_main_live).setOnClickListener(this);
-        findViewById(R.id.btn_main_loop).setOnClickListener(this);
-        findViewById(R.id.btn_main_logout).setOnClickListener(this);
         findViewById(R.id.btn_main_setting).setOnClickListener(this);
+        findViewById(R.id.btn_main_class).setOnClickListener(this);
+        findViewById(R.id.btn_main_audio).setOnClickListener(this);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
             startActivity(new Intent(StarAvDemoActivity.this,SplashActivity.class));
             finish();
         }
-        isOnline = StarRtcCore.getInstance().getIsOnline();
+        isOnline = XHClient.getInstance().getIsOnline();
         if(isOnline){
             findViewById(R.id.loading).setVisibility(View.INVISIBLE);
         }else{
@@ -71,25 +71,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onRestart(){
         super.onRestart();
-        addListener();
     }
-
-    private void addListener(){
-        AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
-        AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
-        AEvent.addListener(AEvent.AEVENT_USER_OFFLINE,this);
-    }
-    private void removeListener(){
-        AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
-        AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
-        AEvent.removeListener(AEvent.AEVENT_USER_OFFLINE,this);
-    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -103,15 +85,6 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
                 Intent intent3 = new Intent(this, VideoLiveListActivity.class);
                 startActivity(intent3);
                 break;
-            case R.id.btn_main_loop:
-                startActivity(new Intent(this,LoopTestActivity.class));
-                break;
-            case R.id.btn_main_logout:
-                XHClient.getInstance().getLoginManager().logout();
-                stopService(new Intent(StarAvDemoActivity.this, FloatWindowsService.class));
-                removeListener();
-                finish();
-                break;
             case R.id.btn_main_setting:
                 Intent intent6 = new Intent(this, SettingActivity.class);
                 startActivity(intent6);
@@ -119,6 +92,14 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
             case R.id.btn_main_im:
                 Intent intent7= new Intent(this, IMDemoActivity.class);
                 startActivity(intent7);
+                break;
+            case R.id.btn_main_class:
+                Intent intent8= new Intent(this, MiniClassListActivity.class);
+                startActivity(intent8);
+                break;
+            case R.id.btn_main_audio:
+                Intent intent9= new Intent(this, AudioLiveListActivity.class);
+                startActivity(intent9);
                 break;
         }
     }

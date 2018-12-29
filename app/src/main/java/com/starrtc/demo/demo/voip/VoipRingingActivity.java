@@ -10,14 +10,14 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 
 import java.text.SimpleDateFormat;
 
@@ -36,6 +36,7 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
         targetId = getIntent().getStringExtra("targetId");
         findViewById(R.id.ring_hangoff).setOnClickListener(this);
         findViewById(R.id.ring_pickup).setOnClickListener(this);
+        findViewById(R.id.ring_pickup_audio).setOnClickListener(this);
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
         findViewById(R.id.head_bg).setBackgroundColor(ColorUtils.getColor(VoipRingingActivity.this,targetId));
         ((CircularCoverView)findViewById(R.id.head_cover)).setCoverColor(Color.parseColor("#000000"));
@@ -98,7 +99,7 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ring_hangoff:
-                XHClient.getInstance().getVoipManager().refuse(new IXHCallback() {
+                XHClient.getInstance().getVoipManager().refuse(new IXHResultCallback() {
                     @Override
                     public void success(Object data) {
                         finish();
@@ -110,13 +111,22 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
                     }
                 });
                 break;
-            case R.id.ring_pickup:
+            case R.id.ring_pickup:{
                 Intent intent = new Intent(VoipRingingActivity.this,VoipActivity.class);
                 intent.putExtra("targetId",targetId);
                 intent.putExtra(VoipActivity.ACTION,VoipActivity.RING);
                 startActivity(intent);
                 finish();
                 break;
+            }
+            case R.id.ring_pickup_audio: {
+                Intent intent = new Intent(VoipRingingActivity.this, VoipAudioActivity.class);
+                intent.putExtra("targetId", targetId);
+                intent.putExtra(VoipAudioActivity.ACTION, VoipAudioActivity.RING);
+                startActivity(intent);
+                finish();
+                break;
+            }
         }
     }
 }

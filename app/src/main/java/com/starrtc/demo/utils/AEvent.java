@@ -52,7 +52,9 @@ public class AEvent {
     public static final String AEVENT_RESET                     = "AEVENT_RESET";
 
     public static final String AEVENT_MEETING_GOT_LIST          = "AEVENT_MEETING_GOT_LIST";
+    public static final String AEVENT_MINI_CLASS_GOT_LIST       = "AEVENT_MINI_CLASS_GOT_LIST";
     public static final String AEVENT_LIVE_GOT_LIST             = "AEVENT_LIVE_GOT_LIST";
+    public static final String AEVENT_AUDIO_LIVE_GOT_LIST       = "AEVENT_AUDIO_LIVE_GOT_LIST";
     public static final String AEVENT_CHATROOM_GOT_LIST         = "AEVENT_CHATROOM_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_LIST             = "AEVENT_GROUP_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_MEMBER_LIST     = "AEVENT_GROUP_GOT_MEMBER_LIST";
@@ -65,6 +67,7 @@ public class AEvent {
     public static final String AEVENT_VOIP_REV_CONNECT          = "AEVENT_VOIP_REV_CONNECT";
     public static final String AEVENT_VOIP_REV_ERROR            = "AEVENT_VOIP_REV_ERROR";
     public static final String AEVENT_VOIP_REV_REALTIME_DATA    = "AEVENT_VOIP_REV_REALTIME_DATA";
+    public static final String AEVENT_VOIP_P2P_REV_CALLING      = "AEVENT_VOIP_P2P_REV_CALLING";
 
     public static final String AEVENT_LIVE_ADD_UPLOADER         = "AEVENT_LIVE_ADD_UPLOADER";
     public static final String AEVENT_LIVE_REMOVE_UPLOADER      = "AEVENT_LIVE_REMOVE_UPLOADER";
@@ -81,14 +84,15 @@ public class AEvent {
     public static final String AEVENT_LIVE_SELF_COMMANDED_TO_STOP  = "AEVENT_LIVE_SELF_COMMANDED_TO_STOP";
     public static final String AEVENT_LIVE_REV_REALTIME_DATA    = "AEVENT_LIVE_REV_REALTIME_DATA";
 
-    public static final String AEVENT_MEETING_ADD_UPLOADER  = "AEVENT_MEETING_ADD_UPLOADER";
-    public static final String AEVENT_MEETING_REMOVE_UPLOADER  = "AEVENT_MEETING_REMOVE_UPLOADER";
-    public static final String AEVENT_MEETING_ERROR  = "AEVENT_MEETING_ERROR";
-    public static final String AEVENT_MEETING_GET_ONLINE_NUMBER  = "AEVENT_MEETING_GET_ONLINE_NUMBER";
-    public static final String AEVENT_MEETING_SELF_KICKED  = "AEVENT_MEETING_SELF_KICKED";
-    public static final String AEVENT_MEETING_SELF_BANNED  = "AEVENT_MEETING_SELF_BANNED";
-    public static final String AEVENT_MEETING_REV_MSG  = "AEVENT_MEETING_REV_MSG";
-    public static final String AEVENT_MEETING_REV_PRIVATE_MSG  = "AEVENT_MEETING_REV_PRIVATE_MSG";
+    public static final String AEVENT_MEETING_ADD_UPLOADER          = "AEVENT_MEETING_ADD_UPLOADER";
+    public static final String AEVENT_MEETING_REMOVE_UPLOADER       = "AEVENT_MEETING_REMOVE_UPLOADER";
+    public static final String AEVENT_MEETING_ERROR                 = "AEVENT_MEETING_ERROR";
+    public static final String AEVENT_MEETING_GET_ONLINE_NUMBER     = "AEVENT_MEETING_GET_ONLINE_NUMBER";
+    public static final String AEVENT_MEETING_SELF_KICKED           = "AEVENT_MEETING_SELF_KICKED";
+    public static final String AEVENT_MEETING_SELF_BANNED           = "AEVENT_MEETING_SELF_BANNED";
+    public static final String AEVENT_MEETING_REV_MSG               = "AEVENT_MEETING_REV_MSG";
+    public static final String AEVENT_MEETING_REV_PRIVATE_MSG       = "AEVENT_MEETING_REV_PRIVATE_MSG";
+    public static final String AEVENT_MEETING_REV_REALTIME_DATA     = "AEVENT_MEETING_REV_REALTIME_DATA";
 
     public static final String AEVENT_ECHO_FIN                  = "AEVENT_ECHO_FIN";
 

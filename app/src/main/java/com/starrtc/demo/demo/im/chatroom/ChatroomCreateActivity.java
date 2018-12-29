@@ -1,6 +1,5 @@
 package com.starrtc.demo.demo.im.chatroom;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;

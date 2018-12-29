@@ -1,6 +1,5 @@
 package com.starrtc.demo.demo.im.chatroom;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,12 +19,11 @@ import java.util.ArrayList;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
-import com.starrtc.demo.utils.IEventListener;
 import com.starrtc.demo.utils.StarListUtil;
 
 public class ChatroomListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {

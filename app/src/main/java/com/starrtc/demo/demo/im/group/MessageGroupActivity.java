@@ -21,20 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.starrtc.demo.R;
-import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.database.MessageBean;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.database.MessageBean;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHGroupManager;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 public class MessageGroupActivity extends Activity implements IEventListener{
@@ -91,7 +90,7 @@ public class MessageGroupActivity extends Activity implements IEventListener{
         }else if(type.equals(GROUP_NAME)){
             mGroupName = getIntent().getStringExtra(GROUP_NAME);
             mCreaterId = MLOC.userId;
-            groupManager.createGroup(mGroupName, new IXHCallback() {
+            groupManager.createGroup(mGroupName, new IXHResultCallback() {
                 @Override
                 public void success(Object data) {
                     mGroupId = (String) data;
@@ -283,7 +282,7 @@ public class MessageGroupActivity extends Activity implements IEventListener{
                 itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
                 int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
                 itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-                itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+                itemSelfHolder.vHeadImage.setImageResource(MLOC.getHeadImage(MessageGroupActivity.this,mDatas.get(position).getFromId()));
             }else if(currLayoutType == 1){//别人的信息
                 final ViewHolder itemOtherHolder;
                 if(convertView == null){
@@ -294,10 +293,7 @@ public class MessageGroupActivity extends Activity implements IEventListener{
                     itemOtherHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
                     itemOtherHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
                     itemOtherHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
-                    itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
-                    int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
-                    itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-                    itemOtherHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+
                     convertView.setTag(itemOtherHolder);
                 }else{
                     itemOtherHolder = (ViewHolder)convertView.getTag();
@@ -305,6 +301,10 @@ public class MessageGroupActivity extends Activity implements IEventListener{
                 itemOtherHolder.vUserId.setText(mDatas.get(position).getFromId());
                 itemOtherHolder.vMsg.setText(mDatas.get(position).getMsg());
                 itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(MessageGroupActivity.this,mDatas.get(position).getFromId()));
+                itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                int cint = DensityUtils.dip2px(MessageGroupActivity.this,20);
+                itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                itemOtherHolder.vHeadImage.setImageResource(MLOC.getHeadImage(MessageGroupActivity.this,mDatas.get(position).getFromId()));
             }
             return convertView;
         }

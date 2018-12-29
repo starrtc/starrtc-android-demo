@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.view.View;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.demo.p2p.VoipP2PRingingActivity;
 import com.starrtc.demo.demo.voip.VoipRingingActivity;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.IEventListener;
+import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 import org.json.JSONException;
@@ -28,6 +30,7 @@ public class BaseActivity extends Activity implements IEventListener {
 
     private void addListener(){
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
+        AEvent.addListener(AEvent.AEVENT_VOIP_P2P_REV_CALLING,this);
         AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
@@ -35,6 +38,7 @@ public class BaseActivity extends Activity implements IEventListener {
     }
     private void removeListener(){
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
+        AEvent.removeListener(AEvent.AEVENT_VOIP_P2P_REV_CALLING,this);
         AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
@@ -63,6 +67,14 @@ public class BaseActivity extends Activity implements IEventListener {
                     });
                 }else{
                     Intent intent = new Intent(BaseActivity.this,VoipRingingActivity.class);
+                    intent.putExtra("targetId",eventObj.toString());
+                    startActivity(intent);
+                }
+                break;
+            case AEvent.AEVENT_VOIP_P2P_REV_CALLING:
+                if(MLOC.canPickupVoip){
+                    MLOC.hasNewVoipMsg = true;
+                    Intent intent = new Intent(BaseActivity.this,VoipP2PRingingActivity.class);
                     intent.putExtra("targetId",eventObj.toString());
                     startActivity(intent);
                 }
@@ -121,6 +133,13 @@ public class BaseActivity extends Activity implements IEventListener {
                     @Override
                     public void run() {
                         MLOC.showMsg(BaseActivity.this,"服务已断开");
+                        if(findViewById(R.id.loading)!=null) {
+                            if (XHClient.getInstance().getIsOnline()) {
+                                findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+                            } else {
+                                findViewById(R.id.loading).setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
                 });
                 break;
@@ -129,6 +148,13 @@ public class BaseActivity extends Activity implements IEventListener {
                     @Override
                     public void run() {
 //                        MLOC.showMsg(BaseActivity.this,"服务已连接");
+                        if(findViewById(R.id.loading)!=null) {
+                            if (XHClient.getInstance().getIsOnline()) {
+                                findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+                            } else {
+                                findViewById(R.id.loading).setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
                 });
                 break;

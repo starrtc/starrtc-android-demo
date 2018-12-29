@@ -25,9 +25,9 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.listener.XHLiveManagerListener;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.listener.XHLiveManagerListener;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.demo.videomeeting.ViewPosition;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.DensityUtils;
@@ -35,8 +35,9 @@ import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.api.XHLiveManager;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class VideoLiveActivity extends BaseActivity {
 
@@ -84,6 +86,8 @@ public class VideoLiveActivity extends BaseActivity {
 
     private Boolean isPortrait = true;
 
+    private StarRTCAudioManager starRTCAudioManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +97,14 @@ public class VideoLiveActivity extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_live);
+
+        starRTCAudioManager = StarRTCAudioManager.create(this);
+        starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
+            @Override
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+
+            }
+        });
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         if(dm.heightPixels>dm.widthPixels){
@@ -110,13 +122,13 @@ public class VideoLiveActivity extends BaseActivity {
             if(createrId.equals(MLOC.userId)){
                 if(TextUtils.isEmpty(liveName)||liveType==null){
                     MLOC.showMsg(this,"没有直播信息");
-                    finish();
+                    stopAndFinish();
                     return;
                 }
             }else{
                 if(TextUtils.isEmpty(liveName)||liveType==null){
                     MLOC.showMsg(this,"没有直播信息");
-                    finish();
+                    stopAndFinish();
                     return;
                 }
             }
@@ -124,6 +136,7 @@ public class VideoLiveActivity extends BaseActivity {
 
         liveManager = XHClient.getInstance().getLiveManager(this);
         liveManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
+        liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         liveManager.addListener(new XHLiveManagerListener());
 
 
@@ -253,7 +266,7 @@ public class VideoLiveActivity extends BaseActivity {
                 if(vPanelBtn.isSelected()){
                     vPanelBtn.setSelected(false);
                     vCleanBtn.setVisibility(View.INVISIBLE);
-                    vPaintPlayer.puase();
+                    vPaintPlayer.pause();
                 }else{
                     vPanelBtn.setSelected(true);
                     vCleanBtn.setVisibility(View.VISIBLE);
@@ -289,7 +302,7 @@ public class VideoLiveActivity extends BaseActivity {
         XHLiveItem liveItem = new XHLiveItem();
         liveItem.setLiveName(liveName);
         liveItem.setLiveType(liveType);
-        liveManager.createLive(liveItem, new IXHCallback() {
+        liveManager.createLive(liveItem, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 liveId = (String) data;
@@ -302,8 +315,7 @@ public class VideoLiveActivity extends BaseActivity {
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoLiveActivity.this,errMsg);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
             }
@@ -313,7 +325,7 @@ public class VideoLiveActivity extends BaseActivity {
     private void starLive(){
         //开始直播
         isUploader = true;
-        liveManager.startLive(liveId, new IXHCallback() {
+        liveManager.startLive(liveId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("XHLiveManager","startLive success "+data);
@@ -325,8 +337,7 @@ public class VideoLiveActivity extends BaseActivity {
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoLiveActivity.this,errMsg);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
 
@@ -337,7 +348,7 @@ public class VideoLiveActivity extends BaseActivity {
     private void joinLive(){
         //观众加入直播
         isUploader = false;
-        liveManager.watchLive(liveId, new IXHCallback() {
+        liveManager.watchLive(liveId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("XHLiveManager","watchLive success "+data);
@@ -349,8 +360,7 @@ public class VideoLiveActivity extends BaseActivity {
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoLiveActivity.this,errMsg);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
 
@@ -450,11 +460,10 @@ public class VideoLiveActivity extends BaseActivity {
     }
 
     private void stop(){
-        liveManager.leaveLive(liveId, new IXHCallback() {
+        liveManager.leaveLive(liveId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                removeListener();
-                finish();
+                stopAndFinish();
             }
 
             @Override
@@ -465,8 +474,7 @@ public class VideoLiveActivity extends BaseActivity {
                         MLOC.showMsg(VideoLiveActivity.this,errMsg);
                     }
                 });
-                removeListener();
-                finish();
+                stopAndFinish();
             }
         });
     }
@@ -890,8 +898,7 @@ public class VideoLiveActivity extends BaseActivity {
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoLiveActivity.this,"你已被踢出");
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -933,8 +940,7 @@ public class VideoLiveActivity extends BaseActivity {
                             errStr = "直播关闭";
                         }
                         MLOC.showMsg(getApplicationContext(),errStr);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -1085,5 +1091,11 @@ public class VideoLiveActivity extends BaseActivity {
         }
 
     }
-
+    private void stopAndFinish(){
+        if(starRTCAudioManager!=null){
+            starRTCAudioManager.stop();
+        }
+        removeListener();
+        finish();
+    }
 }

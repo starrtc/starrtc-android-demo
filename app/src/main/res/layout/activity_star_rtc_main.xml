@@ -15,13 +15,12 @@
         android:layout_marginRight="12dp"
         >
         <ImageView
-            android:id="@+id/btn_main_logout"
-            android:layout_width="20dp"
-            android:layout_height="24dp"
-            android:src="@drawable/icon_mian_logout"
+            android:id="@+id/btn_main_setting"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/icon_main_setting"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="14dp"
-            android:layout_marginRight="16dp"/>
+            android:padding="10dp"/>
         <ImageView
             android:id="@+id/userinfo_head"
             android:layout_width="58dp"
@@ -143,7 +142,7 @@
                     />
             </RelativeLayout>
             <RelativeLayout
-                android:id="@+id/btn_main_loop"
+                android:id="@+id/btn_main_class"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="108"
@@ -157,7 +156,7 @@
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
                     android:textSize="21sp"
-                    android:text="回环测试"
+                    android:text="小班课"
                     android:shadowColor="#ff000000"
                     android:shadowRadius="1"
                     android:shadowDx="1"
@@ -260,7 +259,7 @@
                     />
             </RelativeLayout>
             <RelativeLayout
-                android:id="@+id/btn_main_setting"
+                android:id="@+id/btn_main_audio"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="123"
@@ -273,20 +272,20 @@
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
                     android:textSize="21sp"
-                    android:text="设置"
+                    android:text="语音聊天室"
                     android:shadowColor="#ff000000"
                     android:shadowRadius="1"
                     android:shadowDx="1"
                     android:shadowDy="1"
                     />
                 <ImageView
-                    android:layout_width="57dp"
+                    android:layout_width="35dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="5dp"
-                    android:src="@drawable/icon_setting"
+                    android:src="@drawable/icon_main_mic"
                     android:maxHeight="1000dp"
                     android:maxWidth="1000dp"
                     android:adjustViewBounds="true"

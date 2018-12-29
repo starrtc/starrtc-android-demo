@@ -24,18 +24,17 @@ import java.util.List;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.listener.XHChatroomManagerListener;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.listener.XHChatroomManagerListener;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
-import com.starrtc.starrtcsdk.core.utils.StarLog;
 
 public class ChatroomActivity extends BaseActivity {
     public static String TYPE = "TYPE";
@@ -128,7 +127,7 @@ public class ChatroomActivity extends BaseActivity {
     }
 
     private void createChatroom(){
-        chatroomManager.createChatroom(mRoomName,createType, new IXHCallback() {
+        chatroomManager.createChatroom(mRoomName,createType, new IXHResultCallback() {
             @Override
             public void success(final Object data) {
                 runOnUiThread(new Runnable() {
@@ -155,7 +154,7 @@ public class ChatroomActivity extends BaseActivity {
         });
     }
     private void joinChatroom(){
-        chatroomManager.joinChatroom(mRoomId, new IXHCallback() {
+        chatroomManager.joinChatroom(mRoomId, new IXHResultCallback() {
             @Override
             public void success(final Object data) {
                 runOnUiThread(new Runnable() {
@@ -235,7 +234,7 @@ public class ChatroomActivity extends BaseActivity {
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        chatroomManager.exitChatroom(mRoomId, new IXHCallback() {
+        chatroomManager.exitChatroom(mRoomId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
             }
@@ -380,7 +379,7 @@ public class ChatroomActivity extends BaseActivity {
                 itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
                 int cint = DensityUtils.dip2px(ChatroomActivity.this,20);
                 itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-                itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+                itemSelfHolder.vHeadImage.setImageResource(MLOC.getHeadImage(ChatroomActivity.this,mDatas.get(position).fromId));
             }else if(currLayoutType == 1){//别人的信息
                 final ViewHolder itemOtherHolder;
                 if(convertView == null){
@@ -391,10 +390,6 @@ public class ChatroomActivity extends BaseActivity {
                     itemOtherHolder.vHeadBg = convertView.findViewById(R.id.head_bg);
                     itemOtherHolder.vHeadCover = (CircularCoverView) convertView.findViewById(R.id.head_cover);
                     itemOtherHolder.vHeadImage = (ImageView) convertView.findViewById(R.id.head_img);
-                    itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
-                    int cint = DensityUtils.dip2px(ChatroomActivity.this,20);
-                    itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-                    itemOtherHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
                     convertView.setTag(itemOtherHolder);
                 }else{
                     itemOtherHolder = (ViewHolder)convertView.getTag();
@@ -402,6 +397,10 @@ public class ChatroomActivity extends BaseActivity {
                 itemOtherHolder.vUserId.setText(mDatas.get(position).fromId);
                 itemOtherHolder.vMsg.setText(mDatas.get(position).contentData);
                 itemOtherHolder.vHeadBg.setBackgroundColor(ColorUtils.getColor(ChatroomActivity.this,mDatas.get(position).fromId));
+                itemOtherHolder.vHeadCover.setCoverColor(Color.parseColor("#f6f6f6"));
+                int cint = DensityUtils.dip2px(ChatroomActivity.this,20);
+                itemOtherHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
+                itemOtherHolder.vHeadImage.setImageResource(MLOC.getHeadImage(ChatroomActivity.this,mDatas.get(position).fromId));
             }
             return convertView;
         }
@@ -425,7 +424,7 @@ public class ChatroomActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(i==0){
-                            chatroomManager.kickMember(mRoomId, userId, new IXHCallback() {
+                            chatroomManager.kickMember(mRoomId, userId, new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
                                     runOnUiThread(new Runnable() {
@@ -448,7 +447,7 @@ public class ChatroomActivity extends BaseActivity {
                                 }
                             });
                         }else if(i==1){
-                            chatroomManager.muteMember(mRoomId, userId,60, new IXHCallback() {
+                            chatroomManager.muteMember(mRoomId, userId,60, new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
                                     runOnUiThread(new Runnable() {

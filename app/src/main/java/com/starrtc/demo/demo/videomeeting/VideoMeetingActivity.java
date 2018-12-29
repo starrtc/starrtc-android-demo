@@ -18,30 +18,32 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.listener.XHMeetingManagerListener;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.listener.XHMeetingManagerListener;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHMeetingItem;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 
 public class VideoMeetingActivity extends BaseActivity{
 
     public static String MEETING_ID         = "MEETING_ID";          //会议ID
-    public static String MEETING_NAME       = "MEETING_NAME";         //会议名称
-    public static String MEETING_TYPE       = "MEETING_TYPE";         //会议类型
-    public static String MEETING_CREATER       = "MEETING_CREATER";   //会议创建者
+    public static String MEETING_NAME       = "CLASS_NAME";         //会议名称
+    public static String MEETING_TYPE       = "CLASS_TYPE";         //会议类型
+    public static String MEETING_CREATER       = "CLASS_CREATER";   //会议创建者
 
     private String meetingId;
     private String meetingName;
@@ -55,6 +57,7 @@ public class VideoMeetingActivity extends BaseActivity{
     private int borderH = 0;
 
     private IXHMeetingManager meetingManager;
+    private StarRTCAudioManager starRTCAudioManager;
 
     private Boolean isPortrait = true;
     @Override
@@ -65,6 +68,14 @@ public class VideoMeetingActivity extends BaseActivity{
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_video_meeting);
 
+        starRTCAudioManager = StarRTCAudioManager.create(getApplicationContext());
+        starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
+            @Override
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+
+            }
+        });
+
         DisplayMetrics dm = getResources().getDisplayMetrics();
         if(dm.heightPixels>dm.widthPixels){
             isPortrait = true;
@@ -74,6 +85,7 @@ public class VideoMeetingActivity extends BaseActivity{
 
         meetingManager = XHClient.getInstance().getMeetingManager(this);
         meetingManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
+        meetingManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         meetingManager.addListener(new XHMeetingManagerListener());
 
         addListener();
@@ -129,7 +141,7 @@ public class VideoMeetingActivity extends BaseActivity{
         XHMeetingItem meetingItem = new XHMeetingItem();
         meetingItem.setMeetingName(meetingName);
         meetingItem.setMeetingType((XHConstants.XHMeetingType) getIntent().getSerializableExtra(MEETING_TYPE));
-        meetingManager.createMeeting(meetingItem, new IXHCallback() {
+        meetingManager.createMeeting(meetingItem, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 meetingId = (String) data;
@@ -142,8 +154,7 @@ public class VideoMeetingActivity extends BaseActivity{
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoMeetingActivity.this,errMsg);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
             }
@@ -151,11 +162,10 @@ public class VideoMeetingActivity extends BaseActivity{
     }
 
     private void stop(){
-        meetingManager.leaveMeeting(meetingId, new IXHCallback() {
+        meetingManager.leaveMeeting(meetingId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                removeListener();
-                finish();
+                stopAndFinish();
             }
 
             @Override
@@ -166,15 +176,14 @@ public class VideoMeetingActivity extends BaseActivity{
                         MLOC.showMsg(VideoMeetingActivity.this,errMsg);
                     }
                 });
-                removeListener();
-                finish();
+                stopAndFinish();
             }
         });
     }
 
     private void joinMeeting(){
         //开始直播
-        meetingManager.joinMeeting(meetingId, new IXHCallback() {
+        meetingManager.joinMeeting(meetingId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("XHMeetingManager","startLive success "+data);
@@ -186,8 +195,7 @@ public class VideoMeetingActivity extends BaseActivity{
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoMeetingActivity.this,errMsg);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
 
                     }
                 });
@@ -561,8 +569,7 @@ public class VideoMeetingActivity extends BaseActivity{
                     public void run() {
                         String errStr = (String) eventObj;
                         MLOC.showMsg(getApplicationContext(),errStr);
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -573,8 +580,7 @@ public class VideoMeetingActivity extends BaseActivity{
                     @Override
                     public void run() {
                         MLOC.showMsg(VideoMeetingActivity.this,"你已被踢出");
-                        removeListener();
-                        finish();
+                        stopAndFinish();
                     }
                 });
                 break;
@@ -585,5 +591,12 @@ public class VideoMeetingActivity extends BaseActivity{
             case AEvent.AEVENT_MEETING_REV_PRIVATE_MSG:
                 break;
         }
+    }
+    private void stopAndFinish(){
+        if(starRTCAudioManager!=null){
+            starRTCAudioManager.stop();
+        }
+        removeListener();
+        finish();
     }
 }

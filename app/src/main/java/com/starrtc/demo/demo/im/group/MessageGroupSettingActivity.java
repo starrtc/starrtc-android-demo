@@ -24,15 +24,15 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.im.c2c.C2CActivity;
-import com.starrtc.demo.demo.serverAPI.InterfaceUrls;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.demo.voip.VoipActivity;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHGroupManager;
-import com.starrtc.starrtcsdk.apiInterface.IXHCallback;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +69,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
             public void onClick(View v) {
                 if (findViewById(R.id.switch_btn).isSelected()) {
                     findViewById(R.id.switch_btn).setSelected(false);
-                    groupManager.setPushEnable(mGroupId, false, new IXHCallback() {
+                    groupManager.setPushEnable(mGroupId, false, new IXHResultCallback() {
                         @Override
                         public void success(Object data) {
                             runOnUiThread(new Runnable() {
@@ -92,7 +92,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     });
                 } else {
                     findViewById(R.id.switch_btn).setSelected(true);
-                    groupManager.setPushEnable(mGroupId, true, new IXHCallback() {
+                    groupManager.setPushEnable(mGroupId, true, new IXHResultCallback() {
                         @Override
                         public void success(Object data) {
                             runOnUiThread(new Runnable() {
@@ -195,7 +195,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
     private void addUserToGroup(String addUserId){
         ArrayList<String> idList = new ArrayList<>();
         idList.add(addUserId);
-        groupManager.addGroupMembers(mGroupId, idList, new IXHCallback() {
+        groupManager.addGroupMembers(mGroupId, idList, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 runOnUiThread(new Runnable() {
@@ -222,7 +222,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
     private void deleteUserFormGroup(String delUserId){
         ArrayList<String> idList = new ArrayList<>();
         idList.add(delUserId);
-        groupManager.deleteGroupMembers(mGroupId, idList, new IXHCallback() {
+        groupManager.deleteGroupMembers(mGroupId, idList, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 runOnUiThread(new Runnable() {
@@ -247,7 +247,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
     }
 
     private void deleteGroup(){
-        groupManager.deleteGroup(mGroupId, new IXHCallback() {
+        groupManager.deleteGroup(mGroupId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 runOnUiThread(new Runnable() {
@@ -390,14 +390,13 @@ public class MessageGroupSettingActivity extends BaseActivity{
                 holder.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
                 int cint = DensityUtils.dip2px(MessageGroupSettingActivity.this,26);
                 holder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-                holder.vHeadImage.setImageResource(R.drawable.starfox_50);
+                holder.vHeadImage.setImageResource(MLOC.getHeadImage(MessageGroupSettingActivity.this,id));
                 holder.vHeadImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showManagerDialog(id);
                     }
                 });
-
             }
         }
         class MyViewHolder extends RecyclerView.ViewHolder {

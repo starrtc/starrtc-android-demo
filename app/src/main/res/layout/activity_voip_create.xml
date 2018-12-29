@@ -20,7 +20,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="33dp"
+            android:layout_marginTop="13dp"
             android:gravity="center"
             android:textColor="#131313"
             android:textSize="16sp"
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#00000000"
-            android:layout_marginTop="33dp"
+            android:layout_marginTop="13dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:textColor="#131313"
@@ -52,7 +52,7 @@
             android:layout_height="49dp"
             android:background="@drawable/bg_btn_orange"
             android:layout_centerInParent="true"
-            android:layout_marginTop="49dp"
+            android:layout_marginTop="19dp"
             android:layout_marginBottom="49dp">
             <TextView
                 android:layout_width="match_parent"

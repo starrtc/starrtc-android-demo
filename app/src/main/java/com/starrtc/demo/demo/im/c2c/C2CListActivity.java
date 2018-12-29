@@ -16,9 +16,9 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.database.CoreDB;
-import com.starrtc.demo.demo.database.HistoryBean;
-import com.starrtc.demo.demo.ui.CircularCoverView;
+import com.starrtc.demo.database.CoreDB;
+import com.starrtc.demo.database.HistoryBean;
+import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 
@@ -36,7 +36,7 @@ public class C2CListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_c2c_list);
-        //StatusBarUtils.with(this).setColor(Color.parseColor("#FF6C00")).init();
+        //StatusBarUtils.with(this).setColor(Color.parseColor("#FF6C00")).initSDK();
         ((TextView)findViewById(R.id.title_text)).setText("一对一会话列表");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
@@ -146,7 +146,7 @@ public class C2CListActivity extends BaseActivity {
             itemSelfHolder.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(C2CListActivity.this,28);
             itemSelfHolder.vHeadCover.setRadians(cint, cint, cint, cint,0);
-            itemSelfHolder.vHeadImage.setImageResource(R.drawable.starfox_50);
+            itemSelfHolder.vHeadImage.setImageResource(MLOC.getHeadImage(C2CListActivity.this,userId));
 
             itemSelfHolder.vTime.setText(historyBean.getLastTime());
             itemSelfHolder.vMessage.setText(historyBean.getLastMsg());

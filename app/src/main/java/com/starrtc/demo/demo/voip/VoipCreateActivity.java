@@ -1,5 +1,7 @@
 package com.starrtc.demo.demo.voip;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,17 +30,36 @@ public class VoipCreateActivity extends BaseActivity {
         findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
+                final String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VoipCreateActivity.this,"id不能为空");
                 }else{
-                    Intent intent = new Intent(VoipCreateActivity.this,VoipActivity.class);
-                    intent.putExtra("targetId",inputId);
-                    intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);
-                    startActivity(intent);
-                    finish();
+
+                    AlertDialog.Builder builder=new AlertDialog.Builder(VoipCreateActivity.this);
+                    builder.setItems(new String[]{"视频通话","音频通话"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if(i==0){
+                                Intent intent = new Intent(VoipCreateActivity.this,VoipActivity.class);
+                                intent.putExtra("targetId",inputId);
+                                intent.putExtra(VoipActivity.ACTION,VoipActivity.CALLING);
+                                startActivity(intent);
+                                VoipCreateActivity.this.finish();
+                            }else if(i==1){
+                                Intent intent = new Intent(VoipCreateActivity.this,VoipAudioActivity.class);
+                                intent.putExtra("targetId",inputId);
+                                intent.putExtra(VoipActivity.ACTION,VoipAudioActivity.CALLING);
+                                startActivity(intent);
+                                VoipCreateActivity.this.finish();
+                            }
+                        }
+                    });
+                    builder.setCancelable(true);
+                    AlertDialog dialog=builder.create();
+                    dialog.show();
                 }
             }
         });
+
     }
 }
