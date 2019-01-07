@@ -1,6 +1,9 @@
 # starRTC demo for Android
 
 ![StarRTC_demo](StarRTC_demo.jpg)
+纯语音直播间
+==
+![audio_live](audio_live.png)
 
 互动连麦直播
 ==
