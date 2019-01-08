@@ -97,7 +97,7 @@ https://github.com/starrtc/starrtc_demo_server_sdk_php
 
 自行部署服务端程序
 ===
-正在整理中，敬请期待...
+https://github.com/starrtc/starrtc_server
 
 更多示例
 ==
