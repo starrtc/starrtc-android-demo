@@ -95,6 +95,10 @@ https://github.com/starrtc/android-sdk
 ===
 https://github.com/starrtc/starrtc_demo_server_sdk_php
 
+自行部署服务端程序
+===
+正在整理中，敬请期待...
+
 更多示例
 ==
 测试小车，人脸识别，在线教育等请参见：https://docs.starrtc.com/en/download/
