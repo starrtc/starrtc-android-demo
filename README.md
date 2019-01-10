@@ -59,6 +59,10 @@ https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
 
 ![arm_hdmi_screen](arm_hdmi_screen.jpg)
 
+hdmi接摄像头：
+
+![camera](camera.jpg)
+
 电视盒子
 ==
 
