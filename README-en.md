@@ -2,19 +2,19 @@
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
-audio live
+纯语音直播间
 ==
 ![audio_live](audio_live.png)
 
-live
+纯语音直播间
 ==
 ![live](live.jpg)
 
-meeting
+多人视频会议
 ==
 ![meeting](meeting.png)
 
-edu
+在线教育
 ==
 pdf文档上传标记直播，白板
 
@@ -22,14 +22,14 @@ pdf文档上传标记直播，白板
 
 ![edu_whiteboard](edu_whiteboard.jpg)
 
-IM
+IM演示
 ==
 轻量级IM，安卓,ios和web互通，支持一对一聊天，群聊，聊天室，公有云免费！
 
 ![im](im.jpg)
 P2P直连
 ==
-direct voip：
+不经过服务器直连：
 
 ![p2p](p2p.jpg)
 
