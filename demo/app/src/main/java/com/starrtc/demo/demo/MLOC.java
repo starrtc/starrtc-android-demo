@@ -33,8 +33,6 @@ import java.util.TimerTask;
 public class MLOC {
     public static Context appContext;
     public static String agentId = "stargWeHN8Y7";
-//    public static String agentId = "starrtc181228";
-//    public static String agentId = "BjR6QV3vUJ4d";
     public static String authKey = "";
     public static String userId = "";
 
@@ -44,14 +42,6 @@ public class MLOC {
     public static String LIVE_VDN_SCHEDULE_URL = "ips2.starrtc.com";
     public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com";
     public static String VOIP_SERVER_URL = "voip2.starrtc.com";
-
-//    public static String STAR_LOGIN_URL             = "192.168.0.1";
-//    public static String IM_SCHEDULE_URL            = "192.168.0.1";
-//    public static String LIVE_SRC_SCHEDULE_URL      = "192.168.0.1";
-//    public static String LIVE_VDN_SCHEDULE_URL      = "192.168.0.1";
-//    public static String CHAT_ROOM_SCHEDULE_URL     = "192.168.0.1";
-//    public static String VOIP_SERVER_URL            = "192.168.0.1";
-
 
     public static Boolean hasLogout = false;
 

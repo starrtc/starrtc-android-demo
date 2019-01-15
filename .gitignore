@@ -12,6 +12,7 @@
 bin/
 gen/
 build/
+release/
 
 # gradle
 .gradle/
