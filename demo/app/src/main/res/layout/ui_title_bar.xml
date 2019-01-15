@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:background="#FF6c00"
+    >
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:text="StarRTC"
+        />
+    <RelativeLayout
+        android:id="@+id/title_left_btn"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:visibility="invisible">
+        <ImageView
+            android:id="@+id/title_left_icon"
+            android:layout_width="8dp"
+            android:layout_height="15dp"
+            android:src="@drawable/icon_title_back"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/title_right_btn"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible">
+        <ImageView
+            android:id="@+id/title_right_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/icon_title_group"/>
+    </RelativeLayout>
+</RelativeLayout>

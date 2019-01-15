@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/white_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
+        <ImageView
+            android:id="@+id/face"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/splash_face"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="StarRTC"
+            android:textColor="#fc5800"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="330dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/black_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000">
+        <ImageView
+            android:id="@+id/eye"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/splash_eye"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>
