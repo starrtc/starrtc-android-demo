@@ -139,26 +139,8 @@ public class SplashActivity extends Activity implements IEventListener {
 //            int logConfig = 2 | 4 | 16;
 //            int logConfig = 0;
             customConfig.setLogLevel(logConfig,1);
-//            customConfig.setDefConfigCameraId(0);
 //            StarLog.setDebug(false);
 //            MLOC.setDebug(false);
-//test
-//            customConfig.setDefaultConfig(true,false,1,0,false,true,true, XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_120SW_160SH);
-//            customConfig.setCustomEncoderConfig(640,480,320,240,5,300,2);
-
-
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        String testHostName = "aisee.f3322.org";
-//                        String addr = InetAddress.getByName(testHostName).getHostAddress();
-//                        StarSocket.setServerUrl(addr);
-//                    } catch (UnknownHostException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }).start();
 
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
@@ -168,16 +150,6 @@ public class SplashActivity extends Activity implements IEventListener {
         }
         startAnimation();
         checkNetworkConnectAndLogin();
-
-        //测试用绕过登录
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                removeListener();
-//                startActivity(new Intent(SplashActivity.this,StarAvDemoActivity.class));
-//                finish();
-//            }
-//        },1000);
     }
 
     @Override
