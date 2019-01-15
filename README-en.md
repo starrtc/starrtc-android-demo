@@ -2,19 +2,19 @@
 
 ![StarRTC_demo](StarRTC_demo.jpg)
 
-纯语音直播间
+audio live
 ==
 ![audio_live](audio_live.png)
 
-互动连麦直播
+live
 ==
+![live](live.jpg)
 
-
-多人视频会议
+meeting
 ==
+![meeting](meeting.png)
 
-
-在线教育
+edu
 ==
 pdf文档上传标记直播，白板
 
@@ -22,14 +22,14 @@ pdf文档上传标记直播，白板
 
 ![edu_whiteboard](edu_whiteboard.jpg)
 
-IM演示
+IM
 ==
 轻量级IM，安卓,ios和web互通，支持一对一聊天，群聊，聊天室，公有云免费！
 
 ![im](im.jpg)
 P2P直连
 ==
-不经过服务器直连：
+direct voip：
 
 ![p2p](p2p.jpg)
 
@@ -41,6 +41,9 @@ P2P直连
 
 ![door_calling](door_calling.jpg)
 
+![door](door.jpg)
+
+![door_voip](door_voip.jpg)
 
 树莓派小车
 ==
@@ -59,6 +62,18 @@ https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
 hdmi接摄像头：
 
 ![camera](camera.jpg)
+
+电视盒子
+==
+
+![tv_box_voip](tv_box_voip.jpg)
+
+录屏
+==
+
+![screen_phone](screen_phone.jpg)
+
+![screen_web](screen_web.jpg)
 
 APP下载
 =====
