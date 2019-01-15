@@ -1,79 +1,79 @@
 # starRTC demo for Android
 
-![StarRTC_demo](StarRTC_demo.jpg)
+![StarRTC_demo](assets/StarRTC_demo.jpg)
 
 纯语音直播间
 ==
-![audio_live](audio_live.png)
+![audio_live](assets/audio_live.png)
 
 纯语音直播间
 ==
-![live](live.jpg)
+![live](assets/live.jpg)
 
 多人视频会议
 ==
-![meeting](meeting.png)
+![meeting](assets/meeting.png)
 
 在线教育
 ==
 pdf文档上传标记直播，白板
 
-![edu_pdf](edu_pdf.jpg)
+![edu_pdf](assets/edu_pdf.jpg)
 
-![edu_whiteboard](edu_whiteboard.jpg)
+![edu_whiteboard](assets/edu_whiteboard.jpg)
 
 IM演示
 ==
 轻量级IM，安卓,ios和web互通，支持一对一聊天，群聊，聊天室，公有云免费！
 
-![im](im.jpg)
+![im](assets/im.jpg)
 P2P直连
 ==
 不经过服务器直连：
 
-![p2p](p2p.jpg)
+![p2p](assets/p2p.jpg)
 
-![p2p_calling](p2p_calling.jpg)
+![p2p_calling](assets/p2p_calling.jpg)
 
 
 门禁对讲
 ==
 
-![door_calling](door_calling.jpg)
+![door_calling](assets/door_calling.jpg)
 
-![door](door.jpg)
+![door](assets/door.jpg)
 
-![door_voip](door_voip.jpg)
+![door_voip](assets/door_voip.jpg)
 
 树莓派小车
 ==
 树莓派小车将视频实时传回到操控者的手机上：
 
-https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
+https://github.com/starrtc/android-demo/raw/master/assets/rpi_car.MP4
 
 物联网硬件
 ==
 海思arm板采集mac电脑的hdmi信号进行实时录屏直播：
 
-![arm_hdmi](arm_hdmi.jpg)
+![arm_hdmi](assets/arm_hdmi.jpg)
 
-![arm_hdmi_screen](arm_hdmi_screen.jpg)
+![arm_hdmi_screen](assets/arm_hdmi_screen.jpg)
 
 hdmi接摄像头：
 
-![camera](camera.jpg)
+![camera](assets/camera.jpg)
 
 电视盒子
 ==
 
-![tv_box_voip](tv_box_voip.jpg)
+![tv_box_voip](assets/tv_box_voip.jpg)
 
 录屏
 ==
 
-![screen_phone](screen_phone.jpg)
+![screen_phone](assets/screen_phone.jpg)
 
-![screen_web](screen_web.jpg)
+![screen_web](assets/screen_web.jpg)
 
 APP下载
 =====
@@ -81,7 +81,7 @@ APP下载
 
 [StarRTC_demo 安装包](https://github.com/starrtc/android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
 
-![StarRTC_demo 安装包](android.png)
+![StarRTC_demo 安装包](assets/android.png)
 
 IM测试时，除了app之间可以互发消息，app也可以和这个页面互发消息进行测试：
 
@@ -126,4 +126,4 @@ https://github.com/starrtc/android-demo/wiki/Changelog
 
 对比
 ===
-webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/webRTC_vs_starRTC.mp4
+webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/assets/webRTC_vs_starRTC.mp4

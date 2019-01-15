@@ -46,7 +46,7 @@ P2P直连
 ==
 树莓派小车将视频实时传回到操控者的手机上：
 
-https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
+https://github.com/starrtc/android-demo/raw/master/assets/rpi_car.MP4
 
 物联网硬件
 ==
@@ -107,4 +107,4 @@ https://github.com/starrtc/android-demo/wiki/Changelog
 
 对比
 ===
-webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/webRTC_vs_starRTC.mp4
+webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
