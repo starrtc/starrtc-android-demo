@@ -56,10 +56,6 @@ https://github.com/starrtc/android-demo/raw/master/rpi_car.MP4
 
 ![arm_hdmi_screen](arm_hdmi_screen.jpg)
 
-hdmi接摄像头：
-
-![camera](camera.jpg)
-
 APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
