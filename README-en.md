@@ -91,11 +91,6 @@ IM测试时，除了app之间可以互发消息，app也可以和这个页面互
 
 [H5测试](https://www.starrtc.com/demo/h5/)
 
-SDK下载
-===
-
-https://github.com/starrtc/android-sdk
-
 后台api与数据库
 ===
 https://github.com/starrtc/starrtc_demo_server_sdk_php
