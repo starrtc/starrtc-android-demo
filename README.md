@@ -46,7 +46,7 @@ P2P直连
 ==
 树莓派小车将视频实时传回到操控者的手机上：
 
-https://github.com/starrtc/android-demo/raw/master/assets/rpi_car.MP4
+https://github.com/starrtc/starrtc-android-demo/raw/master/assets/rpi_car.MP4
 
 物联网硬件
 ==
@@ -60,7 +60,7 @@ APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
 
-[StarRTC_demo 安装包](https://github.com/starrtc/android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
+[StarRTC_demo 安装包](https://github.com/starrtc/starrtc-android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
 
 ![StarRTC_demo 安装包](assets/android.png)
 
@@ -98,8 +98,8 @@ QQ群：807242783
 
 更新记录
 ===
-https://github.com/starrtc/android-demo/wiki/Changelog
+https://github.com/starrtc/starrtc-android-demo/wiki/Changelog
 
 对比
 ===
-webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
+webRTC vs starRTC: https://github.com/starrtc/starrtc-android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
