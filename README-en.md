@@ -93,11 +93,11 @@ IM测试时，除了app之间可以互发消息，app也可以和这个页面互
 
 后台api与数据库
 ===
-https://github.com/starrtc/starrtc_demo_server_sdk_php
+https://github.com/starrtc/starrtc-demo-server-api-php
 
 自行部署服务端程序
 ===
-https://github.com/starrtc/starrtc_server
+https://github.com/starrtc/starrtc-server
 
 More demo
 ==
