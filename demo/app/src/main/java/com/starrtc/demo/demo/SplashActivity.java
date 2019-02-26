@@ -97,13 +97,22 @@ public class SplashActivity extends Activity implements IEventListener {
                     }).show();
                 }
             }else{
-                init();
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_MORE)){
+                    init();
+                }else{
+                    initFree();
+                }
             }
         }else{
-            init();
+            if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_MORE)){
+                init();
+            }else{
+                initFree();
+            }
         }
     }
 
+    //正常SDK登录
     private void init(){
         isLogin = StarRtcCore.getInstance().getIsOnline();
         if(!isLogin){
@@ -113,9 +122,7 @@ public class SplashActivity extends Activity implements IEventListener {
                 MLOC.saveUserId(MLOC.userId);
             }
             addListener();
-            //初始化
-
-
+            //初始化 完整版
             XHCustomConfig customConfig =  XHCustomConfig.getInstance();
             customConfig.setAppId(MLOC.agentId);
             customConfig.setLoginServerUrl(MLOC.STAR_LOGIN_URL);
@@ -136,12 +143,9 @@ public class SplashActivity extends Activity implements IEventListener {
                 }
             });
             int logConfig = 1 | 2 | 4 | 8 | 16;
-//            int logConfig = 2 | 4 | 16;
-//            int logConfig = 0;
             customConfig.setLogLevel(logConfig,1);
-//            StarLog.setDebug(false);
-//            MLOC.setDebug(false);
-
+            customConfig.setDefConfigOpenGLESEnable(false);
+            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
@@ -151,6 +155,63 @@ public class SplashActivity extends Activity implements IEventListener {
         startAnimation();
         checkNetworkConnectAndLogin();
     }
+
+    //开放版SDK初始化
+    private void initFree(){
+        MLOC.init(getApplicationContext());
+        if(MLOC.userId.equals("")){
+            MLOC.userId = ""+(new Random().nextInt(900000)+100000);
+            MLOC.saveUserId(MLOC.userId);
+        }
+        addListener();
+        //初始化 开放版 无调度 直接指定Server地址
+        XHCustomConfig customConfig =  XHCustomConfig.getInstance();
+        customConfig.setAppId(MLOC.agentId);
+        customConfig.setChatroomScheduleUrl(MLOC.CHAT_ROOM_SERVER_URL);
+        customConfig.setLiveSrcScheduleUrl(MLOC.LIVE_SRC_SERVER_URL);
+        customConfig.setLiveVdnScheduleUrl(MLOC.LIVE_VDN_SERVER_URL);
+        customConfig.setImScheduleUrl(MLOC.IM_SERVER_URL);
+        customConfig.setVoipServerUrl(MLOC.VOIP_SERVER_URL);
+        customConfig.initSDKForFree(this, MLOC.userId, new IXHErrorCallback() {
+            @Override
+            public void error(final String errMsg, Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(errMsg);
+                    }
+                });
+            }
+        });
+        int logConfig = 1 | 2 | 4 | 8 | 16;
+        customConfig.setLogLevel(logConfig,1);
+        customConfig.setDefConfigOpenGLESEnable(false);
+        customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
+        XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
+        XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
+        XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
+        XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
+        XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
+        startAnimation();
+
+        XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                isLogin = true;
+            }
+            @Override
+            public void failed(final String errMsg) {
+                MLOC.d("",errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(SplashActivity.this,errMsg);
+                    }
+                });
+            }
+        });
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,  final String[] permissions, int[] grantResults) {

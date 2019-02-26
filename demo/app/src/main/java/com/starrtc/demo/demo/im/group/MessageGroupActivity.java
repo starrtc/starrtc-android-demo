@@ -144,6 +144,8 @@ public class MessageGroupActivity extends Activity implements IEventListener{
         XHIMMessage imMessage = groupManager.sendMessage(mGroupId, new ArrayList<String>(), msg, null);
 
         HistoryBean historyBean = new HistoryBean();
+        historyBean.setGroupName(mGroupName);
+        historyBean.setGroupCreaterId(mCreaterId);
         historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
         historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
         historyBean.setLastMsg(imMessage.contentData);

@@ -35,14 +35,42 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/sdk_type"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="服务配置选择"/>
 
+                <TextView
+                    android:id="@+id/sdk_type_text"
+                    android:layout_width="299dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#ff0000"
+                    android:textSize="12sp"
+                    android:gravity="right"/>
+                <ImageView
+                    android:layout_width="6dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/icon_right"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="#FFFFFF"
-                android:layout_marginTop="10dp">
+                android:background="#FFFFFF">
                 <TextView
                     android:gravity="right"
                     android:layout_width="100dp"
@@ -76,99 +104,187 @@
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/more_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="登录服务"/>
-                <EditText
-                    android:id="@+id/login_host"
+                android:orientation="vertical">
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="登录服务"/>
+                    <EditText
+                        android:id="@+id/login_host"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="消息调度"/>
+                    <EditText
+                        android:id="@+id/im_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="聊天室调度"/>
+                    <EditText
+                        android:id="@+id/chatroom_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="上传调度"/>
+                    <EditText
+                        android:id="@+id/src_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="下载调度"/>
+                    <EditText
+                        android:id="@+id/vdn_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/singel_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="消息服务"/>
-                <EditText
-                    android:id="@+id/im_host"
+                android:orientation="vertical">
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="聊天室服务"/>
-                <EditText
-                    android:id="@+id/chatroom_host"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="消息服务"/>
+                    <EditText
+                        android:id="@+id/im_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="上传服务"/>
-                <EditText
-                    android:id="@+id/src_host"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="聊天室服务"/>
+                    <EditText
+                        android:id="@+id/chatroom_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="下载服务"/>
-                <EditText
-                    android:id="@+id/vdn_host"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="上传服务"/>
+                    <EditText
+                        android:id="@+id/src_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="下载服务"/>
+                    <EditText
+                        android:id="@+id/vdn_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -183,12 +299,13 @@
                     android:layout_margin="10dp"
                     android:text="VOIP服务"/>
                 <EditText
-                    android:id="@+id/voip_host"
+                    android:id="@+id/voip_server"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
+
             <TextView
                 android:id="@+id/btn"
                 android:layout_width="match_parent"
