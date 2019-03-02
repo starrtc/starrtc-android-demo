@@ -54,9 +54,9 @@ public class SplashActivity extends Activity implements IEventListener {
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
+
+        MLOC.init(this);
         checkPermission();
-
-
     }
 
     private int times = 0;
@@ -116,7 +116,6 @@ public class SplashActivity extends Activity implements IEventListener {
     private void init(){
         isLogin = StarRtcCore.getInstance().getIsOnline();
         if(!isLogin){
-            MLOC.init(getApplicationContext());
             if(MLOC.userId.equals("")){
                 MLOC.userId = ""+(new Random().nextInt(900000)+100000);
                 MLOC.saveUserId(MLOC.userId);
@@ -158,7 +157,6 @@ public class SplashActivity extends Activity implements IEventListener {
 
     //开放版SDK初始化
     private void initFree(){
-        MLOC.init(getApplicationContext());
         if(MLOC.userId.equals("")){
             MLOC.userId = ""+(new Random().nextInt(900000)+100000);
             MLOC.saveUserId(MLOC.userId);
@@ -167,10 +165,10 @@ public class SplashActivity extends Activity implements IEventListener {
         //初始化 开放版 无调度 直接指定Server地址
         XHCustomConfig customConfig =  XHCustomConfig.getInstance();
         customConfig.setAppId(MLOC.agentId);
-        customConfig.setChatroomScheduleUrl(MLOC.CHAT_ROOM_SERVER_URL);
-        customConfig.setLiveSrcScheduleUrl(MLOC.LIVE_SRC_SERVER_URL);
-        customConfig.setLiveVdnScheduleUrl(MLOC.LIVE_VDN_SERVER_URL);
-        customConfig.setImScheduleUrl(MLOC.IM_SERVER_URL);
+        customConfig.setChatroomServerUrl(MLOC.CHAT_ROOM_SERVER_URL);
+        customConfig.setLiveSrcServerUrl(MLOC.LIVE_SRC_SERVER_URL);
+        customConfig.setLiveVdnServerUrl(MLOC.LIVE_VDN_SERVER_URL);
+        customConfig.setImServereUrl(MLOC.IM_SERVER_URL);
         customConfig.setVoipServerUrl(MLOC.VOIP_SERVER_URL);
         customConfig.initSDKForFree(this, MLOC.userId, new IXHErrorCallback() {
             @Override
@@ -376,6 +374,5 @@ public class SplashActivity extends Activity implements IEventListener {
             }
         });
         va.start();
-
     }
 }

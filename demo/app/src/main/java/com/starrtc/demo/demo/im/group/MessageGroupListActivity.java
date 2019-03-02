@@ -3,7 +3,9 @@ package com.starrtc.demo.demo.im.group;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,11 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class MessageGroupListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -94,8 +101,49 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
     public void onResume(){
         super.onResume();
         MLOC.hasNewGroupMsg = false;
-        InterfaceUrls.demoRequestGroupList(MLOC.userId);
+        queryGroupList();
     }
+
+    private void queryGroupList(){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_SINGLE)){
+            XHClient.getInstance().getGroupManager().queryGroupList(new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    MLOC.d("IM_GROUP","applyGetGroupList success:"+data);
+                    runOnUiThread(new Runnable() {
+                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                        @Override
+                        public void run() {
+                            try {
+                                JSONArray datas = (JSONArray) data;
+                                ArrayList<MessageGroupInfo> res = new ArrayList<MessageGroupInfo>();
+                                for (int i = 0;i<datas.length();i++){
+                                    MessageGroupInfo groupInfo = new MessageGroupInfo();
+                                    groupInfo.createrId = datas.getJSONObject(i).getString("creator");
+                                    groupInfo.groupId = datas.getJSONObject(i).getString("groupId");
+                                    groupInfo.groupName = datas.getJSONObject(i).getString("groupName");
+                                    res.add(groupInfo);
+                                }
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,true,res);
+                                return;
+                            } catch (JSONException e) {
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,"数据解析失败");
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("IM_GROUP","applyGetGroupList failed:"+errMsg);
+                }
+            });
+        }else{
+            InterfaceUrls.demoRequestGroupList(MLOC.userId);
+        }
+    }
+
     @Override
     public void onStart(){
         super.onStart();
@@ -119,13 +167,12 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_GROUP_GOT_LIST:
-                refreshLayout.setRefreshing(false);
                 mDatas.clear();
                 if(success){
                     ArrayList<MessageGroupInfo> res = (ArrayList<MessageGroupInfo>) eventObj;
                     List<HistoryBean> historyList = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_GROUP);
                     //删除已经不再的群
-                    for(int i=historyList.size()-1;i>0;i--){
+                    for(int i=historyList.size()-1;i>=0;i--){
                         HistoryBean historyBean = historyList.get(i);
                         Boolean needRemove = true;
                         for(int j = 0;j<res.size();j++){
@@ -166,6 +213,7 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        refreshLayout.setRefreshing(false);
                         myListAdapter.notifyDataSetChanged();
                     }
                 });
@@ -192,7 +240,7 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
 
     @Override
     public void onRefresh() {
-        InterfaceUrls.demoRequestGroupList(MLOC.userId);
+        queryGroupList();
     }
 
 

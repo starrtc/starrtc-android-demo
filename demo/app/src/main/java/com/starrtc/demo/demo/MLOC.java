@@ -65,7 +65,9 @@ public class MLOC {
 
     public static void init(Context context){
         appContext = context;
-        coreDB = new CoreDB();
+        if(coreDB==null){
+            coreDB = new CoreDB();
+        }
         userId = loadSharedData(context,"userId",userId);
         agentId = loadSharedData(context,"agentId",agentId);
         InterfaceUrls.setBaseUrl(loadSharedData(context,"workServer","https://api.starrtc.com/public"));
@@ -79,7 +81,7 @@ public class MLOC {
         LIVE_SRC_SERVER_URL = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
         LIVE_VDN_SERVER_URL = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
         CHAT_ROOM_SERVER_URL = loadSharedData(context,"CHAT_ROOM_SERVER_URL",CHAT_ROOM_SERVER_URL);
-        SERVER_TYPE = loadSharedData(context,"SERVER_TYPE",SERVER_TYPE_MORE);
+        SERVER_TYPE = loadSharedData(context,"SERVER_TYPE",SERVER_TYPE_SINGLE);
     }
 
     private static Boolean debug = true;

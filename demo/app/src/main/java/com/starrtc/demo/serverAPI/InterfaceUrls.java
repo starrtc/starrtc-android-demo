@@ -256,7 +256,6 @@ public class InterfaceUrls {
                     }
                 }
                 AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,"数据解析失败");
-
             }
         });
         Bundle bundle = new Bundle();

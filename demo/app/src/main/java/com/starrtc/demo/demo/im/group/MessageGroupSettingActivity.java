@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
@@ -33,6 +35,10 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHGroupManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +150,45 @@ public class MessageGroupSettingActivity extends BaseActivity{
         vRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(5,StaggeredGridLayoutManager.VERTICAL));
         mGroupId = getIntent().getStringExtra("groupId");
         mGroupCreaterId = getIntent().getStringExtra("createrId");
-        InterfaceUrls.demoRequestGroupMembers(mGroupId);
+        queryGroupMemberList();
+    }
+
+    private void queryGroupMemberList(){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_SINGLE)){
+            groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    MLOC.d("IM_GROUP","applyGetUserList success:"+data);
+                    runOnUiThread(new Runnable() {
+                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                        @Override
+                        public void run() {
+                            try {
+                                JSONArray datas = ((JSONObject) data).getJSONArray("data");
+                                int ignore = ((JSONObject) data).getInt("ignore");
+                                findViewById(R.id.switch_btn).setSelected(ignore==1?true:false);
+                                ArrayList<String> res = new ArrayList<String>();
+                                for (int i = 0;i<datas.length();i++){
+                                    String uid = datas.getJSONObject(i).getString("userId");
+                                    res.add(uid);
+                                }
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
+                                return;
+                            } catch (JSONException e) {
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("IM_GROUP","applyGetUserList failed:"+errMsg);
+                }
+            });
+        }else{
+            InterfaceUrls.demoRequestGroupMembers(mGroupId);
+        }
     }
 
     private void addListener(){
@@ -202,7 +246,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     @Override
                     public void run() {
                         MLOC.showMsg(MessageGroupSettingActivity.this, "成员添加成功");
-                        InterfaceUrls.demoRequestGroupMembers(mGroupId);
+                        queryGroupMemberList();
                     }
                 });
             }
@@ -229,7 +273,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     @Override
                     public void run() {
                         MLOC.showMsg(MessageGroupSettingActivity.this, "成员删除成功");
-                        InterfaceUrls.demoRequestGroupMembers(mGroupId);
+                        queryGroupMemberList();
                     }
                 });
             }

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,10 @@ import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHGroupManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MessageGroupActivity extends Activity implements IEventListener{
     public static String TYPE = "TYPE";
@@ -168,7 +174,8 @@ public class MessageGroupActivity extends Activity implements IEventListener{
     public void onResume(){
         super.onResume();
         if(mGroupId!=null){
-            InterfaceUrls.demoRequestGroupMembers(mGroupId);
+            queryGroupMemberList();
+
             mDatas.clear();
             List<MessageBean> list =  MLOC.getMessageList(mGroupId);
             if(list!=null&&list.size()>0){
@@ -177,6 +184,8 @@ public class MessageGroupActivity extends Activity implements IEventListener{
             mAdapter.notifyDataSetChanged();
         }
     }
+
+
 
     private void addListener(){
         AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
@@ -230,6 +239,43 @@ public class MessageGroupActivity extends Activity implements IEventListener{
                     });
                 }
                 break;
+        }
+    }
+
+    private void queryGroupMemberList(){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_SINGLE)){
+            groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    MLOC.d("IM_GROUP","applyGetUserList success:"+data);
+                    runOnUiThread(new Runnable() {
+                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                        @Override
+                        public void run() {
+                            try {
+                                JSONArray datas = ((JSONObject) data).getJSONArray("data");
+                                ArrayList<String> res = new ArrayList<String>();
+                                for (int i = 0;i<datas.length();i++){
+                                    String uid = datas.getJSONObject(i).getString("userId");
+                                    res.add(uid);
+                                }
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
+                                return;
+                            } catch (JSONException e) {
+                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("IM_GROUP","applyGetUserList failed:"+errMsg);
+                }
+            });
+        }else{
+            InterfaceUrls.demoRequestGroupMembers(mGroupId);
         }
     }
 
