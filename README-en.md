@@ -49,7 +49,7 @@ P2P直连
 ==
 树莓派小车将视频实时传回到操控者的手机上：
 
-https://github.com/starrtc/android-demo/raw/master/assets/rpi_car.MP4
+https://github.com/starrtc/starrtc-android-demo/raw/master/assets/rpi_car.MP4
 
 物联网硬件
 ==
@@ -79,7 +79,7 @@ APP下载
 =====
 如果不想自己编译，可直接下载apk进行测试：
 
-[StarRTC_demo 安装包](https://github.com/starrtc/android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
+[点击下载Android示例程序](https://github.com/starrtc/starrtc-android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
 
 ![StarRTC_demo 安装包](assets/android.png)
 
@@ -93,13 +93,13 @@ IM测试时，除了app之间可以互发消息，app也可以和这个页面互
 
 后台api与数据库
 ===
-https://github.com/starrtc/starrtc_demo_server_sdk_php
+https://github.com/starrtc/starrtc-demo-server-api-php
 
 自行部署服务端程序
 ===
-https://github.com/starrtc/starrtc_server
+https://github.com/starrtc/starrtc-server
 
-更多示例
+More demo
 ==
 测试小车，人脸识别，在线教育等请参见：https://docs.starrtc.com/en/download/
 
@@ -115,10 +115,10 @@ QQ ： 2162498688
 
 QQ群：807242783
 
-更新记录
+ChangeLog
 ===
-https://github.com/starrtc/android-demo/wiki/Changelog
+https://github.com/starrtc/starrtc-android-demo/wiki/Changelog
 
-对比
+Compare
 ===
-webRTC vs starRTC: https://github.com/starrtc/android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
+webRTC vs starRTC: https://github.com/starrtc/starrtc-android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
