@@ -5,7 +5,6 @@
 /gradle/wrapper/gradle-wrapper.properties
 ##----------Android----------
 # build
-*.apk
 *.ap_
 *.dex
 *.class
