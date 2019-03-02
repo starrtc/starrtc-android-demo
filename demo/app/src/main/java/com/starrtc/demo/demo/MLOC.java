@@ -44,10 +44,10 @@ public class MLOC {
     public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com:9907";
 
     public static String VOIP_SERVER_URL = "voip2.starrtc.com:10086";
-    public static String IM_SERVER_URL = "aisee.f3322.org:19903";
-    public static String LIVE_SRC_SERVER_URL = "aisee.f3322.org:19928";
-    public static String LIVE_VDN_SERVER_URL = "aisee.f3322.org:19925";
-    public static String CHAT_ROOM_SERVER_URL = "aisee.f3322.org:19906";
+    public static String IM_SERVER_URL = "xxxx.xxxx.com:19903";
+    public static String LIVE_SRC_SERVER_URL = "xxxx.xxxx.com:19928";
+    public static String LIVE_VDN_SERVER_URL = "xxxx.xxxx.com:19925";
+    public static String CHAT_ROOM_SERVER_URL = "xxxx.xxxx.com:19906";
 
     public static String SERVER_TYPE_MORE = "MORE";
     public static String SERVER_TYPE_SINGLE = "SINGLE";
