@@ -243,7 +243,7 @@ public class MessageGroupActivity extends Activity implements IEventListener{
     }
 
     private void queryGroupMemberList(){
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_SINGLE)){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
             groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
                 @Override
                 public void success(final Object data) {

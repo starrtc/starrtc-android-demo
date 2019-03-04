@@ -37,10 +37,7 @@ import com.starrtc.demo.listener.XHVoipManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
-import com.starrtc.starrtcsdk.socket.StarSocket;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -97,14 +94,14 @@ public class SplashActivity extends Activity implements IEventListener {
                     }).show();
                 }
             }else{
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_MORE)){
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
                     init();
                 }else{
                     initFree();
                 }
             }
         }else{
-            if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_MORE)){
+            if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
                 init();
             }else{
                 initFree();

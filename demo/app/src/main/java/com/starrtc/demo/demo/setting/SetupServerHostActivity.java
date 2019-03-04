@@ -17,7 +17,7 @@ import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.starrtcsdk.api.XHClient;
 
 public class SetupServerHostActivity extends Activity {
-    String[] arr = {"免登录+单服务器","登录验证+服务调度"};
+    String[] arr = {"自定义服务+免登录","公有服务+登录验证"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +40,13 @@ public class SetupServerHostActivity extends Activity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(i==1){
                             //多服务
-                            MLOC.saveServerType(MLOC.SERVER_TYPE_MORE);
+                            MLOC.saveServerType(MLOC.SERVER_TYPE_PUBLIC);
                             findViewById(R.id.more_box).setVisibility(View.VISIBLE);
                             findViewById(R.id.singel_box).setVisibility(View.GONE);
                             ((TextView)findViewById(R.id.sdk_type_text)).setText(arr[1]);
                         }else{
                             //单服务免登录
-                            MLOC.saveServerType(MLOC.SERVER_TYPE_SINGLE);
+                            MLOC.saveServerType(MLOC.SERVER_TYPE_CUSTOM);
                             findViewById(R.id.more_box).setVisibility(View.GONE);
                             findViewById(R.id.singel_box).setVisibility(View.VISIBLE);
                             ((TextView)findViewById(R.id.sdk_type_text)).setText(arr[0]);
@@ -140,7 +140,7 @@ public class SetupServerHostActivity extends Activity {
         ((EditText)findViewById(R.id.src_server)).setText(MLOC.LIVE_SRC_SERVER_URL);
         ((EditText)findViewById(R.id.vdn_server)).setText(MLOC.LIVE_VDN_SERVER_URL);
 
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_MORE)){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
             findViewById(R.id.more_box).setVisibility(View.VISIBLE);
             findViewById(R.id.singel_box).setVisibility(View.GONE);
             ((TextView)findViewById(R.id.sdk_type_text)).setText(arr[1]);

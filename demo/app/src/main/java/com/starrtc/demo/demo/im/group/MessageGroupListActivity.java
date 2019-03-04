@@ -105,7 +105,7 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
     }
 
     private void queryGroupList(){
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_SINGLE)){
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
             XHClient.getInstance().getGroupManager().queryGroupList(new IXHResultCallback() {
                 @Override
                 public void success(final Object data) {

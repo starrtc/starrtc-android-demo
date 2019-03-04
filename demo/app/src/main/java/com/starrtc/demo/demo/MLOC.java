@@ -44,14 +44,14 @@ public class MLOC {
     public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com:9907";
 
     public static String VOIP_SERVER_URL = "voip2.starrtc.com:10086";
-    public static String IM_SERVER_URL = "xxxx.xxxx.com:19903";
-    public static String LIVE_SRC_SERVER_URL = "xxxx.xxxx.com:19928";
-    public static String LIVE_VDN_SERVER_URL = "xxxx.xxxx.com:19925";
-    public static String CHAT_ROOM_SERVER_URL = "xxxx.xxxx.com:19906";
+    public static String IM_SERVER_URL = "xxx.xxx.xxx:00000";
+    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:00000";
+    public static String LIVE_VDN_SERVER_URL = "xxx.xxx.xxx:00000";
+    public static String CHAT_ROOM_SERVER_URL = "xxx.xxx.xxx:00000";
 
-    public static String SERVER_TYPE_MORE = "MORE";
-    public static String SERVER_TYPE_SINGLE = "SINGLE";
-    public static String SERVER_TYPE = SERVER_TYPE_SINGLE;
+    public static String SERVER_TYPE_PUBLIC = "PUBLIC";
+    public static String SERVER_TYPE_CUSTOM = "CUSTOM";
+    public static String SERVER_TYPE = SERVER_TYPE_PUBLIC;
 
     public static Boolean hasLogout = false;
 
@@ -81,7 +81,7 @@ public class MLOC {
         LIVE_SRC_SERVER_URL = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
         LIVE_VDN_SERVER_URL = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
         CHAT_ROOM_SERVER_URL = loadSharedData(context,"CHAT_ROOM_SERVER_URL",CHAT_ROOM_SERVER_URL);
-        SERVER_TYPE = loadSharedData(context,"SERVER_TYPE",SERVER_TYPE_SINGLE);
+        SERVER_TYPE = loadSharedData(context,"SERVER_TYPE", SERVER_TYPE_PUBLIC);
     }
 
     private static Boolean debug = true;
