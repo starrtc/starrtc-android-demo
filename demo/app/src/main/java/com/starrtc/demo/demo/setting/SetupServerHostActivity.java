@@ -17,7 +17,7 @@ import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.starrtcsdk.api.XHClient;
 
 public class SetupServerHostActivity extends Activity {
-    String[] arr = {"自定义服务+免登录","公有服务+登录验证"};
+    String[] arr = {"私有部署","公有云"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +29,7 @@ public class SetupServerHostActivity extends Activity {
                 finish();
             }
         });
-        ((TextView)findViewById(R.id.title_text)).setText("系统设置");
+        ((TextView)findViewById(R.id.title_text)).setText("服务器配置");
 
         findViewById(R.id.sdk_type).setOnClickListener(new View.OnClickListener() {
             @Override

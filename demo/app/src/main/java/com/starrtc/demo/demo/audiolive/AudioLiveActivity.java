@@ -29,7 +29,6 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
@@ -458,7 +457,7 @@ public class AudioLiveActivity extends BaseActivity {
     }
 
     private void stop(){
-        liveManager.leaveLive(liveId, new IXHResultCallback() {
+        liveManager.leaveLive(new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 stopAndFinish();
@@ -806,9 +805,9 @@ public class AudioLiveActivity extends BaseActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(i==0){
-                                StarRtcCore.getInstance().kickOutUser(userId);
+                                kickUser(userId);
                             }else if(i==1){
-                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                               muteUser(userId,60);
                             }else if(i==2){
                                 mPrivateMsgTargetId = userId;
                                 vEditText.setText("[私"+userId+"]");
@@ -823,9 +822,9 @@ public class AudioLiveActivity extends BaseActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(i==0){
-                                StarRtcCore.getInstance().kickOutUser(userId);
+                                kickUser(userId);
                             }else if(i==1){
-                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                                muteUser(userId,60);
                             }else if(i==2){
                                 mPrivateMsgTargetId = userId;
                                 vEditText.setText("[私"+userId+"]");
@@ -854,6 +853,33 @@ public class AudioLiveActivity extends BaseActivity {
             dialog.show();
         }
 
+    }
+
+    private void kickUser(String userId){
+        liveManager.kickMember(userId, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                //踢人成功
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                //踢人失败
+            }
+        });
+    }
+    private void muteUser(String userId,int times){
+        liveManager.muteMember(userId, times, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                //禁言成功
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                //禁言失败
+            }
+        });
     }
 
     private void stopAndFinish(){

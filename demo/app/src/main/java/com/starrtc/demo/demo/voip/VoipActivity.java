@@ -29,6 +29,7 @@ import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
@@ -350,7 +351,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 });
                 break;
             case R.id.screen_btn:
-                if(!StarRtcCore.getInstance().isHardEncode()){
+                if(!XHCustomConfig.getInstance().getHardwareEnable()){
                     MLOC.showMsg(this,"需要打开硬编模式");
                     return;
                 }

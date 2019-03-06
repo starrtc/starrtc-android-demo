@@ -33,11 +33,12 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
+import com.starrtc.starrtcsdk.core.camera.StarCameraManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
@@ -250,7 +251,7 @@ public class VideoLiveActivity extends BaseActivity {
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StarRtcCore.getInstance().switchCamera();
+                liveManager.switchCamera();
             }
         });
 
@@ -460,7 +461,7 @@ public class VideoLiveActivity extends BaseActivity {
     }
 
     private void stop(){
-        liveManager.leaveLive(liveId, new IXHResultCallback() {
+        liveManager.leaveLive( new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 stopAndFinish();
@@ -550,7 +551,7 @@ public class VideoLiveActivity extends BaseActivity {
         final float mainEndX = clickPlayer.getX();
         final float mainEndY = clickPlayer.getY();
 
-        if(StarRtcCore.openGLESEnable){
+        if(XHCustomConfig.getInstance().getOpenGLESEnable()){
             clickPlayer.setX(clickEndX);
             clickPlayer.setY(clickEndY);
             clickPlayer.getLayoutParams().width = (int) clickEndW;
@@ -1042,9 +1043,9 @@ public class VideoLiveActivity extends BaseActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(i==0){
-                                StarRtcCore.getInstance().kickOutUser(userId);
+                                kickUser(userId);
                             }else if(i==1){
-                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                                muteUser(userId,60);
                             }else if(i==2){
                                 mPrivateMsgTargetId = userId;
                                 vEditText.setText("[私"+userId+"]");
@@ -1059,9 +1060,9 @@ public class VideoLiveActivity extends BaseActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(i==0){
-                                StarRtcCore.getInstance().kickOutUser(userId);
+                                kickUser(userId);
                             }else if(i==1){
-                                StarRtcCore.getInstance().banToSendMessage(userId,60);
+                                muteUser(userId,60);
                             }else if(i==2){
                                 mPrivateMsgTargetId = userId;
                                 vEditText.setText("[私"+userId+"]");
@@ -1091,6 +1092,35 @@ public class VideoLiveActivity extends BaseActivity {
         }
 
     }
+
+
+    private void kickUser(String userId){
+        liveManager.kickMember(userId, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                //踢人成功
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                //踢人失败
+            }
+        });
+    }
+    private void muteUser(String userId,int times){
+        liveManager.muteMember(userId, times, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                //禁言成功
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                //禁言失败
+            }
+        });
+    }
+
     private void stopAndFinish(){
         if(starRTCAudioManager!=null){
             starRTCAudioManager.stop();

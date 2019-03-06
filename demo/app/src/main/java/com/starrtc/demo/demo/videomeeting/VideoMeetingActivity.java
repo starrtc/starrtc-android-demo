@@ -30,10 +30,10 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHMeetingItem;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
@@ -335,7 +335,7 @@ public class VideoMeetingActivity extends BaseActivity{
         final float mainEndX = clickPlayer.getX();
         final float mainEndY = clickPlayer.getY();
 
-        if(StarRtcCore.openGLESEnable){
+        if(XHCustomConfig.getInstance().getOpenGLESEnable()){
             clickPlayer.setX(clickEndX);
             clickPlayer.setY(clickEndY);
             clickPlayer.getLayoutParams().width = (int) clickEndW;

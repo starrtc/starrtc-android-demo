@@ -15,9 +15,7 @@ import com.starrtc.demo.demo.setting.SettingActivity;
 import com.starrtc.demo.demo.videolive.VideoLiveListActivity;
 import com.starrtc.demo.demo.videomeeting.VideoMeetingListActivity;
 import com.starrtc.demo.demo.voip.VoipListActivity;
-import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 
 public class StarAvDemoActivity extends BaseActivity implements View.OnClickListener {

@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.demo.beauty.DemoBeautyCallback;
 import com.starrtc.demo.listener.XHVoipP2PManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.utils.AEvent;
@@ -36,7 +37,7 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.demo.listener.XHVoipManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.core.beauty.StarBeautyManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +112,7 @@ public class SplashActivity extends Activity implements IEventListener {
 
     //正常SDK登录
     private void init(){
-        isLogin = StarRtcCore.getInstance().getIsOnline();
+        isLogin = XHClient.getInstance().getIsOnline();;
         if(!isLogin){
             if(MLOC.userId.equals("")){
                 MLOC.userId = ""+(new Random().nextInt(900000)+100000);
@@ -141,12 +142,13 @@ public class SplashActivity extends Activity implements IEventListener {
             int logConfig = 1 | 2 | 4 | 8 | 16;
             customConfig.setLogLevel(logConfig,1);
             customConfig.setDefConfigOpenGLESEnable(false);
-            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
+//            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
+//            StarBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         }
         startAnimation();
         checkNetworkConnectAndLogin();
@@ -181,12 +183,13 @@ public class SplashActivity extends Activity implements IEventListener {
         int logConfig = 1 | 2 | 4 | 8 | 16;
         customConfig.setLogLevel(logConfig,1);
         customConfig.setDefConfigOpenGLESEnable(false);
-        customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
+//        customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
         XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
         XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
+//        StarBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {

@@ -29,7 +29,8 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.IEventListener;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 public class C2CActivity extends Activity implements IEventListener {
@@ -84,7 +85,15 @@ public class C2CActivity extends Activity implements IEventListener {
     }
 
     private void sendMsg(String msg){
-        XHIMMessage message = StarRtcCore.getInstance().sendMessage(mTargetId,msg);
+        XHIMMessage message = XHClient.getInstance().getChatManager().sendMessage(msg, mTargetId, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+            }
+
+            @Override
+            public void failed(String errMsg) {
+            }
+        });
 
         HistoryBean historyBean = new HistoryBean();
         historyBean.setType(CoreDB.HISTORY_TYPE_C2C);

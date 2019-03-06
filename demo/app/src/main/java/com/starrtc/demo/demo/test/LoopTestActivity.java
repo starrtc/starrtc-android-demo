@@ -15,11 +15,12 @@ import com.starrtc.demo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
+import com.starrtc.starrtcsdk.core.camera.StarCameraManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 import java.util.Set;
 
-public class LoopTestActivity extends BaseActivity implements View.OnClickListener {
+public class LoopTestActivity extends BaseActivity{
 
     private StarPlayer selfPlayer;
     private StarPlayer selfSmallPlayer;
@@ -58,67 +59,13 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
                 onBackPressed();
             }
         });
-        findViewById(R.id.info_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(findViewById(R.id.info_box).getVisibility()==View.VISIBLE){
-                    findViewById(R.id.info_box).setVisibility(View.INVISIBLE);
-                }else{
-                    findViewById(R.id.info_box).setVisibility(View.VISIBLE);
-                }
-            }
-        });
+
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StarRtcCore.getInstance().switchCamera();
+                StarCameraManager.getInstance().switchCamera();
             }
         });
-
-        vVideoSizeText = (TextView) findViewById(R.id.video_size);
-        vVideoFpsText = (TextView) findViewById(R.id.video_fps);
-        vMediaConfigText = (TextView) findViewById(R.id.media_config);
-        vVideoSizeText.setText(StarRtcCore.videoConfig_videoSize);
-        vMediaConfigText.setText(StarRtcCore.videoConfig_mediaEncodeConfig);
-
-        final Handler mHandler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                switch (msg.what){
-                    case 0:
-                        int fps = msg.getData().getInt("fpsBig");
-                        vVideoFpsText.setText("upId = "+ StarRtcCore.keepWatch_upId
-                                +" | fps = "+fps
-                        );
-                        break;
-                }
-                return false;
-            }
-        });
-
-        findViewById(R.id.self_gl_view).setOnClickListener(this);
-        findViewById(R.id.self_small_gl_view).setOnClickListener(this);
-        findViewById(R.id.target_gl_view).setOnClickListener(this);
-        findViewById(R.id.target_small_gl_view).setOnClickListener(this);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true)
-                try {
-                    int fps = (int) StarRtcCore.fpsQueue.take();
-                    if(fps == -1) return;
-                    Message msg = new Message();
-                    msg.what = 0;
-                    Bundle b = new Bundle();
-                    b.putInt("fpsBig",fps);
-                    msg.setData(b);
-                    mHandler.sendMessage(msg);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
         selfPlayer = (StarPlayer) findViewById(R.id.self_gl_view);
         selfSmallPlayer = (StarPlayer) findViewById(R.id.self_small_gl_view);
@@ -170,28 +117,9 @@ public class LoopTestActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onBackPressed() {
         StarRtcCore.getInstance().stopLoopTest();
-        StarRtcCore.stopKeepWatch();
         if(starRTCAudioManager!=null){
             starRTCAudioManager.stop();
         }
         finish();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.target_gl_view:
-                StarRtcCore.startKeepWatch(0);
-                break;
-            case R.id.target_small_gl_view:
-                StarRtcCore.startKeepWatch(1);
-                break;
-            case R.id.self_gl_view:
-                StarRtcCore.startKeepWatch(2);
-                break;
-            case R.id.self_small_gl_view:
-                StarRtcCore.startKeepWatch(3);
-                break;
-        }
     }
 }

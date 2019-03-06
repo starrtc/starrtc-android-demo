@@ -402,7 +402,7 @@ public class MiniClassActivity extends BaseActivity{
     }
 
     private void stop(){
-        classManager.leaveLive(meetingId, new IXHResultCallback() {
+        classManager.leaveLive(new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 stopAndFinish();
