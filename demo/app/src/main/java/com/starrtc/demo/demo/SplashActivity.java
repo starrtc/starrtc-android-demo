@@ -32,12 +32,11 @@ import com.starrtc.demo.listener.XHChatManagerListener;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.demo.listener.XHGroupManagerListener;
 import com.starrtc.demo.listener.XHLoginManagerListener;
-import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.demo.listener.XHVoipManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.beauty.StarBeautyManager;
+import com.starrtc.starrtcsdk.core.beauty.XHBeautyManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +147,7 @@ public class SplashActivity extends Activity implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-//            StarBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         }
         startAnimation();
         checkNetworkConnectAndLogin();
@@ -189,7 +188,7 @@ public class SplashActivity extends Activity implements IEventListener {
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
         XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-//        StarBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
