@@ -11,7 +11,7 @@ import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.StarNetUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
-
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 
 public class VoipP2PDemoActivity extends BaseActivity {
     private boolean onListening = false;
@@ -30,7 +30,6 @@ public class VoipP2PDemoActivity extends BaseActivity {
                 startActivity(new Intent(VoipP2PDemoActivity.this, VoipP2PCreateActivity.class));
             }
         });
-
     }
 
     @Override
@@ -38,7 +37,7 @@ public class VoipP2PDemoActivity extends BaseActivity {
         super.onResume();
         if(!onListening){
             onListening = true;
-            XHClient.getInstance().initStarDirectLink();
+            XHCustomConfig.getInstance().initStarDirectLink();
         }
     }
 
@@ -46,7 +45,7 @@ public class VoipP2PDemoActivity extends BaseActivity {
     public void onBackPressed(){
         removeListener();
         onListening = false;
-        XHClient.getInstance().stopStarDircetLink();
+        XHCustomConfig.getInstance().stopStarDircetLink();
         finish();
     }
 

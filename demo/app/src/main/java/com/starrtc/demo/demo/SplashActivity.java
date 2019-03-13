@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -51,7 +52,6 @@ public class SplashActivity extends Activity implements IEventListener {
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-
         MLOC.init(this);
         checkPermission();
     }
@@ -138,10 +138,8 @@ public class SplashActivity extends Activity implements IEventListener {
                     });
                 }
             });
-            int logConfig = 1 | 2 | 4 | 8 | 16;
-            customConfig.setLogLevel(logConfig,1);
+            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
-//            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
@@ -179,10 +177,8 @@ public class SplashActivity extends Activity implements IEventListener {
                 });
             }
         });
-        int logConfig = 1 | 2 | 4 | 8 | 16;
-        customConfig.setLogLevel(logConfig,1);
+        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
         customConfig.setDefConfigOpenGLESEnable(false);
-//        customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_240BW_320BH_SMALL_NONE);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
         XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());

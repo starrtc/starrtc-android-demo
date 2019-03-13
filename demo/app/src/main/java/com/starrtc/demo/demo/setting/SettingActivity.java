@@ -62,6 +62,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_logout).setOnClickListener(this);
+        findViewById(R.id.btn_uploadlogs).setOnClickListener(this);
     }
     @Override
     public void onResume(){
@@ -185,6 +186,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_about:
                 startActivity(new Intent(this,AboutActivity.class));
+                break;
+            case R.id.btn_uploadlogs:
+                XHCustomConfig.getInstance().uploadLogs();
+                MLOC.showMsg(this,"日志已上传");
                 break;
             case R.id.btn_logout:
                 XHClient.getInstance().getLoginManager().logout();

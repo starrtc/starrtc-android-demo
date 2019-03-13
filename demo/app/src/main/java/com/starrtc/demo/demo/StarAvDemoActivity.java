@@ -26,7 +26,6 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_rtc_main);
         ((TextView)findViewById(R.id.title_text)).setText(R.string.app_name);
-//        MLOC.initSDK(getApplicationContext());
         MLOC.userId = MLOC.loadSharedData(getApplicationContext(),"userId");
         ((ImageView)findViewById(R.id.userinfo_head)).setImageResource(MLOC.getHeadImage(this,MLOC.userId));
         ((TextView)findViewById(R.id.userinfo_id)).setText(MLOC.userId);
