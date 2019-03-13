@@ -50,7 +50,6 @@ public class LoopTestActivity extends BaseActivity{
             }
         });
 
-
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -64,6 +63,11 @@ public class LoopTestActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 StarCameraManager.getInstance().switchCamera();
+                if(starRTCAudioManager.getSelectedAudioDevice()==StarRTCAudioManager.AudioDevice.EARPIECE){
+                    starRTCAudioManager.setDefaultAudioDevice(StarRTCAudioManager.AudioDevice.SPEAKER_PHONE);
+                }else{
+                    starRTCAudioManager.setDefaultAudioDevice(StarRTCAudioManager.AudioDevice.EARPIECE);
+                }
             }
         });
 
