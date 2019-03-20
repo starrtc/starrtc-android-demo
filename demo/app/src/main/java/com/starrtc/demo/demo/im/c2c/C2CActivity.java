@@ -1,6 +1,7 @@
 package com.starrtc.demo.demo.im.c2c;
 
 import android.app.Activity;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,11 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
-public class C2CActivity extends Activity implements IEventListener {
+public class C2CActivity extends Activity implements IEventListener, AdapterView.OnItemLongClickListener {
 
     private EditText vEditText;
     private TextView vTargetId;
@@ -66,6 +69,7 @@ public class C2CActivity extends Activity implements IEventListener {
         mAdapter = new MyChatroomListAdapter();
         vMsgList = (ListView) findViewById(R.id.msg_list);
         vMsgList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        vMsgList.setOnItemLongClickListener(this);
         mAdapter = new MyChatroomListAdapter();
         vMsgList.setAdapter(mAdapter);
 
@@ -186,6 +190,15 @@ public class C2CActivity extends Activity implements IEventListener {
                 MLOC.d("IM_C2C","消息序号："+eventObj);
                 break;
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        // 将文本内容放到系统剪贴板里。
+        cm.setText(mDatas.get(position).getMsg());
+        Toast.makeText(this,"消息已复制",Toast.LENGTH_LONG).show();
+        return false;
     }
 
     public class MyChatroomListAdapter extends BaseAdapter {

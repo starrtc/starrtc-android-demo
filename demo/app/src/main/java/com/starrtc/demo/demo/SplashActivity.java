@@ -138,7 +138,7 @@ public class SplashActivity extends Activity implements IEventListener {
                     });
                 }
             });
-            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
+//            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
@@ -177,7 +177,7 @@ public class SplashActivity extends Activity implements IEventListener {
                 });
             }
         });
-        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
+//        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
         customConfig.setDefConfigOpenGLESEnable(false);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
         XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());

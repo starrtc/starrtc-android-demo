@@ -35,11 +35,11 @@ public class VideoMeetingCreateActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-//                XHConstants.XHMeetingType type =
-//                        findViewById(R.id.switch_type).isSelected()?
-//                                XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic:
-//                                XHConstants.XHMeetingType.XHMeetingTypeLoginPublic;
-                XHConstants.XHMeetingType type = XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic;
+                XHConstants.XHMeetingType type =
+                        findViewById(R.id.switch_type).isSelected()?
+                                XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic:
+                                XHConstants.XHMeetingType.XHMeetingTypeLoginPublic;
+//                XHConstants.XHMeetingType type = XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic;
 
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VideoMeetingCreateActivity.this,"id不能为空");
