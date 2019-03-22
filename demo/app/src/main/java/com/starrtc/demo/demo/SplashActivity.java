@@ -39,6 +39,8 @@ import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.beauty.XHBeautyManager;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -138,7 +140,7 @@ public class SplashActivity extends Activity implements IEventListener {
                     });
                 }
             });
-            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
+//            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
@@ -177,7 +179,7 @@ public class SplashActivity extends Activity implements IEventListener {
                 });
             }
         });
-        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
+//        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
         customConfig.setDefConfigOpenGLESEnable(false);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
         XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
@@ -186,6 +188,8 @@ public class SplashActivity extends Activity implements IEventListener {
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
         XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
+
+        MLOC.d("CCCCCC","1234567890123456aaaaaaaaaaaaaaaa".substring(16));
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
             @Override

@@ -31,6 +31,7 @@ import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -119,21 +120,19 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
         XHClient.getInstance().getChatroomManager().queryChatroomList(new IXHResultCallback() {
             @Override
             public void success(final Object data) {
-                MLOC.d("ssssssss",((JSONObject)data).toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         mDatas.clear();
                         try {
-                            String[] roomIdList = ((JSONObject)data).getString("roomIdList").split(",");
-                            String[] creatorList = ((JSONObject)data).getString("creatorList").split(",");
-                            String[] userDefineDataList = ((JSONObject)data).getString("userDefineDataList").split(",");
-                            for(int i = roomIdList.length-1;i>=0;i--){
+                            JSONArray array = (JSONArray) data;
+                            for(int i = array.length()-1;i>=0;i--){
                                 ChatroomInfo info = new ChatroomInfo();
-                                info.createrId = creatorList[i];
-                                info.roomId = roomIdList[i];
-                                info.roomName = userDefineDataList[i];
+                                JSONObject obj = array.getJSONObject(i);
+                                info.createrId = obj.getString("creator");
+                                info.roomId = obj.getString("id");
+                                info.roomName = obj.getString("name");
                                 mDatas.add(info);
                             }
                             myListAdapter.notifyDataSetChanged();
@@ -147,7 +146,14 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
 
             @Override
             public void failed(String errMsg) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        myListAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
     }

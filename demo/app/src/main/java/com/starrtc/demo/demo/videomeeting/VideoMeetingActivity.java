@@ -145,7 +145,9 @@ public class VideoMeetingActivity extends BaseActivity{
             @Override
             public void success(Object data) {
                 meetingId = (String) data;
-                InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                }
                 joinMeeting();
             }
             @Override

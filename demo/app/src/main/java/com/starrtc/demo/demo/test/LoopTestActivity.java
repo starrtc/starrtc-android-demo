@@ -82,7 +82,7 @@ public class LoopTestActivity extends BaseActivity{
             targetSmallPlayer.setVisibility(View.GONE);
             StarRtcCore.getInstance().initLoopTest(this,
                     targetPlayer,0,
-                    selfPlayer,2, XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
+                    selfPlayer,2, XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         }else{
             if(dm.heightPixels>dm.widthPixels){
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) selfSmallPlayer.getLayoutParams();
@@ -110,7 +110,7 @@ public class LoopTestActivity extends BaseActivity{
                     targetSmallPlayer,1,
                     selfPlayer,2,
                     selfSmallPlayer,3,
-                    XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
+                    XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         }
     }
 
