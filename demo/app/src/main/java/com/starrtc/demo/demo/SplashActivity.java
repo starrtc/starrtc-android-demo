@@ -147,7 +147,7 @@ public class SplashActivity extends Activity implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+//            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         }
         startAnimation();
         checkNetworkConnectAndLogin();
@@ -186,7 +186,7 @@ public class SplashActivity extends Activity implements IEventListener {
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
         XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+//        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
