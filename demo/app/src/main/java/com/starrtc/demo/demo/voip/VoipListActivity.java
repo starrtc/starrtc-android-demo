@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,75 +25,30 @@ import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
-import com.starrtc.demo.utils.IEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VoipListActivity extends BaseActivity {
 
-    private EditText vEditText;
     private String mTargetId;
     private List<HistoryBean> mHistoryList;
     private ListView vHistoryList;
     private MyListAdapter myListAdapter;
-
-    private IEventListener eventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voip_list);
 
-        eventListener = new IEventListener() {
-            @Override
-            public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
-                if (aEventID.equals(AEvent.AEVENT_GOT_ONLINE_USER_LIST)){
-                    if(success){
-                        ArrayList<HistoryBean> list = (ArrayList<HistoryBean>) eventObj;
-                        //删除自己的ID
-                        for(int i = list.size()-1;i>=0;i--){
-                            if(list.get(i).getConversationId().equals(MLOC.userId)){
-                                list.remove(i);
-                                continue;
-                            }
-                        }
-                        //删除两个列表中重复的和 历史列表中不在线的
-                        for(int i = mHistoryList.size()-1;i>=0;i--){
-                            boolean b = true;
-                            for(int j = list.size()-1;j>=0;j--){
-                                if(mHistoryList.get(i).getConversationId().equals(list.get(j).getConversationId())){
-                                    list.remove(j);
-                                    b = false;
-                                    break;
-                                }
-                            }
-                            if(b){
-                                mHistoryList.remove(i);
-                            }
-                        }
-
-                        mHistoryList.addAll(list);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                myListAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                }
-            }
-        };
-
-        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,eventListener);
+        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
         ((TextView)findViewById(R.id.title_text)).setText("VOIP会话列表");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
-                AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,eventListener);
+                AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,VoipListActivity.this);
             }
         });
 
@@ -149,7 +103,7 @@ public class VoipListActivity extends BaseActivity {
         if(list!=null&&list.size()>0){
             mHistoryList.addAll(list);
         }
-        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,eventListener);
+        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
         InterfaceUrls.demoRequestOnlineUsers();
         runOnUiThread(new Runnable() {
             @Override
@@ -162,12 +116,46 @@ public class VoipListActivity extends BaseActivity {
     @Override
     public void onPause(){
         super.onPause();
-        AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,eventListener);
+        AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
     }
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+        super.dispatchEvent(aEventID,success,eventObj);
+        if (aEventID.equals(AEvent.AEVENT_GOT_ONLINE_USER_LIST)){
+            if(success){
+                ArrayList<HistoryBean> list = (ArrayList<HistoryBean>) eventObj;
+                //删除自己的ID
+                for(int i = list.size()-1;i>=0;i--){
+                    if(list.get(i).getConversationId().equals(MLOC.userId)){
+                        list.remove(i);
+                        continue;
+                    }
+                }
+                //删除两个列表中重复的和 历史列表中不在线的
+                for(int i = mHistoryList.size()-1;i>=0;i--){
+                    boolean b = true;
+                    for(int j = list.size()-1;j>=0;j--){
+                        if(mHistoryList.get(i).getConversationId().equals(list.get(j).getConversationId())){
+                            list.remove(j);
+                            b = false;
+                            break;
+                        }
+                    }
+                    if(b){
+                        mHistoryList.remove(i);
+                    }
+                }
 
+                mHistoryList.addAll(list);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        myListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }
     }
 
     public class MyListAdapter extends BaseAdapter {

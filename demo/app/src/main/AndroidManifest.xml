@@ -117,7 +117,7 @@
         <!-- 测试 -->
         <activity
             android:name=".demo.test.LoopTestActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="landscape" />
 
         <!-- IM -->
         <activity

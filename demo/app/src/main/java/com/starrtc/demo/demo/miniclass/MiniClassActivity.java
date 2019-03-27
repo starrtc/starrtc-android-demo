@@ -812,11 +812,11 @@ public class MiniClassActivity extends BaseActivity{
                     @Override
                     public void run() {
                         if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
-                            isUploader = true;
-                            classManager.changeToBroadcaster();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    isUploader = true;
+                                    classManager.changeToBroadcaster();
                                     vPaintPlayer.publish(MLOC.userId);
                                     vLinkBtn.setText("停止");
                                     vCameraBtn.setVisibility(View.VISIBLE);

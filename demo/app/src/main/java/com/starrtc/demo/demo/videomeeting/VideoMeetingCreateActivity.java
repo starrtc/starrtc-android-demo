@@ -25,29 +25,17 @@ public class VideoMeetingCreateActivity extends BaseActivity {
                 finish();
             }
         });
-        findViewById(R.id.switch_type).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.switch_type).setSelected(!findViewById(R.id.switch_type).isSelected());
-            }
-        });
         findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-                XHConstants.XHMeetingType type =
-                        findViewById(R.id.switch_type).isSelected()?
-                                XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic:
-                                XHConstants.XHMeetingType.XHMeetingTypeLoginPublic;
-//                XHConstants.XHMeetingType type = XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic;
-
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VideoMeetingCreateActivity.this,"id不能为空");
                 }else{
                     Intent intent = new Intent(VideoMeetingCreateActivity.this, VideoMeetingActivity.class);
                     intent.putExtra(VideoMeetingActivity.MEETING_NAME,inputId);
                     intent.putExtra(VideoMeetingActivity.MEETING_CREATER,MLOC.userId);
-                    intent.putExtra(VideoMeetingActivity.MEETING_TYPE,type);
+                    intent.putExtra(VideoMeetingActivity.MEETING_TYPE,XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic);
                     startActivity(intent);
                     finish();
                 }

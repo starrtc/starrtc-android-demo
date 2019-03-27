@@ -165,17 +165,23 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     }
 
     @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+    public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_GOT_LIST:
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                if(success){
-                    ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
-                    mDatas.addAll(res);
-                    myListAdapter.notifyDataSetChanged();
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        if(success){
+                            ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
+                            mDatas.addAll(res);
+                            myListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
                 break;
         }
     }

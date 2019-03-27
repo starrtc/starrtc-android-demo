@@ -50,6 +50,12 @@ public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
         StringBuffer responseResult = new StringBuffer();
         try {
             String serverUrl = params[0].getString(URL);
+            if(serverUrl==null||serverUrl.length()==0||serverUrl.equals("null")){
+                bundle = new Bundle();
+                bundle.putBoolean("result", false);
+                bundle.putString("content", "url为空");
+                return bundle;
+            }
             String paramData = params[0].getString(DATA);
             StringBuilder postData = new StringBuilder();
             if(StringUtils.isNotEmpty(paramData)){
@@ -118,7 +124,9 @@ public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
             bundle.putString("content", e.getLocalizedMessage());
         } catch (JSONException e) {
             e.printStackTrace();
-        } finally {
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }finally {
             postConn.disconnect();
             try {
                 if (printWriter != null) {

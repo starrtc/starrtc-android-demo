@@ -150,17 +150,23 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
     }
 
     @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+    public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MEETING_GOT_LIST:
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                if(success){
-                    ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
-                    mDatas.addAll(res);
-                    myListAdapter.notifyDataSetChanged();
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        if(success){
+                            ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
+                            mDatas.addAll(res);
+                            myListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
                 break;
         }
     }
