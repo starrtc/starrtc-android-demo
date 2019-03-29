@@ -43,4 +43,15 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:layout_alignParentRight="true"/>
+    <TextView
+        android:id="@+id/push_rtmp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/icon_bg"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="60dp"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="RTMP"
+        android:textColor="#ffffff"/>
 </RelativeLayout>

@@ -39,6 +39,8 @@ import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.beauty.XHBeautyManager;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -145,7 +147,7 @@ public class SplashActivity extends Activity implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+//            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         }
         startAnimation();
         checkNetworkConnectAndLogin();
@@ -184,7 +186,7 @@ public class SplashActivity extends Activity implements IEventListener {
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
         XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+//        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {

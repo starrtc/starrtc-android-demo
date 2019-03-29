@@ -19,12 +19,19 @@ import java.util.ArrayList;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class VideoMeetingListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -87,7 +94,53 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
     public void onResume(){
         super.onResume();
         AEvent.addListener(AEvent.AEVENT_MEETING_GOT_LIST,this);
-        InterfaceUrls.demoRequestMeetingList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestMeetingList();
+        }else{
+            queryAllList();
+        }
+    }
+    private void queryAllList(){
+        XHClient.getInstance().getMeetingManager().queryMeetingList(new IXHResultCallback() {
+            @Override
+            public void success(final Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        try {
+                            JSONArray array = (JSONArray) data;
+                            for(int i = array.length()-1;i>=0;i--){
+                                MeetingInfo info = new MeetingInfo();
+                                JSONObject obj = array.getJSONObject(i);
+                                info.createrId = obj.getString("creator");
+                                info.meetingId = obj.getString("id");
+                                info.meetingName = obj.getString("name");
+                                mDatas.add(info);
+                            }
+                            myListAdapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("VideoMettingListActivity",errMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        myListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
@@ -97,17 +150,23 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
     }
 
     @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+    public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MEETING_GOT_LIST:
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                if(success){
-                    ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
-                    mDatas.addAll(res);
-                    myListAdapter.notifyDataSetChanged();
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        if(success){
+                            ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
+                            mDatas.addAll(res);
+                            myListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
                 break;
         }
     }
@@ -124,7 +183,11 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
 
     @Override
     public void onRefresh() {
-        InterfaceUrls.demoRequestMeetingList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestMeetingList();
+        }else{
+            queryAllList();
+        }
     }
 
 

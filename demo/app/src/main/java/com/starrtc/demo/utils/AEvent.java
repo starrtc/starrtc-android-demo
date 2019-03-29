@@ -56,8 +56,9 @@ public class AEvent {
     public static final String AEVENT_LIVE_GOT_LIST             = "AEVENT_LIVE_GOT_LIST";
     public static final String AEVENT_AUDIO_LIVE_GOT_LIST       = "AEVENT_AUDIO_LIVE_GOT_LIST";
     public static final String AEVENT_CHATROOM_GOT_LIST         = "AEVENT_CHATROOM_GOT_LIST";
-    public static final String AEVENT_GROUP_GOT_LIST             = "AEVENT_GROUP_GOT_LIST";
+    public static final String AEVENT_GROUP_GOT_LIST            = "AEVENT_GROUP_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_MEMBER_LIST     = "AEVENT_GROUP_GOT_MEMBER_LIST";
+    public static final String AEVENT_GOT_ONLINE_USER_LIST      = "AEVENT_GOT_ONLINE_USER_LIST";
 
     public static final String AEVENT_VOIP_INIT_COMPLETE        = "AEVENT_VOIP_INIT_COMPLETE";
     public static final String AEVENT_VOIP_REV_CALLING          = "AEVENT_VOIP_REV_CALLING";

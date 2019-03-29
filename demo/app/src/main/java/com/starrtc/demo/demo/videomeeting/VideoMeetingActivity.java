@@ -3,14 +3,19 @@ package com.starrtc.demo.demo.videomeeting;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +28,7 @@ import java.util.Set;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.demo.im.group.MessageGroupSettingActivity;
 import com.starrtc.demo.listener.XHMeetingManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
@@ -60,6 +66,8 @@ public class VideoMeetingActivity extends BaseActivity{
     private StarRTCAudioManager starRTCAudioManager;
 
     private Boolean isPortrait = true;
+    private boolean rtmpPushing = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +117,16 @@ public class VideoMeetingActivity extends BaseActivity{
                 onBackPressed();
             }
         });
+        findViewById(R.id.push_rtmp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(rtmpPushing){
+                    stopPushRtmp();
+                }else{
+                    showAddDialog();
+                }
+            }
+        });
 
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +136,79 @@ public class VideoMeetingActivity extends BaseActivity{
         });
 
         init();
+    }
+
+    private void showAddDialog(){
+        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
+        dialog.setContentView(R.layout.dialog_input_rtmp_url);
+        Window win = dialog.getWindow();
+        win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        win.setGravity(Gravity.CENTER);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String rtmpUrl = ((EditText)dialog.findViewById(R.id.rtmpurl)).getText().toString();
+                if(TextUtils.isEmpty(rtmpUrl)){
+                    MLOC.showMsg(VideoMeetingActivity.this,"推流地址不能为空");
+                }else{
+                    pushRtmp(rtmpUrl);
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void pushRtmp(String url){
+        meetingManager.pushRtmp(url, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rtmpPushing = true;
+                        MLOC.showMsg(VideoMeetingActivity.this,"推流成功");
+                    }
+                });
+            }
+
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rtmpPushing = false;
+                        MLOC.showMsg(VideoMeetingActivity.this,"推流失败"+errMsg);
+                    }
+                });
+            }
+        });
+    }
+    private void stopPushRtmp(){
+        meetingManager.stopPushRtmp( new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rtmpPushing = false;
+                        MLOC.showMsg(VideoMeetingActivity.this,"停止推流成功");
+                    }
+                });
+            }
+
+            @Override
+            public void failed(final String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MLOC.showMsg(VideoMeetingActivity.this,"停止推流失败"+errMsg);
+                    }
+                });
+            }
+        });
     }
 
     private void init(){
@@ -145,7 +236,9 @@ public class VideoMeetingActivity extends BaseActivity{
             @Override
             public void success(Object data) {
                 meetingId = (String) data;
-                InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                }
                 joinMeeting();
             }
             @Override

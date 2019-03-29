@@ -26,25 +26,15 @@ public class VideoLiveCreateActivity extends BaseActivity {
                 finish();
             }
         });
-        findViewById(R.id.switch_type).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.switch_type).setSelected(!findViewById(R.id.switch_type).isSelected());
-            }
-        });
         findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-                XHConstants.XHLiveType type =
-                        findViewById(R.id.switch_type).isSelected()?
-                                XHConstants.XHLiveType.XHLiveTypeGlobalPublic:
-                                XHConstants.XHLiveType.XHLiveTypeLoginPublic;
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VideoLiveCreateActivity.this,"id不能为空");
                 }else{
                     Intent intent = new Intent(VideoLiveCreateActivity.this, VideoLiveActivity.class);
-                    intent.putExtra(VideoLiveActivity.LIVE_TYPE,type);
+                    intent.putExtra(VideoLiveActivity.LIVE_TYPE,XHConstants.XHLiveType.XHLiveTypeGlobalPublic);
                     intent.putExtra(VideoLiveActivity.LIVE_NAME,inputId);
                     intent.putExtra(VideoLiveActivity.CREATER_ID,MLOC.userId);
                     startActivity(intent);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,20 @@ import java.util.ArrayList;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.listener.XHChatroomManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ChatroomListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -100,7 +109,53 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     @Override
     public void onResume(){
         super.onResume();
-        InterfaceUrls.demoRequestChatroomList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestChatroomList();
+        }else{
+           queryAllList();
+        }
+    }
+
+    private void queryAllList(){
+        XHClient.getInstance().getChatroomManager().queryChatroomList(new IXHResultCallback() {
+            @Override
+            public void success(final Object data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        try {
+                            JSONArray array = (JSONArray) data;
+                            for(int i = array.length()-1;i>=0;i--){
+                                ChatroomInfo info = new ChatroomInfo();
+                                JSONObject obj = array.getJSONObject(i);
+                                info.createrId = obj.getString("creator");
+                                info.roomId = obj.getString("id");
+                                info.roomName = obj.getString("name");
+                                mDatas.add(info);
+                            }
+                            myListAdapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        myListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -110,17 +165,23 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     }
 
     @Override
-    public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
+    public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_GOT_LIST:
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                if(success){
-                    ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
-                    mDatas.addAll(res);
-                    myListAdapter.notifyDataSetChanged();
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        mDatas.clear();
+                        if(success){
+                            ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
+                            mDatas.addAll(res);
+                            myListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
                 break;
         }
     }
@@ -137,9 +198,12 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
 
     @Override
     public void onRefresh() {
-        InterfaceUrls.demoRequestChatroomList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestChatroomList();
+        }else{
+            queryAllList();
+        }
     }
-
 
     class MyListAdapter extends BaseAdapter{
         @Override

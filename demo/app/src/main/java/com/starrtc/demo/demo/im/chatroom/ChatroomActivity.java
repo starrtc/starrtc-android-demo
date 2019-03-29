@@ -1,6 +1,7 @@
 package com.starrtc.demo.demo.im.chatroom;
 
 import android.app.AlertDialog;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
-public class ChatroomActivity extends BaseActivity {
+public class ChatroomActivity extends BaseActivity implements AdapterView.OnItemLongClickListener {
     public static String TYPE = "TYPE";
     public static String CHATROOM_NAME = "CHATROOM_NAME";
     public static String CHATROOM_TYPE = "CHATROOM_TYPE";
@@ -102,6 +104,7 @@ public class ChatroomActivity extends BaseActivity {
 
         vMsgList = (ListView) findViewById(R.id.msg_list);
         vMsgList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        vMsgList.setOnItemLongClickListener(this);
 //        vMsgList.setStackFromBottom(true);
         mAdapter = new MyChatroomListAdapter();
         vMsgList.setAdapter(mAdapter);
@@ -134,7 +137,9 @@ public class ChatroomActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mRoomId = data.toString();
-                        InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
+                        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                            InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
+                        }
                         joinChatroom();
                     }
                 });
@@ -319,6 +324,15 @@ public class ChatroomActivity extends BaseActivity {
                 ChatroomActivity.this.finish();
                 break;
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        // 将文本内容放到系统剪贴板里。
+        cm.setText(mDatas.get(position).contentData);
+        Toast.makeText(this,"消息已复制",Toast.LENGTH_LONG).show();;
+        return false;
     }
 
     public class MyChatroomListAdapter extends BaseAdapter {

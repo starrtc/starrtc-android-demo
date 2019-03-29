@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import com.starrtc.demo.database.HistoryBean;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.audiolive.AudioLiveInfo;
 import com.starrtc.demo.demo.im.chatroom.ChatroomInfo;
@@ -44,6 +45,8 @@ public class InterfaceUrls {
     public static String GROUP_LIST_URL;
     //群成员列表
     public static String GROUP_MEMBERS_URL;
+    //在线用户列表
+    public static String ONLINE_USER_LIST_URL;
 
     //上报直播
     public static String REPORT_LIVE_INFO_URL;
@@ -66,6 +69,7 @@ public class InterfaceUrls {
         LIVE_SET_CHAT_URL = BASE_URL+"/live/set_chat";
         CHATROOM_LIST_URL = BASE_URL+"/chat/list";
         GROUP_LIST_URL = BASE_URL+"/group/list_all";
+        ONLINE_USER_LIST_URL = BASE_URL+"/user/list";
         GROUP_MEMBERS_URL = BASE_URL+"/group/members";
         REPORT_LIVE_INFO_URL = BASE_URL+"/live/store";
         REPORT_AUDIO_LIVE_INFO_URL = BASE_URL+"/audio/store";
@@ -297,6 +301,43 @@ public class InterfaceUrls {
                     }
                 }
                 AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
+
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpPost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+
+    //在线用户列表
+    public static void demoRequestOnlineUsers(){
+        String url = ONLINE_USER_LIST_URL+"?appid="+MLOC.agentId;
+        String params = "";
+        StarHttpUtil httpPost = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpPost.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    if(statusCode.equals("1")){
+                        try {
+                            JSONArray datas = new JSONArray(data);
+                            ArrayList<HistoryBean> res = new ArrayList<HistoryBean>();
+                            for (int i = 0;i<datas.length();i++){
+                                String uid = datas.getJSONObject(i).getString("userId");
+                                HistoryBean bean = new HistoryBean();
+                                bean.setConversationId(uid);
+                                res.add(bean);
+                            }
+                            AEvent.notifyListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,true,res);
+                            return;
+                        } catch (JSONException e) {
+                            AEvent.notifyListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,false,"数据解析失败");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                AEvent.notifyListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,false,"数据解析失败");
 
             }
         });
