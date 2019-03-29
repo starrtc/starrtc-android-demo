@@ -15,6 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="切换配置保存后才会生效，点保存时App将自动关闭，需要手动重新启动"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_marginTop="10dp"/>
             <LinearLayout
                 android:id="@+id/sdk_type"
                 android:layout_width="match_parent"
@@ -67,29 +74,29 @@
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="AppId"/>
-                <EditText
-                    android:id="@+id/app_id"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
-            </LinearLayout>
-            <LinearLayout
                 android:id="@+id/more_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="AppId"/>
+                    <EditText
+                        android:id="@+id/app_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -177,7 +184,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="上传调度"/>
+                        android:text="LiveSrc调度"/>
                     <EditText
                         android:id="@+id/src_schedule"
                         android:layout_width="match_parent"
@@ -196,9 +203,28 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="下载调度"/>
+                        android:text="LiveVdn调度"/>
                     <EditText
                         android:id="@+id/vdn_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="VOIP服务"/>
+                    <EditText
+                        android:id="@+id/voip_schedule"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_marginLeft="10dp"
@@ -259,7 +285,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="上传服务"/>
+                        android:text="LiveSrc服务"/>
                     <EditText
                         android:id="@+id/src_server"
                         android:layout_width="match_parent"
@@ -278,7 +304,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="下载服务"/>
+                        android:text="LiveVdn服务"/>
                     <EditText
                         android:id="@+id/vdn_server"
                         android:layout_width="match_parent"
@@ -286,26 +312,27 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"/>
                 </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="#FFFFFF">
-                <TextView
-                    android:gravity="right"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="VOIP服务"/>
-                <EditText
-                    android:id="@+id/voip_server"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#FFFFFF">
+                    <TextView
+                        android:gravity="right"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="VOIP服务"/>
+                    <EditText
+                        android:id="@+id/voip_server"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
             </LinearLayout>
+
 
             <TextView
                 android:id="@+id/btn"
@@ -318,13 +345,7 @@
                 android:gravity="center"
                 android:text="保存"
                 android:background="@drawable/btn_style_red"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="保存后将自动关闭，需要手动重新打开APP"
-                android:textSize="10sp"
-                android:gravity="center"
-                android:layout_marginTop="10dp"/>
+
         </LinearLayout>
     </ScrollView>
 

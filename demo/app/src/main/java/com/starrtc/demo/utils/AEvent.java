@@ -1,10 +1,19 @@
 package com.starrtc.demo.utils;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.ArrayList;
 import java.util.List;
+
 public class AEvent {
     private static List<EventObj> callBackList = new ArrayList<EventObj>();
 
+    private static Handler mHandler;
+
+    public static void setHandler(Handler handler){
+        mHandler = handler;
+    }
 
     public static void addListener(String eventID, IEventListener eventListener){
         for(EventObj eventObj:callBackList){
@@ -31,15 +40,46 @@ public class AEvent {
         }
     }
 
-    public static void notifyListener(String eventID, boolean success, Object object){
-        int i;
-        EventObj event;
-        for(i=0;i<callBackList.size();i++){
-            event = callBackList.get(i);
-            if(event.eventID.equals(eventID)){
-                event.eventListener.dispatchEvent(eventID,success,object);
+    public static void notifyListener(final String eventID, final boolean success, final Object object){
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            // UI线程
+            int i;
+            EventObj event;
+            for(i=0;i<callBackList.size();i++){
+                event = callBackList.get(i);
+                if(event.eventID.equals(eventID)){
+                    event.eventListener.dispatchEvent(eventID,success,object);
+                }
+            }
+        } else {
+            // 非UI线程
+            if(mHandler!=null){
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int i;
+                        EventObj event;
+                        for(i=0;i<callBackList.size();i++){
+                            event = callBackList.get(i);
+                            if(event.eventID.equals(eventID)){
+                                event.eventListener.dispatchEvent(eventID,success,object);
+                            }
+                        }
+                    }
+                });
+            }else{
+                int i;
+                EventObj event;
+                for(i=0;i<callBackList.size();i++){
+                    event = callBackList.get(i);
+                    if(event.eventID.equals(eventID)){
+                        event.eventListener.dispatchEvent(eventID,success,object);
+                    }
+                }
             }
         }
+
     }
 
     private static class EventObj{

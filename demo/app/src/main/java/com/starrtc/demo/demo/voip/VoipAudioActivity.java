@@ -80,28 +80,23 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(action.equals(CALLING)){
-                            MLOC.d("newVoip","call");
-                            voipManager.call(targetId, new IXHResultCallback() {
-                                @Override
-                                public void success(Object data) {
-                                    MLOC.d("newVoip","call success");
-                                }
-                                @Override
-                                public void failed(String errMsg) {
-                                    MLOC.d("newVoip","call failed");
-                                    stopAndFinish();
-                                }
-                            });
-                        }else{
-                            MLOC.d("newVoip","onPickup");
-                            onPickup();
+                if(action.equals(CALLING)){
+                    MLOC.d("newVoip","call");
+                    voipManager.call(targetId, new IXHResultCallback() {
+                        @Override
+                        public void success(Object data) {
+                            MLOC.d("newVoip","call success");
                         }
-                    }
-                });
+                        @Override
+                        public void failed(String errMsg) {
+                            MLOC.d("newVoip","call failed");
+                            stopAndFinish();
+                        }
+                    });
+                }else{
+                    MLOC.d("newVoip","onPickup");
+                    onPickup();
+                }
             }
 
             @Override
@@ -185,12 +180,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
                             @Override
                             public void failed(final String errMsg) {
                                 MLOC.d("","AEVENT_VOIP_ON_STOP errMsg:"+errMsg);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        MLOC.showMsg(VoipAudioActivity.this,errMsg);
-                                    }
-                                });
+                                MLOC.showMsg(VoipAudioActivity.this,errMsg);
                             }
                         });
                     }
@@ -203,48 +193,28 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_VOIP_REV_BUSY:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方线路忙");
-                        MLOC.showMsg(VoipAudioActivity.this,"对方线路忙");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方线路忙");
+                MLOC.showMsg(VoipAudioActivity.this,"对方线路忙");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_REFUSED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方拒绝通话");
-                        MLOC.showMsg(VoipAudioActivity.this,"对方拒绝通话");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方拒绝通话");
+                MLOC.showMsg(VoipAudioActivity.this,"对方拒绝通话");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_HANGUP:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方已挂断");
-                        MLOC.showMsg(VoipAudioActivity.this,"对方已挂断");
-                        timer.stop();
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方已挂断");
+                MLOC.showMsg(VoipAudioActivity.this,"对方已挂断");
+                timer.stop();
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_CONNECT:
                 MLOC.d("","对方允许通话");
                 showTalkingView();
                 break;
             case AEvent.AEVENT_VOIP_REV_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("",(String) eventObj);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("",(String) eventObj);
+                stopAndFinish();
                 break;
         }
     }
@@ -255,15 +225,10 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void showTalkingView(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.calling_txt).setVisibility(View.INVISIBLE);
-                findViewById(R.id.timer).setVisibility(View.VISIBLE);
-                timer.setBase(SystemClock.elapsedRealtime());
-                timer.start();
-            }
-        });
+        findViewById(R.id.calling_txt).setVisibility(View.INVISIBLE);
+        findViewById(R.id.timer).setVisibility(View.VISIBLE);
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.start();
     }
 
     private void onPickup(){

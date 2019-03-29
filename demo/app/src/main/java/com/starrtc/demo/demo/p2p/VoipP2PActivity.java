@@ -112,13 +112,8 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                 @Override
                 public void success(Object data) {
                     MLOC.d(TAG,"setupView success");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MLOC.d(TAG,"onPickup");
-                            onPickup();
-                        }
-                    });
+                    MLOC.d(TAG,"onPickup");
+                    onPickup();
                 }
                 @Override
                 public void failed(String errMsg) {
@@ -195,12 +190,7 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                             @Override
                             public void failed(final String errMsg) {
                                 MLOC.d("","AEVENT_VOIP_ON_STOP errMsg:"+errMsg);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        MLOC.showMsg(VoipP2PActivity.this,errMsg);
-                                    }
-                                });
+                                MLOC.showMsg(VoipP2PActivity.this,errMsg);
                             }
                         });
                     }
@@ -213,35 +203,20 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_VOIP_REV_BUSY:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d(TAG,"对方线路忙");
-                        MLOC.showMsg(VoipP2PActivity.this,"对方线路忙");
-                        VoipP2PActivity.this.stopAndFinish();
-                    }
-                });
+                MLOC.d(TAG,"对方线路忙");
+                MLOC.showMsg(VoipP2PActivity.this,"对方线路忙");
+                VoipP2PActivity.this.stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_REFUSED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d(TAG,"对方拒绝通话");
-                        MLOC.showMsg(VoipP2PActivity.this,"对方拒绝通话");
-                        VoipP2PActivity.this.stopAndFinish();
-                    }
-                });
+                MLOC.d(TAG,"对方拒绝通话");
+                MLOC.showMsg(VoipP2PActivity.this,"对方拒绝通话");
+                VoipP2PActivity.this.stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_HANGUP:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d(TAG,"对方已挂断");
-                        MLOC.showMsg(VoipP2PActivity.this,"对方已挂断");
-                        timer.stop();
-                        VoipP2PActivity.this.stopAndFinish();
-                    }
-                });
+                MLOC.d(TAG,"对方已挂断");
+                MLOC.showMsg(VoipP2PActivity.this,"对方已挂断");
+                timer.stop();
+                VoipP2PActivity.this.stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_CONNECT:
                 MLOC.d(TAG,"对方允许通话");
@@ -259,13 +234,8 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                 });
                 break;
             case AEvent.AEVENT_VOIP_REV_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d(TAG,(String) eventObj);
-                        VoipP2PActivity.this.stopAndFinish();
-                    }
-                });
+                MLOC.d(TAG,(String) eventObj);
+                VoipP2PActivity.this.stopAndFinish();
                 break;
         }
     }
@@ -277,19 +247,14 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void showTalkingView(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                isTalking = true;
-                findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
-                findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
-                @SuppressLint("WrongViewCast") FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
-                flp.width = findViewById(R.id.calling_view).getWidth();
-                findViewById(R.id.talking_view).setLayoutParams(flp);
-                timer.setBase(SystemClock.elapsedRealtime());
-                timer.start();
-            }
-        });
+        isTalking = true;
+        findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
+        @SuppressLint("WrongViewCast") FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
+        flp.width = findViewById(R.id.calling_view).getWidth();
+        findViewById(R.id.talking_view).setLayoutParams(flp);
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.start();
     }
 
     private void onPickup(){

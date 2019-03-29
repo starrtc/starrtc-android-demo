@@ -120,40 +120,29 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
         XHClient.getInstance().getChatroomManager().queryChatroomList(new IXHResultCallback() {
             @Override
             public void success(final Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        try {
-                            JSONArray array = (JSONArray) data;
-                            for(int i = array.length()-1;i>=0;i--){
-                                ChatroomInfo info = new ChatroomInfo();
-                                JSONObject obj = array.getJSONObject(i);
-                                info.createrId = obj.getString("creator");
-                                info.roomId = obj.getString("id");
-                                info.roomName = obj.getString("name");
-                                mDatas.add(info);
-                            }
-                            myListAdapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                try {
+                    JSONArray array = (JSONArray) data;
+                    for(int i = array.length()-1;i>=0;i--){
+                        ChatroomInfo info = new ChatroomInfo();
+                        JSONObject obj = array.getJSONObject(i);
+                        info.createrId = obj.getString("creator");
+                        info.roomId = obj.getString("id");
+                        info.roomName = obj.getString("name");
+                        mDatas.add(info);
                     }
-                });
-
+                    myListAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void failed(String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        myListAdapter.notifyDataSetChanged();
-                    }
-                });
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                myListAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -169,19 +158,13 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_CHATROOM_GOT_LIST:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        if(success){
-                            ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
-                            mDatas.addAll(res);
-                            myListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                if(success){
+                    ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
+                    mDatas.addAll(res);
+                    myListAdapter.notifyDataSetChanged();
+                }
                 break;
         }
     }

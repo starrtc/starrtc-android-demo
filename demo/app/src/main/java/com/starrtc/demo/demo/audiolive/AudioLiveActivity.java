@@ -208,15 +208,10 @@ public class AudioLiveActivity extends BaseActivity {
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = false;
                                     liveManager.changeToAudience();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            vLinkBtn.setText("上麦");
-                                            vAudioBtn.setVisibility(View.GONE);
-                                            findViewById(R.id.audio_container).setVisibility(View.GONE);
-                                            findViewById(R.id.chat_container).setVisibility(View.VISIBLE);
-                                        }
-                                    });
+                                    vLinkBtn.setText("上麦");
+                                    vAudioBtn.setVisibility(View.GONE);
+                                    findViewById(R.id.audio_container).setVisibility(View.GONE);
+                                    findViewById(R.id.chat_container).setVisibility(View.VISIBLE);
                                 }
                             }
                     ).show();
@@ -314,13 +309,8 @@ public class AudioLiveActivity extends BaseActivity {
             }
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,errMsg);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(AudioLiveActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -336,13 +326,8 @@ public class AudioLiveActivity extends BaseActivity {
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("XHLiveManager","startLive failed "+errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,errMsg);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(AudioLiveActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -358,14 +343,8 @@ public class AudioLiveActivity extends BaseActivity {
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("XHLiveManager","watchLive failed "+errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,errMsg);
-                        stopAndFinish();
-                    }
-                });
-
+                MLOC.showMsg(AudioLiveActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -465,12 +444,7 @@ public class AudioLiveActivity extends BaseActivity {
 
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,errMsg);
-                    }
-                });
+                MLOC.showMsg(AudioLiveActivity.this,errMsg);
                 stopAndFinish();
             }
         });
@@ -543,121 +517,83 @@ public class AudioLiveActivity extends BaseActivity {
         MLOC.d("XHLiveManager","dispatchEvent  "+aEventID + eventObj);
         switch (aEventID){
             case AEvent.AEVENT_LIVE_ADD_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String addId = data.getString("actorID");
-                            addPlayer(addId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String addId = data.getString("actorID");
+                    addPlayer(addId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_LIVE_REMOVE_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String removeUserId = data.getString("actorID");
-                            deletePlayer(removeUserId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String removeUserId = data.getString("actorID");
+                    deletePlayer(removeUserId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(AudioLiveActivity.this).setCancelable(true)
-                                .setTitle(eventObj+"申请上麦")
-                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        liveManager.refuseApplyToBroadcaster((String) eventObj);
-                                    }
-                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        sendChatMsg("欢迎新的小伙伴上麦！！！");
-                                        liveManager.agreeApplyToBroadcaster((String) eventObj);
-                                    }
-                                }
-                        ).show();
-                    }
-                });
+                new AlertDialog.Builder(AudioLiveActivity.this).setCancelable(true)
+                        .setTitle(eventObj+"申请上麦")
+                        .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                liveManager.refuseApplyToBroadcaster((String) eventObj);
+                            }
+                        }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                sendChatMsg("欢迎新的小伙伴上麦！！！");
+                                liveManager.agreeApplyToBroadcaster((String) eventObj);
+                            }
+                        }
+                ).show();
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
-                            isUploader = true;
-                            liveManager.changeToBroadcaster();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    vLinkBtn.setText("下麦");
-                                    vAudioBtn.setVisibility(View.VISIBLE);
-                                    findViewById(R.id.audio_container).setVisibility(View.VISIBLE);
-                                    findViewById(R.id.chat_container).setVisibility(View.GONE);
-                                }
-                            });
+                if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
+                    isUploader = true;
+                    liveManager.changeToBroadcaster();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            vLinkBtn.setText("下麦");
+                            vAudioBtn.setVisibility(View.VISIBLE);
+                            findViewById(R.id.audio_container).setVisibility(View.VISIBLE);
+                            findViewById(R.id.chat_container).setVisibility(View.GONE);
                         }
-                    }
-                });
+                    });
+                }
                 break;
             case AEvent.AEVENT_LIVE_INVITE_LINK:
-                //zjt 自动同意邀请
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        vLinkBtn.setSelected(true);
-                    }
-                });
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(AudioLiveActivity.this).setCancelable(true)
-                                .setTitle(eventObj+"邀请您上麦")
-                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(AudioLiveActivity.this).setCancelable(true)
+                        .setTitle(eventObj+"邀请您上麦")
+                        .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                liveManager.refuseInviteToBroadcaster((String) eventObj);
+                            }
+                        }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                runOnUiThread(new Runnable() {
                                     @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        liveManager.refuseInviteToBroadcaster((String) eventObj);
+                                    public void run() {
+                                        vLinkBtn.setSelected(true);
                                     }
-                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                vLinkBtn.setSelected(true);
-                                            }
-                                        });
-                                        isUploader = true;
-                                        liveManager.agreeInviteToBroadcaster((String) eventObj);
-                                    }
-                                }
-                        ).show();
-                    }
-                });
+                                });
+                                isUploader = true;
+                                liveManager.agreeInviteToBroadcaster((String) eventObj);
+                            }
+                        }
+                ).show();
                 break;
             case AEvent.AEVENT_LIVE_INVITE_LINK_RESULT:
                 XHConstants.XHLiveJoinResult result = (XHConstants.XHLiveJoinResult) eventObj;
                 switch (result){
                     case XHLiveJoinResult_accept:
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sendChatMsg("欢迎新的小伙伴上麦！！！");
-                            }
-                        });
+                        sendChatMsg("欢迎新的小伙伴上麦！！！");
                         break;
                     case XHLiveJoinResult_refuse:
                         break;
@@ -669,69 +605,39 @@ public class AudioLiveActivity extends BaseActivity {
 //                onLineUserNumber = (int) eventObj;
                 break;
             case AEvent.AEVENT_LIVE_SELF_KICKED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,"你已被踢出");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(AudioLiveActivity.this,"你已被踢出");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_LIVE_SELF_BANNED:
                 final String banTime = eventObj.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(AudioLiveActivity.this,"你已被禁言,"+banTime+"秒后自动解除");
-                    }
-                });
+                MLOC.showMsg(AudioLiveActivity.this,"你已被禁言,"+banTime+"秒后自动解除");
                 break;
             case AEvent.AEVENT_LIVE_REV_MSG:
                 XHIMMessage revMsg = (XHIMMessage) eventObj;
                 mDatas.add(revMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                mAdapter.notifyDataSetChanged();
                 break;
             case AEvent.AEVENT_LIVE_REV_PRIVATE_MSG:
                 XHIMMessage revMsgPrivate = (XHIMMessage) eventObj;
                 mDatas.add(revMsgPrivate);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                mAdapter.notifyDataSetChanged();
                 break;
             case AEvent.AEVENT_LIVE_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String errStr = (String) eventObj;
-                        if(errStr.equals("30016")){
-                            errStr = "直播关闭";
-                        }
-                        MLOC.showMsg(getApplicationContext(),errStr);
-                        stopAndFinish();
-                    }
-                });
+                String errStr = (String) eventObj;
+                if(errStr.equals("30016")){
+                    errStr = "直播关闭";
+                }
+                MLOC.showMsg(getApplicationContext(),errStr);
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_LIVE_SELF_COMMANDED_TO_STOP:
                 if(isUploader){
                     isUploader = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            vLinkBtn.setText("上麦");
-                            vAudioBtn.setVisibility(View.GONE);
-                            findViewById(R.id.audio_container).setVisibility(View.GONE);
-                            findViewById(R.id.chat_container).setVisibility(View.VISIBLE);
-                            MLOC.showMsg(AudioLiveActivity.this,"你的表演被叫停");
-                        }
-                    });
+                    vLinkBtn.setText("上麦");
+                    vAudioBtn.setVisibility(View.GONE);
+                    findViewById(R.id.audio_container).setVisibility(View.GONE);
+                    findViewById(R.id.chat_container).setVisibility(View.VISIBLE);
+                    MLOC.showMsg(AudioLiveActivity.this,"你的表演被叫停");
                 }
                 break;
         }

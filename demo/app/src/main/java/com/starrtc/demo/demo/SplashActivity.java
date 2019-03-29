@@ -55,6 +55,7 @@ public class SplashActivity extends Activity implements IEventListener {
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
         MLOC.init(this);
+        AEvent.setHandler(new Handler());
         checkPermission();
     }
 
@@ -128,7 +129,7 @@ public class SplashActivity extends Activity implements IEventListener {
             customConfig.setLiveSrcScheduleUrl(MLOC.LIVE_SRC_SCHEDULE_URL);
             customConfig.setLiveVdnScheduleUrl(MLOC.LIVE_VDN_SCHEDULE_URL);
             customConfig.setImScheduleUrl(MLOC.IM_SCHEDULE_URL);
-            customConfig.setVoipServerUrl(MLOC.VOIP_SERVER_URL);
+            customConfig.setVoipServerUrl(MLOC.VOIP_SCHEDULE_URL);
             customConfig.initSDK(this, MLOC.userId, new IXHErrorCallback() {
                 @Override
                 public void error(final String errMsg, Object data) {
@@ -139,7 +140,7 @@ public class SplashActivity extends Activity implements IEventListener {
                         }
                     });
                 }
-            });
+            },new Handler());
             customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
@@ -147,7 +148,7 @@ public class SplashActivity extends Activity implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-//            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         }
         startAnimation();
         checkNetworkConnectAndLogin();
@@ -162,7 +163,6 @@ public class SplashActivity extends Activity implements IEventListener {
         addListener();
         //初始化 开放版 无调度 直接指定Server地址
         XHCustomConfig customConfig =  XHCustomConfig.getInstance();
-        customConfig.setAppId(MLOC.agentId);
         customConfig.setChatroomServerUrl(MLOC.CHAT_ROOM_SERVER_URL);
         customConfig.setLiveSrcServerUrl(MLOC.LIVE_SRC_SERVER_URL);
         customConfig.setLiveVdnServerUrl(MLOC.LIVE_VDN_SERVER_URL);
@@ -178,7 +178,7 @@ public class SplashActivity extends Activity implements IEventListener {
                     }
                 });
             }
-        });
+        },new Handler());
         customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
         customConfig.setDefConfigOpenGLESEnable(false);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
@@ -186,7 +186,7 @@ public class SplashActivity extends Activity implements IEventListener {
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
         XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
         XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-//        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+        XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
         startAnimation();
 
         XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
@@ -252,12 +252,7 @@ public class SplashActivity extends Activity implements IEventListener {
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("",errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(SplashActivity.this,errMsg);
-                    }
-                });
+                MLOC.showMsg(SplashActivity.this,errMsg);
             }
         });
     }
@@ -284,12 +279,7 @@ public class SplashActivity extends Activity implements IEventListener {
                         @Override
                         public void failed(final String errMsg) {
                             MLOC.d("",errMsg);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MLOC.showMsg(SplashActivity.this,errMsg);
-                                }
-                            });
+                            MLOC.showMsg(SplashActivity.this,errMsg);
                         }
                     });
                 }else{

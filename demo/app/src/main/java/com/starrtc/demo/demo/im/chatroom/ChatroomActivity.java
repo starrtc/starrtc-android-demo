@@ -133,27 +133,17 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
         chatroomManager.createChatroom(mRoomName,createType, new IXHResultCallback() {
             @Override
             public void success(final Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRoomId = data.toString();
-                        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                            InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
-                        }
-                        joinChatroom();
-                    }
-                });
+                mRoomId = data.toString();
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
+                }
+                joinChatroom();
             }
 
             @Override
             public void failed(String errMsg) {
                 final String err = errMsg;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,err.toString());
-                    }
-                });
+                MLOC.showMsg(ChatroomActivity.this,err.toString());
                 finish();
             }
         });
@@ -162,24 +152,14 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
         chatroomManager.joinChatroom(mRoomId, new IXHResultCallback() {
             @Override
             public void success(final Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRoomId = data.toString();
-                        joinOk = true;
-                    }
-                });
+                mRoomId = data.toString();
+                joinOk = true;
             }
 
             @Override
             public void failed(String errMsg) {
                 final String err = errMsg;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,err.toString());
-                    }
-                });
+                MLOC.showMsg(ChatroomActivity.this,err.toString());
                 finish();
             }
         });
@@ -260,12 +240,7 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                     colors.put(revMsg.fromId, ColorUtils.randomColor(200,200,200));
                 }
                 mDatas.add(revMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                mAdapter.notifyDataSetChanged();
                 break;
             case AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG:
                 XHIMMessage revMsgPrivate = (XHIMMessage) eventObj;
@@ -273,49 +248,24 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                     colors.put(revMsgPrivate.fromId, ColorUtils.randomColor(200,200,200));
                 }
                 mDatas.add(revMsgPrivate);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                mAdapter.notifyDataSetChanged();
                 break;
             case AEvent.AEVENT_CHATROOM_GET_ONLINE_NUMBER:
                 onLineUserNumber = (int) eventObj;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((TextView)findViewById(R.id.title_text)).setText(mRoomName+"("+onLineUserNumber+"人在线)");
-                    }
-                });
+                ((TextView)findViewById(R.id.title_text)).setText(mRoomName+"("+onLineUserNumber+"人在线)");
                 break;
             case AEvent.AEVENT_CHATROOM_ERROR:
                 final String err2 = eventObj.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,err2.toString());
-                    }
-                });
+                MLOC.showMsg(ChatroomActivity.this,err2.toString());
                 finish();
                 break;
             case AEvent.AEVENT_CHATROOM_SELF_KICKED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"你已被踢出聊天室");
-                        ChatroomActivity.this.finish();
-                    }
-                });
+                MLOC.showMsg(ChatroomActivity.this,"你已被踢出聊天室");
+                ChatroomActivity.this.finish();
                 break;
             case AEvent.AEVENT_CHATROOM_SELF_BANNED:
                 final String banTime = eventObj.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(ChatroomActivity.this,"你已被禁言,"+banTime+"秒后自动解除");
-                    }
-                });
+                MLOC.showMsg(ChatroomActivity.this,"你已被禁言,"+banTime+"秒后自动解除");
                 break;
             case AEvent.AEVENT_CHATROOM_STOP_OK:
                 ChatroomActivity.this.finish();
@@ -441,22 +391,12 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                             chatroomManager.kickMember(mRoomId, userId, new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            MLOC.showMsg(ChatroomActivity.this,"踢人成功");
-                                        }
-                                    });
+                                    MLOC.showMsg(ChatroomActivity.this,"踢人成功");
                                 }
 
                                 @Override
                                 public void failed(final String errMsg) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            MLOC.showMsg(ChatroomActivity.this,"踢人失败:"+errMsg);
-                                        }
-                                    });
+                                    MLOC.showMsg(ChatroomActivity.this,"踢人失败:"+errMsg);
                                     finish();
                                 }
                             });
@@ -464,22 +404,12 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                             chatroomManager.muteMember(mRoomId, userId,60, new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            MLOC.showMsg(ChatroomActivity.this,"禁言成功");
-                                        }
-                                    });
+                                    MLOC.showMsg(ChatroomActivity.this,"禁言成功");
                                 }
 
                                 @Override
                                 public void failed(final String errMsg) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            MLOC.showMsg(ChatroomActivity.this,"禁言失败:"+errMsg);
-                                        }
-                                    });
+                                    MLOC.showMsg(ChatroomActivity.this,"禁言失败:"+errMsg);
                                 }
                             });
                         }else if(i==2){

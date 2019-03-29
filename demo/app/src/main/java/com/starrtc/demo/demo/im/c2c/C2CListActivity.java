@@ -76,13 +76,7 @@ public class C2CListActivity extends BaseActivity {
        if(list!=null&&list.size()>0){
             mHistoryList.addAll(list);
        }
-       runOnUiThread(new Runnable() {
-           @Override
-           public void run() {
-               listAdapter.notifyDataSetChanged();
-           }
-       });
-
+       listAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -134,13 +134,14 @@ public class VideoMeetingActivity extends BaseActivity{
                 meetingManager.switchCamera();
             }
         });
-
         init();
     }
 
     private void showAddDialog(){
         final Dialog dialog = new Dialog(this,R.style.dialog_popup);
         dialog.setContentView(R.layout.dialog_input_rtmp_url);
+        ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://");
+        ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://62.234.134.38/live/leijh");
         Window win = dialog.getWindow();
         win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         win.setGravity(Gravity.CENTER);
@@ -165,24 +166,16 @@ public class VideoMeetingActivity extends BaseActivity{
         meetingManager.pushRtmp(url, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rtmpPushing = true;
-                        MLOC.showMsg(VideoMeetingActivity.this,"推流成功");
-                    }
-                });
+                rtmpPushing = true;
+                MLOC.showMsg(VideoMeetingActivity.this,"推流成功");
+                ((TextView)findViewById(R.id.push_rtmp)).setText("停止");
             }
 
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rtmpPushing = false;
-                        MLOC.showMsg(VideoMeetingActivity.this,"推流失败"+errMsg);
-                    }
-                });
+                rtmpPushing = false;
+                MLOC.showMsg(VideoMeetingActivity.this,"推流失败"+errMsg);
+                ((TextView)findViewById(R.id.push_rtmp)).setText("RTMP");
             }
         });
     }
@@ -190,23 +183,14 @@ public class VideoMeetingActivity extends BaseActivity{
         meetingManager.stopPushRtmp( new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rtmpPushing = false;
-                        MLOC.showMsg(VideoMeetingActivity.this,"停止推流成功");
-                    }
-                });
+                rtmpPushing = false;
+                MLOC.showMsg(VideoMeetingActivity.this,"停止推流成功");
+                ((TextView)findViewById(R.id.push_rtmp)).setText("RTMP");
             }
 
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoMeetingActivity.this,"停止推流失败"+errMsg);
-                    }
-                });
+                MLOC.showMsg(VideoMeetingActivity.this,"停止推流失败"+errMsg);
             }
         });
     }
@@ -243,13 +227,8 @@ public class VideoMeetingActivity extends BaseActivity{
             }
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(VideoMeetingActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -263,12 +242,7 @@ public class VideoMeetingActivity extends BaseActivity{
 
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
-                    }
-                });
+                MLOC.showMsg(VideoMeetingActivity.this,errMsg);
                 stopAndFinish();
             }
         });
@@ -284,14 +258,8 @@ public class VideoMeetingActivity extends BaseActivity{
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("XHMeetingManager","joinMeeting failed "+errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoMeetingActivity.this,errMsg);
-                        stopAndFinish();
-
-                    }
-                });
+                MLOC.showMsg(VideoMeetingActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -629,53 +597,33 @@ public class VideoMeetingActivity extends BaseActivity{
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MEETING_ADD_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String addId = data.getString("userID");
-                            addPlayer(addId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String addId = data.getString("userID");
+                    addPlayer(addId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_MEETING_REMOVE_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String removeUserId = data.getString("userID");
-                            deletePlayer(removeUserId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String removeUserId = data.getString("userID");
+                    deletePlayer(removeUserId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_MEETING_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String errStr = (String) eventObj;
-                        MLOC.showMsg(getApplicationContext(),errStr);
-                        stopAndFinish();
-                    }
-                });
+                String errStr = (String) eventObj;
+                MLOC.showMsg(getApplicationContext(),errStr);
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_MEETING_GET_ONLINE_NUMBER:
                 break;
             case AEvent.AEVENT_MEETING_SELF_KICKED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(VideoMeetingActivity.this,"你已被踢出");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(VideoMeetingActivity.this,"你已被踢出");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_MEETING_SELF_BANNED:
                 break;

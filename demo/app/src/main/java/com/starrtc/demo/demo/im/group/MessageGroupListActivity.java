@@ -107,31 +107,26 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
     private void queryGroupList(){
         if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
             XHClient.getInstance().getGroupManager().queryGroupList(new IXHResultCallback() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void success(final Object data) {
                     MLOC.d("IM_GROUP","applyGetGroupList success:"+data);
-                    runOnUiThread(new Runnable() {
-                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                        @Override
-                        public void run() {
-                            try {
-                                JSONArray datas = (JSONArray) data;
-                                ArrayList<MessageGroupInfo> res = new ArrayList<MessageGroupInfo>();
-                                for (int i = 0;i<datas.length();i++){
-                                    MessageGroupInfo groupInfo = new MessageGroupInfo();
-                                    groupInfo.createrId = datas.getJSONObject(i).getString("creator");
-                                    groupInfo.groupId = datas.getJSONObject(i).getString("groupId");
-                                    groupInfo.groupName = datas.getJSONObject(i).getString("groupName");
-                                    res.add(groupInfo);
-                                }
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,true,res);
-                                return;
-                            } catch (JSONException e) {
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,"数据解析失败");
-                                e.printStackTrace();
-                            }
+                    try {
+                        JSONArray datas = (JSONArray) data;
+                        ArrayList<MessageGroupInfo> res = new ArrayList<MessageGroupInfo>();
+                        for (int i = 0;i<datas.length();i++){
+                            MessageGroupInfo groupInfo = new MessageGroupInfo();
+                            groupInfo.createrId = datas.getJSONObject(i).getString("creator");
+                            groupInfo.groupId = datas.getJSONObject(i).getString("groupId");
+                            groupInfo.groupName = datas.getJSONObject(i).getString("groupName");
+                            res.add(groupInfo);
                         }
-                    });
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,true,res);
+                        return;
+                    } catch (JSONException e) {
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,"数据解析失败");
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -210,13 +205,8 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
                     }
                     mDatas.addAll(historyList);
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        myListAdapter.notifyDataSetChanged();
-                    }
-                });
+                refreshLayout.setRefreshing(false);
+                myListAdapter.notifyDataSetChanged();
 
                 break;
             default:
