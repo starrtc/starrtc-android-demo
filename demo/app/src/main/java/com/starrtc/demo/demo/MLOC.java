@@ -46,7 +46,7 @@ public class MLOC {
 
     public static String VOIP_SERVER_URL = "xxx.xxx.xxx:10086";
     public static String IM_SERVER_URL = "xxx.xxx.xxx:19903";
-    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:19928";
+    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:19931";
     public static String LIVE_VDN_SERVER_URL = "xxx.xxx.xxx:19925";
     public static String CHAT_ROOM_SERVER_URL = "xxx.xxx.xxx:19906";
 
