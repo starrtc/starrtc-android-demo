@@ -101,19 +101,13 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MINI_CLASS_GOT_LIST:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        if(success){
-                            ArrayList<MiniClassInfo> res = (ArrayList<MiniClassInfo>) eventObj;
-                            mDatas.addAll(res);
-                            myListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                if(success){
+                    ArrayList<MiniClassInfo> res = (ArrayList<MiniClassInfo>) eventObj;
+                    mDatas.addAll(res);
+                    myListAdapter.notifyDataSetChanged();
+                }
                 break;
         }
     }

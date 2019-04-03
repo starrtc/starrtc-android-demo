@@ -114,28 +114,23 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(action.equals(CALLING)){
-                            MLOC.d("newVoip","call");
-                            voipManager.call(targetId, new IXHResultCallback() {
-                                @Override
-                                public void success(Object data) {
-                                    MLOC.d("newVoip","call success");
-                                }
-                                @Override
-                                public void failed(String errMsg) {
-                                    MLOC.d("newVoip","call failed");
-                                    stopAndFinish();
-                                }
-                            });
-                        }else{
-                            MLOC.d("newVoip","onPickup");
-                            onPickup();
+                if(action.equals(CALLING)){
+                    MLOC.d("newVoip","call");
+                    voipManager.call(targetId, new IXHResultCallback() {
+                        @Override
+                        public void success(Object data) {
+                            MLOC.d("newVoip","call success");
                         }
-                    }
-                });
+                        @Override
+                        public void failed(String errMsg) {
+                            MLOC.d("newVoip","call failed");
+                            stopAndFinish();
+                        }
+                    });
+                }else{
+                    MLOC.d("newVoip","onPickup");
+                    onPickup();
+                }
             }
 
             @Override
@@ -220,12 +215,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void failed(final String errMsg) {
                                 MLOC.d("","AEVENT_VOIP_ON_STOP errMsg:"+errMsg);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        MLOC.showMsg(VoipActivity.this,errMsg);
-                                    }
-                                });
+                                MLOC.showMsg(VoipActivity.this,errMsg);
                             }
                         });
                     }
@@ -238,48 +228,28 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_VOIP_REV_BUSY:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方线路忙");
-                        MLOC.showMsg(VoipActivity.this,"对方线路忙");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方线路忙");
+                MLOC.showMsg(VoipActivity.this,"对方线路忙");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_REFUSED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方拒绝通话");
-                        MLOC.showMsg(VoipActivity.this,"对方拒绝通话");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方拒绝通话");
+                MLOC.showMsg(VoipActivity.this,"对方拒绝通话");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_HANGUP:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("","对方已挂断");
-                        MLOC.showMsg(VoipActivity.this,"对方已挂断");
-                        timer.stop();
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("","对方已挂断");
+                MLOC.showMsg(VoipActivity.this,"对方已挂断");
+                timer.stop();
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_CONNECT:
                 MLOC.d("","对方允许通话");
                 showTalkingView();
                 break;
             case AEvent.AEVENT_VOIP_REV_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.d("",(String) eventObj);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.d("",(String) eventObj);
+                stopAndFinish();
                 break;
         }
     }
@@ -291,19 +261,14 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void showTalkingView(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                isTalking = true;
-                findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
-                findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
-                FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
-                flp.width = findViewById(R.id.calling_view).getWidth();
-                findViewById(R.id.talking_view).setLayoutParams(flp);
-                timer.setBase(SystemClock.elapsedRealtime());
-                timer.start();
-            }
-        });
+        isTalking = true;
+        findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
+        FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
+        flp.width = findViewById(R.id.calling_view).getWidth();
+        findViewById(R.id.talking_view).setLayoutParams(flp);
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.start();
     }
 
     private void onPickup(){

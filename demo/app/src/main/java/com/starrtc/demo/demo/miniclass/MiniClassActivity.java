@@ -297,17 +297,12 @@ public class MiniClassActivity extends BaseActivity{
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = false;
                                     classManager.changeToAudience();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            vLinkBtn.setText("互动");
-                                            vPaintPlayer.pause();
-                                            vCameraBtn.setVisibility(View.GONE);
-                                            vMicBtn.setVisibility(View.GONE);
-                                            vCleanBtn.setVisibility(View.GONE);
-                                            vRevokeBtn.setVisibility(View.GONE);
-                                        }
-                                    });
+                                    vLinkBtn.setText("互动");
+                                    vPaintPlayer.pause();
+                                    vCameraBtn.setVisibility(View.GONE);
+                                    vMicBtn.setVisibility(View.GONE);
+                                    vCleanBtn.setVisibility(View.GONE);
+                                    vRevokeBtn.setVisibility(View.GONE);
                                 }
                             }
                     ).show();
@@ -390,13 +385,8 @@ public class MiniClassActivity extends BaseActivity{
             }
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MiniClassActivity.this,errMsg);
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(MiniClassActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -410,12 +400,7 @@ public class MiniClassActivity extends BaseActivity{
 
             @Override
             public void failed(final String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MiniClassActivity.this,errMsg);
-                    }
-                });
+                MLOC.showMsg(MiniClassActivity.this,errMsg);
                 stopAndFinish();
             }
         });
@@ -433,14 +418,8 @@ public class MiniClassActivity extends BaseActivity{
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("XHLiveManager","startLive failed "+errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MiniClassActivity.this,errMsg);
-                        stopAndFinish();
-
-                    }
-                });
+                MLOC.showMsg(MiniClassActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -455,14 +434,8 @@ public class MiniClassActivity extends BaseActivity{
             @Override
             public void failed(final String errMsg) {
                 MLOC.d("XHLiveManager","watchLive failed "+errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MiniClassActivity.this,errMsg);
-                        stopAndFinish();
-
-                    }
-                });
+                MLOC.showMsg(MiniClassActivity.this,errMsg);
+                stopAndFinish();
             }
         });
     }
@@ -697,53 +670,33 @@ public class MiniClassActivity extends BaseActivity{
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_LIVE_ADD_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String addId = data.getString("actorID");
-                            addPlayer(addId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String addId = data.getString("actorID");
+                    addPlayer(addId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_LIVE_REMOVE_UPLOADER:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject data = (JSONObject) eventObj;
-                            String removeUserId = data.getString("actorID");
-                            deletePlayer(removeUserId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                try {
+                    JSONObject data = (JSONObject) eventObj;
+                    String removeUserId = data.getString("actorID");
+                    deletePlayer(removeUserId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case AEvent.AEVENT_LIVE_ERROR:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String errStr = (String) eventObj;
-                        MLOC.showMsg(getApplicationContext(),errStr);
-                        stopAndFinish();
-                    }
-                });
+                String errStr = (String) eventObj;
+                MLOC.showMsg(getApplicationContext(),errStr);
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_LIVE_GET_ONLINE_NUMBER:
                 break;
             case AEvent.AEVENT_LIVE_SELF_KICKED:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MiniClassActivity.this,"你已被踢出");
-                        stopAndFinish();
-                    }
-                });
+                MLOC.showMsg(MiniClassActivity.this,"你已被踢出");
+                stopAndFinish();
                 break;
             case AEvent.AEVENT_LIVE_SELF_BANNED:
                 break;
@@ -752,25 +705,20 @@ public class MiniClassActivity extends BaseActivity{
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 revMsg.contentData = decodeMiniClassMsgContentData(revMsg.contentData);
                 mDatas.add(revMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                        if(revMsg.contentData.equals("打开摄像头")){
-                            for(int i = 0;i<mPlayerList.size();i++){
-                                if(mPlayerList.get(i).getUserId().equals(revMsg.fromId)){
-                                    mPlayerList.get(i).getVideoPlayer().setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }else if(revMsg.contentData.equals("关闭摄像头")){
-                            for(int i = 0;i<mPlayerList.size();i++){
-                                if(mPlayerList.get(i).getUserId().equals(revMsg.fromId)){
-                                    mPlayerList.get(i).getVideoPlayer().setVisibility(View.INVISIBLE);
-                                }
-                            }
+                mAdapter.notifyDataSetChanged();
+                if(revMsg.contentData.equals("打开摄像头")){
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(mPlayerList.get(i).getUserId().equals(revMsg.fromId)){
+                            mPlayerList.get(i).getVideoPlayer().setVisibility(View.VISIBLE);
                         }
                     }
-                });
+                }else if(revMsg.contentData.equals("关闭摄像头")){
+                    for(int i = 0;i<mPlayerList.size();i++){
+                        if(mPlayerList.get(i).getUserId().equals(revMsg.fromId)){
+                            mPlayerList.get(i).getVideoPlayer().setVisibility(View.INVISIBLE);
+                        }
+                    }
+                }
                 break;
             case AEvent.AEVENT_LIVE_REV_REALTIME_DATA:
                 if(success){
@@ -786,92 +734,45 @@ public class MiniClassActivity extends BaseActivity{
                 }
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(MiniClassActivity.this).setCancelable(true)
-                                .setTitle(eventObj+"申请互动")
-                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        classManager.refuseApplyToBroadcaster((String) eventObj);
-                                    }
-                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        sendChatMsg("欢迎新的小伙伴上麦！！！");
-                                        classManager.agreeApplyToBroadcaster((String) eventObj);
-                                    }
-                                }
-                        ).show();
-                    }
-                });
+                new AlertDialog.Builder(MiniClassActivity.this).setCancelable(true)
+                        .setTitle(eventObj+"申请互动")
+                        .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                classManager.refuseApplyToBroadcaster((String) eventObj);
+                            }
+                        }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                sendChatMsg("欢迎新的小伙伴上麦！！！");
+                                classManager.agreeApplyToBroadcaster((String) eventObj);
+                            }
+                        }
+                ).show();
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    isUploader = true;
-                                    classManager.changeToBroadcaster();
-                                    vPaintPlayer.publish(MLOC.userId);
-                                    vLinkBtn.setText("停止");
-                                    vCameraBtn.setVisibility(View.VISIBLE);
-                                    vMicBtn.setVisibility(View.VISIBLE);
-                                    vCleanBtn.setVisibility(View.GONE);
-                                    vRevokeBtn.setVisibility(View.VISIBLE);
-                                    vSelectColorBtn.setVisibility(View.VISIBLE);
-                                    vLaserPenBtn.setVisibility(View.GONE);
-                                }
-                            });
-                        }
-                    }
-                });
+                isUploader = true;
+                classManager.changeToBroadcaster();
+                vPaintPlayer.publish(MLOC.userId);
+                vLinkBtn.setText("停止");
+                vCameraBtn.setVisibility(View.VISIBLE);
+                vMicBtn.setVisibility(View.VISIBLE);
+                vCleanBtn.setVisibility(View.GONE);
+                vRevokeBtn.setVisibility(View.VISIBLE);
+                vSelectColorBtn.setVisibility(View.VISIBLE);
+                vLaserPenBtn.setVisibility(View.GONE);
                 break;
             case AEvent.AEVENT_LIVE_INVITE_LINK:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(MiniClassActivity.this).setCancelable(true)
-                                .setTitle(eventObj+"邀请您互动")
-                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        classManager.refuseInviteToBroadcaster((String) eventObj);
-                                    }
-                                }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                vLinkBtn.setText("停止");
-                                                vCameraBtn.setVisibility(View.VISIBLE);
-                                                vMicBtn.setVisibility(View.VISIBLE);
-                                                vCleanBtn.setVisibility(View.GONE);
-                                                vRevokeBtn.setVisibility(View.VISIBLE);
-                                                vSelectColorBtn.setVisibility(View.VISIBLE);
-                                                vLaserPenBtn.setVisibility(View.GONE);
-                                            }
-                                        });
-                                        isUploader = true;
-                                        classManager.agreeInviteToBroadcaster((String) eventObj);
-                                    }
-                                }
-                        ).show();
-                    }
-                });
-                break;
-            case AEvent.AEVENT_LIVE_INVITE_LINK_RESULT:
-                XHConstants.XHLiveJoinResult result = (XHConstants.XHLiveJoinResult) eventObj;
-                switch (result){
-                    case XHLiveJoinResult_accept:
-                        runOnUiThread(new Runnable() {
+                new AlertDialog.Builder(MiniClassActivity.this).setCancelable(true)
+                        .setTitle(eventObj+"邀请您互动")
+                        .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
                             @Override
-                            public void run() {
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                classManager.refuseInviteToBroadcaster((String) eventObj);
+                            }
+                        }).setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
                                 vLinkBtn.setText("停止");
                                 vCameraBtn.setVisibility(View.VISIBLE);
                                 vMicBtn.setVisibility(View.VISIBLE);
@@ -879,8 +780,23 @@ public class MiniClassActivity extends BaseActivity{
                                 vRevokeBtn.setVisibility(View.VISIBLE);
                                 vSelectColorBtn.setVisibility(View.VISIBLE);
                                 vLaserPenBtn.setVisibility(View.GONE);
+                                isUploader = true;
+                                classManager.agreeInviteToBroadcaster((String) eventObj);
                             }
-                        });
+                        }
+                ).show();
+                break;
+            case AEvent.AEVENT_LIVE_INVITE_LINK_RESULT:
+                XHConstants.XHLiveJoinResult result = (XHConstants.XHLiveJoinResult) eventObj;
+                switch (result){
+                    case XHLiveJoinResult_accept:
+                        vLinkBtn.setText("停止");
+                        vCameraBtn.setVisibility(View.VISIBLE);
+                        vMicBtn.setVisibility(View.VISIBLE);
+                        vCleanBtn.setVisibility(View.GONE);
+                        vRevokeBtn.setVisibility(View.VISIBLE);
+                        vSelectColorBtn.setVisibility(View.VISIBLE);
+                        vLaserPenBtn.setVisibility(View.GONE);
                         break;
                     case XHLiveJoinResult_refuse:
                         break;
@@ -891,19 +807,14 @@ public class MiniClassActivity extends BaseActivity{
             case AEvent.AEVENT_LIVE_SELF_COMMANDED_TO_STOP:
                 if(isUploader){
                     isUploader = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            vPaintPlayer.pause();
-                            vLinkBtn.setText("互动");
-                            vCameraBtn.setVisibility(View.GONE);
-                            vMicBtn.setVisibility(View.GONE);
-                            vCleanBtn.setVisibility(View.GONE);
-                            vRevokeBtn.setVisibility(View.GONE);
-                            vSelectColorBtn.setVisibility(View.GONE);
-                            vLaserPenBtn.setVisibility(View.GONE);
-                        }
-                    });
+                    vPaintPlayer.pause();
+                    vLinkBtn.setText("互动");
+                    vCameraBtn.setVisibility(View.GONE);
+                    vMicBtn.setVisibility(View.GONE);
+                    vCleanBtn.setVisibility(View.GONE);
+                    vRevokeBtn.setVisibility(View.GONE);
+                    vSelectColorBtn.setVisibility(View.GONE);
+                    vLaserPenBtn.setVisibility(View.GONE);
                 }
                 break;
         }

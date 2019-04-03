@@ -103,20 +103,19 @@ public class VoipListActivity extends BaseActivity {
         if(list!=null&&list.size()>0){
             mHistoryList.addAll(list);
         }
-        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
-        InterfaceUrls.demoRequestOnlineUsers();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
+            InterfaceUrls.demoRequestOnlineUsers();
+        }
+        myListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
+        }
     }
 
     @Override
@@ -148,12 +147,7 @@ public class VoipListActivity extends BaseActivity {
                 }
 
                 mHistoryList.addAll(list);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        myListAdapter.notifyDataSetChanged();
-                    }
-                });
+                myListAdapter.notifyDataSetChanged();
             }
         }
     }

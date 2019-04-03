@@ -161,29 +161,21 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
             case AEvent.AEVENT_C2C_REV_MSG:
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 if(revMsg.fromId.equals(mTargetId)){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    HistoryBean historyBean = new HistoryBean();
+                    historyBean.setType(CoreDB.HISTORY_TYPE_C2C);
+                    historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                    historyBean.setLastMsg(revMsg.contentData);
+                    historyBean.setConversationId(revMsg.fromId);
+                    historyBean.setNewMsgCount(1);
+                    MLOC.setHistory(historyBean,true);
 
-                            HistoryBean historyBean = new HistoryBean();
-                            historyBean.setType(CoreDB.HISTORY_TYPE_C2C);
-                            historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-                            historyBean.setLastMsg(revMsg.contentData);
-                            historyBean.setConversationId(revMsg.fromId);
-                            historyBean.setNewMsgCount(1);
-                            MLOC.setHistory(historyBean,true);
-
-                            MessageBean messageBean = new MessageBean();
-                            messageBean.setConversationId(revMsg.fromId);
-                            messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-                            messageBean.setMsg(revMsg.contentData);
-                            messageBean.setFromId(revMsg.fromId);
-
-                            mDatas.add(messageBean);
-
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    MessageBean messageBean = new MessageBean();
+                    messageBean.setConversationId(revMsg.fromId);
+                    messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                    messageBean.setMsg(revMsg.contentData);
+                    messageBean.setFromId(revMsg.fromId);
+                    mDatas.add(messageBean);
+                    mAdapter.notifyDataSetChanged();
                 }
                 break;
             case AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS:

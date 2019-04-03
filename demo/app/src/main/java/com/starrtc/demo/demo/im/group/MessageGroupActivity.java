@@ -103,22 +103,12 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
                 @Override
                 public void success(Object data) {
                     mGroupId = (String) data;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            onResume();
-                        }
-                    });
+                    onResume();
                 }
 
                 @Override
                 public void failed(final String errMsg) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MLOC.showMsg(MessageGroupActivity.this,errMsg);
-                        }
-                    });
+                    MLOC.showMsg(MessageGroupActivity.this,errMsg);
                     finish();
                 }
 
@@ -220,27 +210,22 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
             case AEvent.AEVENT_GROUP_REV_MSG:
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 if(revMsg.targetId.equals(mGroupId)){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            HistoryBean historyBean = new HistoryBean();
-                            historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
-                            historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-                            historyBean.setLastMsg(revMsg.contentData);
-                            historyBean.setConversationId(revMsg.targetId);
-                            historyBean.setNewMsgCount(1);
-                            MLOC.setHistory(historyBean,true);
+                    HistoryBean historyBean = new HistoryBean();
+                    historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
+                    historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                    historyBean.setLastMsg(revMsg.contentData);
+                    historyBean.setConversationId(revMsg.targetId);
+                    historyBean.setNewMsgCount(1);
+                    MLOC.setHistory(historyBean,true);
 
-                            MessageBean messageBean = new MessageBean();
-                            messageBean.setConversationId(revMsg.fromId);
-                            messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-                            messageBean.setMsg(revMsg.contentData);
-                            messageBean.setFromId(revMsg.fromId);
+                    MessageBean messageBean = new MessageBean();
+                    messageBean.setConversationId(revMsg.fromId);
+                    messageBean.setTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                    messageBean.setMsg(revMsg.contentData);
+                    messageBean.setFromId(revMsg.fromId);
 
-                            mDatas.add(messageBean);
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    mDatas.add(messageBean);
+                    mAdapter.notifyDataSetChanged();
                 }
                 break;
         }
@@ -249,28 +234,23 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
     private void queryGroupMemberList(){
         if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
             groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void success(final Object data) {
                     MLOC.d("IM_GROUP","applyGetUserList success:"+data);
-                    runOnUiThread(new Runnable() {
-                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                        @Override
-                        public void run() {
-                            try {
-                                JSONArray datas = ((JSONObject) data).getJSONArray("data");
-                                ArrayList<String> res = new ArrayList<String>();
-                                for (int i = 0;i<datas.length();i++){
-                                    String uid = datas.getJSONObject(i).getString("userId");
-                                    res.add(uid);
-                                }
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
-                                return;
-                            } catch (JSONException e) {
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
-                                e.printStackTrace();
-                            }
+                    try {
+                        JSONArray datas = ((JSONObject) data).getJSONArray("data");
+                        ArrayList<String> res = new ArrayList<String>();
+                        for (int i = 0;i<datas.length();i++){
+                            String uid = datas.getJSONObject(i).getString("userId");
+                            res.add(uid);
                         }
-                    });
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
+                        return;
+                    } catch (JSONException e) {
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override

@@ -78,22 +78,12 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     groupManager.setPushEnable(mGroupId, true, new IXHResultCallback() {
                         @Override
                         public void success(Object data) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MLOC.showMsg(MessageGroupSettingActivity.this,"设置成功");
-                                }
-                            });
+                            MLOC.showMsg(MessageGroupSettingActivity.this,"设置成功");
                         }
 
                         @Override
                         public void failed(String errMsg) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MLOC.showMsg(MessageGroupSettingActivity.this,"设置失败");
-                                }
-                            });
+                            MLOC.showMsg(MessageGroupSettingActivity.this,"设置失败");
                         }
                     });
                 } else {
@@ -101,22 +91,12 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     groupManager.setPushEnable(mGroupId, false, new IXHResultCallback() {
                         @Override
                         public void success(Object data) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MLOC.showMsg(MessageGroupSettingActivity.this, "设置成功");
-                                }
-                            });
+                            MLOC.showMsg(MessageGroupSettingActivity.this, "设置成功");
                         }
 
                         @Override
                         public void failed(String errMsg) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MLOC.showMsg(MessageGroupSettingActivity.this, "设置失败");
-                                }
-                            });
+                            MLOC.showMsg(MessageGroupSettingActivity.this, "设置失败");
                         }
 
                     });
@@ -156,30 +136,25 @@ public class MessageGroupSettingActivity extends BaseActivity{
     private void queryGroupMemberList(){
         if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
             groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void success(final Object data) {
                     MLOC.d("IM_GROUP","applyGetUserList success:"+data);
-                    runOnUiThread(new Runnable() {
-                        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                        @Override
-                        public void run() {
-                            try {
-                                JSONArray datas = ((JSONObject) data).getJSONArray("data");
-                                int ignore = ((JSONObject) data).getInt("ignore");
-                                findViewById(R.id.switch_btn).setSelected(ignore==1?true:false);
-                                ArrayList<String> res = new ArrayList<String>();
-                                for (int i = 0;i<datas.length();i++){
-                                    String uid = datas.getJSONObject(i).getString("userId");
-                                    res.add(uid);
-                                }
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
-                                return;
-                            } catch (JSONException e) {
-                                AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
-                                e.printStackTrace();
-                            }
+                    try {
+                        JSONArray datas = ((JSONObject) data).getJSONArray("data");
+                        int ignore = ((JSONObject) data).getInt("ignore");
+                        findViewById(R.id.switch_btn).setSelected(ignore==1?true:false);
+                        ArrayList<String> res = new ArrayList<String>();
+                        for (int i = 0;i<datas.length();i++){
+                            String uid = datas.getJSONObject(i).getString("userId");
+                            res.add(uid);
                         }
-                    });
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
+                        return;
+                    } catch (JSONException e) {
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
+                        e.printStackTrace();
+                    }
                 }
                 @Override
                 public void failed(String errMsg) {
@@ -227,12 +202,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     user.put("userId","btnAdd");
                     mMembersDatas.add(user);
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        myAdapter.notifyDataSetChanged();
-                    }
-                });
+                myAdapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -242,23 +212,13 @@ public class MessageGroupSettingActivity extends BaseActivity{
         groupManager.addGroupMembers(mGroupId, idList, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "成员添加成功");
-                        queryGroupMemberList();
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "成员添加成功");
+                queryGroupMemberList();
             }
 
             @Override
             public void failed(String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "成员添加失败");
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "成员添加失败");
             }
         });
     }
@@ -269,23 +229,13 @@ public class MessageGroupSettingActivity extends BaseActivity{
         groupManager.deleteGroupMembers(mGroupId, idList, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "成员删除成功");
-                        queryGroupMemberList();
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "成员删除成功");
+                queryGroupMemberList();
             }
 
             @Override
             public void failed(String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "成员删除失败");
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "成员删除失败");
             }
         });
     }
@@ -294,22 +244,12 @@ public class MessageGroupSettingActivity extends BaseActivity{
         groupManager.deleteGroup(mGroupId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "群删除成功");
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "群删除成功");
             }
 
             @Override
             public void failed(String errMsg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MLOC.showMsg(MessageGroupSettingActivity.this, "群删除失败");
-                    }
-                });
+                MLOC.showMsg(MessageGroupSettingActivity.this, "群删除失败");
             }
         });
     }

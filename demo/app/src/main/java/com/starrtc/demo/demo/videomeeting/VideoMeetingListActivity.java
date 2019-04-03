@@ -104,40 +104,30 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
         XHClient.getInstance().getMeetingManager().queryMeetingList(new IXHResultCallback() {
             @Override
             public void success(final Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        try {
-                            JSONArray array = (JSONArray) data;
-                            for(int i = array.length()-1;i>=0;i--){
-                                MeetingInfo info = new MeetingInfo();
-                                JSONObject obj = array.getJSONObject(i);
-                                info.createrId = obj.getString("creator");
-                                info.meetingId = obj.getString("id");
-                                info.meetingName = obj.getString("name");
-                                mDatas.add(info);
-                            }
-                            myListAdapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                try {
+                    JSONArray array = (JSONArray) data;
+                    for(int i = array.length()-1;i>=0;i--){
+                        MeetingInfo info = new MeetingInfo();
+                        JSONObject obj = array.getJSONObject(i);
+                        info.createrId = obj.getString("creator");
+                        info.meetingId = obj.getString("id");
+                        info.meetingName = obj.getString("name");
+                        mDatas.add(info);
                     }
-                });
+                    myListAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void failed(String errMsg) {
                 MLOC.d("VideoMettingListActivity",errMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        myListAdapter.notifyDataSetChanged();
-                    }
-                });
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                myListAdapter.notifyDataSetChanged();
             }
         });
 
@@ -154,19 +144,13 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_MEETING_GOT_LIST:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        if(success){
-                            ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
-                            mDatas.addAll(res);
-                            myListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                if(success){
+                    ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
+                    mDatas.addAll(res);
+                    myListAdapter.notifyDataSetChanged();
+                }
                 break;
         }
     }

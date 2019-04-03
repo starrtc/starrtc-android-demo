@@ -65,22 +65,17 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void dispatchEvent(final String aEventID, boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (aEventID){
-                    case AEvent.AEVENT_VOIP_REV_HANGUP:
-                        MLOC.d("","对方已挂断");
-                        MLOC.showMsg(VoipRingingActivity.this,"对方已挂断");
-                        finish();
-                        break;
-                    case AEvent.AEVENT_VOIP_REV_ERROR:
-                        MLOC.showMsg(VoipRingingActivity.this, (String) eventObj);
-                        finish();
-                        break;
-                }
-            }
-        });
+        switch (aEventID){
+            case AEvent.AEVENT_VOIP_REV_HANGUP:
+                MLOC.d("","对方已挂断");
+                MLOC.showMsg(VoipRingingActivity.this,"对方已挂断");
+                finish();
+                break;
+            case AEvent.AEVENT_VOIP_REV_ERROR:
+                MLOC.showMsg(VoipRingingActivity.this, (String) eventObj);
+                finish();
+                break;
+        }
     }
 
     @Override

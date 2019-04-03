@@ -42,10 +42,11 @@ public class MLOC {
     public static String LIVE_SRC_SCHEDULE_URL = "ips2.starrtc.com:9929";
     public static String LIVE_VDN_SCHEDULE_URL = "ips2.starrtc.com:9926";
     public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com:9907";
+    public static String VOIP_SCHEDULE_URL = "voip2.starrtc.com:10086";
 
-    public static String VOIP_SERVER_URL = "voip2.starrtc.com:10086";
+    public static String VOIP_SERVER_URL = "xxx.xxx.xxx:10086";
     public static String IM_SERVER_URL = "xxx.xxx.xxx:19903";
-    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:19928";
+    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:19931";
     public static String LIVE_VDN_SERVER_URL = "xxx.xxx.xxx:19925";
     public static String CHAT_ROOM_SERVER_URL = "xxx.xxx.xxx:19906";
 
@@ -76,6 +77,7 @@ public class MLOC {
         LIVE_SRC_SCHEDULE_URL = loadSharedData(context,"LIVE_SRC_SCHEDULE_URL",LIVE_SRC_SCHEDULE_URL);
         LIVE_VDN_SCHEDULE_URL = loadSharedData(context,"LIVE_VDN_SCHEDULE_URL",LIVE_VDN_SCHEDULE_URL);
         CHAT_ROOM_SCHEDULE_URL = loadSharedData(context,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
+        VOIP_SCHEDULE_URL = loadSharedData(context,"VOIP_SCHEDULE_URL",VOIP_SCHEDULE_URL);
         VOIP_SERVER_URL = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
         IM_SERVER_URL = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
         LIVE_SRC_SERVER_URL = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
@@ -211,6 +213,10 @@ public class MLOC {
         saveSharedData(appContext,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
     }
 
+    public static void saveVoipSchduleUrl(String voipSchduleUrl){
+        MLOC.VOIP_SCHEDULE_URL = voipSchduleUrl;
+        saveSharedData(appContext,"VOIP_SCHEDULE_URL",VOIP_SCHEDULE_URL);
+    }
     public static void saveVoipServerUrl(String voipServerUrl){
         MLOC.VOIP_SERVER_URL = voipServerUrl;
         saveSharedData(appContext,"VOIP_SERVER_URL",VOIP_SERVER_URL);

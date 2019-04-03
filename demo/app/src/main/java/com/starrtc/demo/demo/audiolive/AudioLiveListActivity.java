@@ -99,28 +99,22 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
             case AEvent.AEVENT_AUDIO_LIVE_GOT_LIST:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        mDatas.clear();
-                        if(success){
-                            ArrayList<AudioLiveInfo> res = (ArrayList<AudioLiveInfo>) eventObj;
-                            for(int i = 0;i<res.size();i++){
-                                if(res.get(i).isLiveOn.equals("1")){
-                                    mDatas.add(res.get(i));
-                                }
-                            }
-                            for(int i = 0;i<res.size();i++){
-                                if(res.get(i).isLiveOn.equals("0")){
-                                    mDatas.add(res.get(i));
-                                }
-                            }
-                            myListAdapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                if(success){
+                    ArrayList<AudioLiveInfo> res = (ArrayList<AudioLiveInfo>) eventObj;
+                    for(int i = 0;i<res.size();i++){
+                        if(res.get(i).isLiveOn.equals("1")){
+                            mDatas.add(res.get(i));
                         }
                     }
-                });
-
+                    for(int i = 0;i<res.size();i++){
+                        if(res.get(i).isLiveOn.equals("0")){
+                            mDatas.add(res.get(i));
+                        }
+                    }
+                    myListAdapter.notifyDataSetChanged();
+                }
                 break;
         }
     }

@@ -52,22 +52,17 @@ public class VoipP2PRingingActivity extends BaseActivity implements View.OnClick
     @Override
     public void dispatchEvent(final String aEventID, boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (aEventID){
-                    case AEvent.AEVENT_VOIP_REV_HANGUP:
-                        MLOC.d("","对方已挂断");
-                        MLOC.showMsg(VoipP2PRingingActivity.this,"对方已挂断");
-                        finish();
-                        break;
-                    case AEvent.AEVENT_VOIP_REV_ERROR:
-                        MLOC.showMsg(VoipP2PRingingActivity.this, (String) eventObj);
-                        finish();
-                        break;
-                }
-            }
-        });
+        switch (aEventID){
+            case AEvent.AEVENT_VOIP_REV_HANGUP:
+                MLOC.d("","对方已挂断");
+                MLOC.showMsg(VoipP2PRingingActivity.this,"对方已挂断");
+                finish();
+                break;
+            case AEvent.AEVENT_VOIP_REV_ERROR:
+                MLOC.showMsg(VoipP2PRingingActivity.this, (String) eventObj);
+                finish();
+                break;
+        }
     }
 
     @Override
