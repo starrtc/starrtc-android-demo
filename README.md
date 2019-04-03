@@ -101,7 +101,3 @@ https://github.com/starrtc/starrtc-android-demo/wiki/Changelog
 对比
 ===
 webRTC vs starRTC: https://github.com/starrtc/starrtc-android-demo/raw/master/assets/webRTC_vs_starRTC.mp4
-
-许可证
-==
-[996ICU License](https://github.com/starrtc/starrtc-android-demo/raw/master/LICENSE.996icu)
