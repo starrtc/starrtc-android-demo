@@ -62,7 +62,6 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
 
         setContentView(R.layout.activity_voip_p2p);
         voipP2PManager = XHClient.getInstance().getVoipP2PManager();
-        voipP2PManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_LEFT);
         voipP2PManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
 

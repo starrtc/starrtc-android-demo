@@ -59,7 +59,6 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
 
         voipManager = XHClient.getInstance().getVoipManager();
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
-        voipManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");

@@ -97,7 +97,6 @@ public class MiniClassActivity extends BaseActivity{
         });
 
         classManager = XHClient.getInstance().getLiveManager(this);
-        classManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         classManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         classManager.addListener(new XHLiveManagerListener());
 
@@ -105,11 +104,9 @@ public class MiniClassActivity extends BaseActivity{
         if(dm.heightPixels>dm.widthPixels){
             isPortrait = true;
             setContentView(R.layout.activity_mini_class);
-            classManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         }else{
             isPortrait = false;
             setContentView(R.layout.activity_mini_class_landscape);
-            classManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         }
         vPlayerView = (RelativeLayout) findViewById(R.id.view1);
         mPlayerList = new ArrayList<>();

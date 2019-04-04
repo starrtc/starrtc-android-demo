@@ -136,7 +136,6 @@ public class VideoLiveActivity extends BaseActivity {
         }
 
         liveManager = XHClient.getInstance().getLiveManager(this);
-        liveManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         liveManager.addListener(new XHLiveManagerListener());
 

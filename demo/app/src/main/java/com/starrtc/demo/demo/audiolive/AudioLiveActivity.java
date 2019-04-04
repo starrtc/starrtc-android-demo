@@ -132,7 +132,6 @@ public class AudioLiveActivity extends BaseActivity {
         vHeadArray.add((ImageView) findViewById(R.id.mc_head_6));
 
         liveManager = XHClient.getInstance().getLiveManager(this);
-        liveManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
         liveManager.addListener(new XHLiveManagerListener());
 

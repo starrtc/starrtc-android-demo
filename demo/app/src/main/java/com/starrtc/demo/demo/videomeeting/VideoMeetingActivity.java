@@ -92,7 +92,6 @@ public class VideoMeetingActivity extends BaseActivity{
         }
 
         meetingManager = XHClient.getInstance().getMeetingManager(this);
-        meetingManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_RIHGT);
         meetingManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         meetingManager.addListener(new XHMeetingManagerListener());
 

@@ -74,7 +74,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
-        voipManager.setDeviceDirection(XHConstants.XHDeviceDirectionEnum.STAR_DEVICE_DIRECTION_HOME_BOTTOM);
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
 
@@ -142,6 +141,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         if(action.equals(CALLING)){
             showCallingView();
         }
+
     }
 
     public void addListener(){
