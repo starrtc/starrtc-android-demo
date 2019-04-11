@@ -95,7 +95,7 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
         if(action.equals(CALLING)){
             showCallingView();
             MLOC.d(TAG,"call");
-            voipP2PManager.call(targetId, new IXHResultCallback() {
+            voipP2PManager.call(this,targetId, new IXHResultCallback() {
                 @Override
                 public void success(Object data) {
                     MLOC.d(TAG,"call success");
@@ -107,20 +107,8 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                 }
             });
         }else{
-            voipP2PManager.setupView(this,selfPlayer, targetPlayer, new IXHResultCallback() {
-                @Override
-                public void success(Object data) {
-                    MLOC.d(TAG,"setupView success");
-                    MLOC.d(TAG,"onPickup");
-                    onPickup();
-                }
-                @Override
-                public void failed(String errMsg) {
-                    MLOC.d(TAG,"setupView failed");
-                    VoipP2PActivity.this.stopAndFinish();
-                }
-            });
-
+            onPickup();
+            showTalkingView();
         }
 
     }
@@ -220,17 +208,6 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
             case AEvent.AEVENT_VOIP_REV_CONNECT:
                 MLOC.d(TAG,"对方允许通话");
                 showTalkingView();
-                voipP2PManager.setupView(this,selfPlayer, targetPlayer, new IXHResultCallback() {
-                    @Override
-                    public void success(Object data) {
-                        MLOC.d(TAG,"setupView success");
-                    }
-                    @Override
-                    public void failed(String errMsg) {
-                        MLOC.d(TAG,"setupView failed");
-                        VoipP2PActivity.this.stopAndFinish();
-                    }
-                });
                 break;
             case AEvent.AEVENT_VOIP_REV_ERROR:
                 MLOC.d(TAG,(String) eventObj);
@@ -239,6 +216,21 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    private void setupViews(){
+        voipP2PManager.setupView(selfPlayer, targetPlayer, new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d(TAG,"setupView success");
+                MLOC.d(TAG,"onPickup");
+
+            }
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d(TAG,"setupView failed");
+                VoipP2PActivity.this.stopAndFinish();
+            }
+        });
+    }
 
     private void showCallingView(){
         findViewById(R.id.calling_view).setVisibility(View.VISIBLE);
@@ -246,29 +238,17 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void showTalkingView(){
+
         isTalking = true;
         findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
         findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
-        @SuppressLint("WrongViewCast") FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
-        flp.width = findViewById(R.id.calling_view).getWidth();
-        findViewById(R.id.talking_view).setLayoutParams(flp);
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
+        setupViews();
     }
 
     private void onPickup(){
-        voipP2PManager.accept(targetId, new IXHResultCallback() {
-            @Override
-            public void success(Object data) {
-                MLOC.d(TAG,"onPickup OK ");
-            }
-            @Override
-            public void failed(String errMsg) {
-                MLOC.d(TAG,"onPickup failed ");
-                VoipP2PActivity.this.stopAndFinish();
-            }
-        });
-        showTalkingView();
+        voipP2PManager.accept(this,targetId,null);
     }
 
     @Override

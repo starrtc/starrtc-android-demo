@@ -11,9 +11,12 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHSDKHelper;
+import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 public class VideoLiveCreateActivity extends BaseActivity {
 
+    private XHSDKHelper xhsdkHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +36,7 @@ public class VideoLiveCreateActivity extends BaseActivity {
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VideoLiveCreateActivity.this,"id不能为空");
                 }else{
+                    xhsdkHelper.stopPerview();
                     Intent intent = new Intent(VideoLiveCreateActivity.this, VideoLiveActivity.class);
                     intent.putExtra(VideoLiveActivity.LIVE_TYPE,XHConstants.XHLiveType.XHLiveTypeGlobalPublic);
                     intent.putExtra(VideoLiveActivity.LIVE_NAME,inputId);
@@ -42,5 +46,23 @@ public class VideoLiveCreateActivity extends BaseActivity {
                 }
             }
         });
+        findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(xhsdkHelper!=null){
+                    xhsdkHelper.switchCamera();
+                }
+            }
+        });
+        xhsdkHelper = new XHSDKHelper();
+        xhsdkHelper.setDefaultCameraId(1);
+        xhsdkHelper.startPerview(this,((StarPlayer)findViewById(R.id.previewPlayer)));
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(xhsdkHelper!=null){
+            xhsdkHelper.stopPerview();
+        }
     }
 }

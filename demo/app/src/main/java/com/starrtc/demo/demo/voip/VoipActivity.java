@@ -108,28 +108,33 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
         findViewById(R.id.screen_btn).setOnClickListener(this);
-        voipManager.setupView(this,selfPlayer, targetPlayer, new IXHResultCallback() {
-//        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
+
+        if(action.equals(CALLING)){
+            showCallingView();
+            MLOC.d("newVoip","call");
+            voipManager.call(this,targetId, new IXHResultCallback() {
+                @Override
+                public void success(Object data) {
+                    MLOC.d("newVoip","call success");
+                }
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("newVoip","call failed");
+                    stopAndFinish();
+                }
+            });
+        }else{
+            MLOC.d("newVoip","onPickup");
+            onPickup();
+        }
+    }
+
+    private void setupViews(){
+        voipManager.setupView(selfPlayer, targetPlayer, new IXHResultCallback() {
+            //        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
-                if(action.equals(CALLING)){
-                    MLOC.d("newVoip","call");
-                    voipManager.call(targetId, new IXHResultCallback() {
-                        @Override
-                        public void success(Object data) {
-                            MLOC.d("newVoip","call success");
-                        }
-                        @Override
-                        public void failed(String errMsg) {
-                            MLOC.d("newVoip","call failed");
-                            stopAndFinish();
-                        }
-                    });
-                }else{
-                    MLOC.d("newVoip","onPickup");
-                    onPickup();
-                }
             }
 
             @Override
@@ -138,10 +143,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 stopAndFinish();
             }
         });
-        if(action.equals(CALLING)){
-            showCallingView();
-        }
-
     }
 
     public void addListener(){
@@ -269,10 +270,11 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.talking_view).setLayoutParams(flp);
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
+        setupViews();
     }
 
     private void onPickup(){
-        voipManager.accept(targetId, new IXHResultCallback() {
+        voipManager.accept(this,targetId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","onPickup OK ");

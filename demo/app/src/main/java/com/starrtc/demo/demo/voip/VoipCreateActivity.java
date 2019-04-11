@@ -12,9 +12,10 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.starrtcsdk.api.XHSDKHelper;
+import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 public class VoipCreateActivity extends BaseActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +61,5 @@ public class VoipCreateActivity extends BaseActivity {
                 }
             }
         });
-
     }
 }

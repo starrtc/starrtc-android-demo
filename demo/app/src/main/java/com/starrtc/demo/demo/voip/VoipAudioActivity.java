@@ -74,28 +74,31 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
 
         findViewById(R.id.hangup).setOnClickListener(this);
 
+        if(action.equals(CALLING)){
+            MLOC.d("newVoip","call");
+            voipManager.call(this,targetId, new IXHResultCallback() {
+                @Override
+                public void success(Object data) {
+                    MLOC.d("newVoip","call success");
+                }
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("newVoip","call failed");
+                    stopAndFinish();
+                }
+            });
+        }else{
+            MLOC.d("newVoip","onPickup");
+            onPickup();
+        }
+    }
 
-        voipManager.setupView(this,null, null, new IXHResultCallback() {
+    private void setupView(){
+        voipManager.setupView(null, null, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
-                if(action.equals(CALLING)){
-                    MLOC.d("newVoip","call");
-                    voipManager.call(targetId, new IXHResultCallback() {
-                        @Override
-                        public void success(Object data) {
-                            MLOC.d("newVoip","call success");
-                        }
-                        @Override
-                        public void failed(String errMsg) {
-                            MLOC.d("newVoip","call failed");
-                            stopAndFinish();
-                        }
-                    });
-                }else{
-                    MLOC.d("newVoip","onPickup");
-                    onPickup();
-                }
+
             }
 
             @Override
@@ -228,10 +231,11 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         findViewById(R.id.timer).setVisibility(View.VISIBLE);
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
+        setupView();
     }
 
     private void onPickup(){
-        voipManager.accept(targetId, new IXHResultCallback() {
+        voipManager.accept(this,targetId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","onPickup OK ");

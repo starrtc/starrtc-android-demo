@@ -143,6 +143,7 @@ public class SplashActivity extends Activity implements IEventListener {
             },new Handler());
             customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
+//            customConfig.setDefConfigCamera2Enable(false);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
@@ -181,6 +182,7 @@ public class SplashActivity extends Activity implements IEventListener {
         },new Handler());
         customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
         customConfig.setDefConfigOpenGLESEnable(false);
+//        customConfig.setDefConfigCamera2Enable(false);
         XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
         XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
         XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
