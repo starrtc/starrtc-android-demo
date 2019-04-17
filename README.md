@@ -94,7 +94,7 @@ https://github.com/starrtc/starrtc-server
 
 Contact
 =====
-QQ ： 2162498688
+QQ群（热）：807242783
 
 邮箱：<a href="mailto:support@starRTC.com">support@starRTC.com</a>
 
@@ -102,7 +102,7 @@ QQ ： 2162498688
 
 微信：starRTC
 
-QQ群：807242783
+
 
 更新记录
 ===
