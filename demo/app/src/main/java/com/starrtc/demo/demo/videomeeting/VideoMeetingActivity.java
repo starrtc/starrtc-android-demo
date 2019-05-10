@@ -22,6 +22,8 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -40,6 +42,7 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHMeetingItem;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
@@ -49,7 +52,7 @@ public class VideoMeetingActivity extends BaseActivity{
     public static String MEETING_ID         = "MEETING_ID";          //会议ID
     public static String MEETING_NAME       = "CLASS_NAME";         //会议名称
     public static String MEETING_TYPE       = "CLASS_TYPE";         //会议类型
-    public static String MEETING_CREATER       = "CLASS_CREATER";   //会议创建者
+    public static String MEETING_CREATER       = "CLASS_CREATOR";   //会议创建者
 
     private String meetingId;
     private String meetingName;
@@ -140,7 +143,6 @@ public class VideoMeetingActivity extends BaseActivity{
         final Dialog dialog = new Dialog(this,R.style.dialog_popup);
         dialog.setContentView(R.layout.dialog_input_rtmp_url);
         ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://");
-        ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://62.234.134.38/live/leijh");
         Window win = dialog.getWindow();
         win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         win.setGravity(Gravity.CENTER);
@@ -212,7 +214,7 @@ public class VideoMeetingActivity extends BaseActivity{
 
     private void createNewMeeting(){
         //创建新直播
-        XHMeetingItem meetingItem = new XHMeetingItem();
+        final XHMeetingItem meetingItem = new XHMeetingItem();
         meetingItem.setMeetingName(meetingName);
         meetingItem.setMeetingType((XHConstants.XHMeetingType) getIntent().getSerializableExtra(MEETING_TYPE));
         meetingManager.createMeeting(meetingItem, new IXHResultCallback() {
@@ -221,6 +223,21 @@ public class VideoMeetingActivity extends BaseActivity{
                 meetingId = (String) data;
                 if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
                     InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
+                }else{
+                    try {
+                        JSONObject info = new JSONObject();
+                        info.put("id",meetingId);
+                        info.put("creator",MLOC.userId);
+                        info.put("name",meetingName);
+                        String infostr = info.toString();
+                        infostr = URLEncoder.encode(infostr,"utf-8");
+                        meetingManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_MEETING,meetingId,infostr,null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
                 }
                 joinMeeting();
             }

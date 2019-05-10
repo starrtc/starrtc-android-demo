@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.listener.XHChatroomManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
@@ -30,6 +28,7 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,7 +116,7 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     }
 
     private void queryAllList(){
-        XHClient.getInstance().getChatroomManager().queryChatroomList(new IXHResultCallback() {
+        XHClient.getInstance().getChatroomManager().queryList("",""+MLOC.CHATROOM_LIST_TYPE_CHATROOM,new IXHResultCallback() {
             @Override
             public void success(final Object data) {
                 refreshLayout.setRefreshing(false);

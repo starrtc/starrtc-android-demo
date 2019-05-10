@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,11 @@ import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ChatroomActivity extends BaseActivity implements AdapterView.OnItemLongClickListener {
     public static String TYPE = "TYPE";
@@ -136,6 +142,20 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                 mRoomId = data.toString();
                 if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
                     InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
+                }else{
+                    try {
+                        JSONObject info = new JSONObject();
+                        info.put("id",mRoomId);
+                        info.put("creator",MLOC.userId);
+                        info.put("name",mRoomName);
+                        String infostr = info.toString();
+                        infostr = URLEncoder.encode(infostr,"utf-8");
+                        chatroomManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_CHATROOM,mRoomId,infostr, null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
                 joinChatroom();
             }

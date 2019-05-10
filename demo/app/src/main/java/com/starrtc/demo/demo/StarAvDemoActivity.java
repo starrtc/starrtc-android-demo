@@ -40,7 +40,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackPressed(){
-
+        finish();
     }
 
     @Override

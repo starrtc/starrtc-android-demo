@@ -105,27 +105,5 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="1"/>
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/ring_pickup_audio"
-                android:layout_width="66dp"
-                android:layout_height="66dp"
-                android:src="@drawable/icon_mic_picup"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:text="语音通话"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_weight="1"/>
     </LinearLayout>
 </RelativeLayout>

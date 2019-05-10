@@ -9,7 +9,9 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -110,6 +112,7 @@ public class CircularCoverView extends View {
         return bm;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -118,12 +121,12 @@ public class CircularCoverView extends View {
         paint.setStyle(Paint.Style.FILL);
 
         //create a canvas layer to show the mix-result
-        @SuppressLint("WrongConstant") int sc = canvas.saveLayer(0, 0, getWidth(), getHeight(), null, Canvas.MATRIX_SAVE_FLAG |
-                Canvas.CLIP_SAVE_FLAG |
-                Canvas.HAS_ALPHA_LAYER_SAVE_FLAG |
-                Canvas.FULL_COLOR_LAYER_SAVE_FLAG |
-                Canvas.CLIP_TO_LAYER_SAVE_FLAG);
-
+//        @SuppressLint("WrongConstant") int sc = canvas.saveLayer(0, 0, getWidth(), getHeight(), null, Canvas.MATRIX_SAVE_FLAG |
+//                Canvas.CLIP_SAVE_FLAG |
+//                Canvas.HAS_ALPHA_LAYER_SAVE_FLAG |
+//                Canvas.FULL_COLOR_LAYER_SAVE_FLAG |
+//                Canvas.CLIP_TO_LAYER_SAVE_FLAG);
+        @SuppressLint("WrongConstant") int sc = canvas.saveLayer(0, 0, getWidth(), getHeight(), null);
         //draw sector-dst-bitmap at first.
         canvas.drawBitmap(drawSector(getWidth(), getHeight()), 0, 0, paint);
         //set Xfermode of paint.

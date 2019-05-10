@@ -22,6 +22,8 @@ import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.p2p.VoipP2PDemoActivity;
 import com.starrtc.demo.demo.service.FloatWindowsService;
 import com.starrtc.demo.demo.test.LoopTestActivity;
+import com.starrtc.demo.demo.thirdstream.RtspTestListActivity;
+import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHConstants;
@@ -46,12 +48,15 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
         findViewById(R.id.btn_server_set).setOnClickListener(this);
         findViewById(R.id.btn_test_loop).setOnClickListener(this);
+        findViewById(R.id.btn_test_rtsp).setOnClickListener(this);
         findViewById(R.id.btn_test_p2p).setOnClickListener(this);
         findViewById(R.id.no_audio_switch).setOnClickListener(this);
         findViewById(R.id.no_video_switch).setOnClickListener(this);
         findViewById(R.id.btn_video_size).setOnClickListener(this);
         findViewById(R.id.btn_video_config_big).setOnClickListener(this);
         findViewById(R.id.btn_video_config_small).setOnClickListener(this);
+        findViewById(R.id.btn_video_codec_type).setOnClickListener(this);
+        findViewById(R.id.btn_audio_codec_type).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.opensl_switch).setOnClickListener(this);
         findViewById(R.id.dy_bt_fp_switch).setOnClickListener(this);
@@ -86,6 +91,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         ((TextView)findViewById(R.id.video_config_small_text)).setText("("+ XHCustomConfig.getInstance().getSmallVideoFPS() +"/"+XHCustomConfig.getInstance().getSmallVideoBitrate()+")");
         findViewById(R.id.no_audio_switch).setSelected(!XHCustomConfig.getInstance().getAudioEnable());
         findViewById(R.id.no_video_switch).setSelected(!XHCustomConfig.getInstance().getVideoEnable());
+        ((TextView)findViewById(R.id.video_codec_type_text)).setText(XHCustomConfig.getInstance().getVideoCodecTypeName());
+        ((TextView)findViewById(R.id.audio_codec_type_text)).setText(XHCustomConfig.getInstance().getAudioCodecTypeName());
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -111,6 +119,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             case R.id.btn_test_loop:
                 startActivity(new Intent(this,LoopTestActivity.class));
                 break;
+            case R.id.btn_test_rtsp:
+                startActivity(new Intent(this,RtspTestListActivity.class));
+                break;
             case R.id.btn_test_p2p:
                 startActivity(new Intent(this,VoipP2PDemoActivity.class));
                 break;
@@ -128,6 +139,47 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             case R.id.btn_video_config_small:
                 showAddDialog(false);
                 break;
+            case R.id.btn_video_codec_type:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(XHConstants.XHVideoCodecConfigEnumName, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        XHConstants.XHVideoCodecConfigEnum selected = XHCustomConfig.getInstance().getVideoCodecType();
+                        for (XHConstants.XHVideoCodecConfigEnum e : XHConstants.XHVideoCodecConfigEnum.values()) {
+                            if(i==e.ordinal()) {
+                                selected = e;
+                            }
+                        }
+                        XHCustomConfig.getInstance().setDefConfigVideoCodecType(selected);
+                        onResume();
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                break;
+            }
+
+            case R.id.btn_audio_codec_type:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(XHConstants.XHAudioCodecConfigEnumName, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        XHConstants.XHAudioCodecConfigEnum selected = XHCustomConfig.getInstance().getAudioCodecType();
+                        for (XHConstants.XHAudioCodecConfigEnum e : XHConstants.XHAudioCodecConfigEnum.values()) {
+                            if(i==e.ordinal()) {
+                                selected = e;
+                            }
+                        }
+                        XHCustomConfig.getInstance().setDefConfigAudioCodecType(selected);
+                        onResume();
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                break;
+            }
             case R.id.btn_video_size:{
                 AlertDialog.Builder builder=new AlertDialog.Builder(this);
                 builder.setItems(XHConstants.XHCropTypeEnumName, new DialogInterface.OnClickListener() {
@@ -193,6 +245,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_logout:
                 XHClient.getInstance().getLoginManager().logout();
+                AEvent.notifyListener(AEvent.AEVENT_LOGOUT,true,null);
                 stopService(new Intent(SettingActivity.this, FloatWindowsService.class));
                 MLOC.hasLogout = true;
                 finish();

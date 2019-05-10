@@ -1,6 +1,5 @@
 package com.starrtc.demo.demo.p2p;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -234,13 +232,12 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
 
     private void showCallingView(){
         findViewById(R.id.calling_view).setVisibility(View.VISIBLE);
-        findViewById(R.id.talking_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.talking_view).setVisibility(View.GONE);
     }
 
     private void showTalkingView(){
-
         isTalking = true;
-        findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.calling_view).setVisibility(View.GONE);
         findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();

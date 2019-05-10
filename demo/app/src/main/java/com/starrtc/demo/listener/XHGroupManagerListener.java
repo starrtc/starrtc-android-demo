@@ -41,7 +41,7 @@ public class XHGroupManagerListener implements IXHGroupManagerListener {
         historyBean.setLastMsg(message.contentData);
         historyBean.setConversationId(message.targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,false);
+        MLOC.addHistory(historyBean,false);
 
         MessageBean messageBean = new MessageBean();
         messageBean.setConversationId(message.targetId);

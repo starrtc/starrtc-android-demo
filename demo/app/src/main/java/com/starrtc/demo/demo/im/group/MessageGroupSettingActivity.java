@@ -129,7 +129,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
         vRecyclerView.setAdapter(myAdapter);
         vRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(5,StaggeredGridLayoutManager.VERTICAL));
         mGroupId = getIntent().getStringExtra("groupId");
-        mGroupCreaterId = getIntent().getStringExtra("createrId");
+        mGroupCreaterId = getIntent().getStringExtra("creator");
         queryGroupMemberList();
     }
 

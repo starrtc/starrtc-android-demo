@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -152,6 +151,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_HANGUP,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CONNECT,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_ERROR,this);
+        AEvent.addListener(AEvent.AEVENT_VOIP_TRANS_STATE_CHANGED,this);
     }
 
     public void removeListener(){
@@ -162,6 +162,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_HANGUP,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CONNECT,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_ERROR,this);
+        AEvent.removeListener(AEvent.AEVENT_VOIP_TRANS_STATE_CHANGED,this);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
         historyBean.setConversationId(targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,true);
+        MLOC.addHistory(historyBean,true);
     }
 
     @Override
@@ -252,22 +253,22 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 MLOC.d("",(String) eventObj);
                 stopAndFinish();
                 break;
+            case AEvent.AEVENT_VOIP_TRANS_STATE_CHANGED:
+                findViewById(R.id.state).setBackgroundColor(((int)eventObj==0)?0xFFFFFF00:0xFF299401);
+                break;
         }
     }
 
 
     private void showCallingView(){
         findViewById(R.id.calling_view).setVisibility(View.VISIBLE);
-        findViewById(R.id.talking_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.talking_view).setVisibility(View.GONE);
     }
 
     private void showTalkingView(){
         isTalking = true;
-        findViewById(R.id.calling_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.calling_view).setVisibility(View.GONE);
         findViewById(R.id.talking_view).setVisibility(View.VISIBLE);
-        FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) findViewById(R.id.talking_view).getLayoutParams();
-        flp.width = findViewById(R.id.calling_view).getWidth();
-        findViewById(R.id.talking_view).setLayoutParams(flp);
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
         setupViews();

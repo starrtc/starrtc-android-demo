@@ -131,20 +131,20 @@ public class VoipListActivity extends BaseActivity {
                         continue;
                     }
                 }
-                //删除两个列表中重复的和 历史列表中不在线的
-                for(int i = mHistoryList.size()-1;i>=0;i--){
-                    boolean b = true;
-                    for(int j = list.size()-1;j>=0;j--){
-                        if(mHistoryList.get(i).getConversationId().equals(list.get(j).getConversationId())){
-                            list.remove(j);
-                            b = false;
-                            break;
-                        }
-                    }
-                    if(b){
-                        mHistoryList.remove(i);
-                    }
-                }
+//                //删除两个列表中重复的和 历史列表中不在线的
+//                for(int i = mHistoryList.size()-1;i>=0;i--){
+//                    boolean b = true;
+//                    for(int j = list.size()-1;j>=0;j--){
+//                        if(mHistoryList.get(i).getConversationId().equals(list.get(j).getConversationId())){
+//                            list.remove(j);
+//                            b = false;
+//                            break;
+//                        }
+//                    }
+//                    if(b){
+//                        mHistoryList.remove(i);
+//                    }
+//                }
 
                 mHistoryList.addAll(list);
                 myListAdapter.notifyDataSetChanged();

@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.starrtc.demo"
-        minSdkVersion 17
-        targetSdkVersion 25
+        minSdkVersion 15
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -40,7 +39,7 @@ android {
 dependencies {
     implementation files('libs/star_rtc_sdk.jar')
     implementation 'com.android.support:appcompat-v7:25.3.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.0-alpha4'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:recyclerview-v7:25.3.1'
 }

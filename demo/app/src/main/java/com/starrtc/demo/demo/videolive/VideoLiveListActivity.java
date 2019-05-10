@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,20 @@ import java.util.ArrayList;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class VideoLiveListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -86,7 +95,11 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
     public void onResume(){
         super.onResume();
         AEvent.addListener(AEvent.AEVENT_LIVE_GOT_LIST,this);
-        InterfaceUrls.demoRequestLiveList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestLiveList();
+        }else{
+            queryAllList();
+        }
     }
     @Override
     public void onPause(){
@@ -133,9 +146,44 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
 
     @Override
     public void onRefresh() {
-        InterfaceUrls.demoRequestLiveList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestLiveList();
+        }else{
+            queryAllList();
+        }
     }
+    private void queryAllList(){
+        XHClient.getInstance().getLiveManager().queryList("",MLOC.CHATROOM_LIST_TYPE_LIVE_ALL,new IXHResultCallback() {
+            @Override
+            public void success(final Object data) {
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                try {
+                    JSONArray array = (JSONArray) data;
+                    for(int i = array.length()-1;i>=0;i--){
+                        LiveInfo info = new LiveInfo();
+                        JSONObject obj = array.getJSONObject(i);
+                        info.createrId = obj.getString("creator");
+                        info.liveId = obj.getString("id");
+                        info.liveName = obj.getString("name");
+                        mDatas.add(info);
+                    }
+                    myListAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("VideoMettingListActivity",errMsg);
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                myListAdapter.notifyDataSetChanged();
+            }
+        });
+
+    }
 
     class MyListAdapter extends BaseAdapter{
         @Override
@@ -173,7 +221,11 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
             viewIconImg.vCreaterId.setText(mDatas.get(position).createrId);
             viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(VideoLiveListActivity.this,mDatas.get(position).liveName));
             viewIconImg.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
-            viewIconImg.vLiveState.setVisibility(mDatas.get(position).isLiveOn.equals("1")?View.VISIBLE:View.INVISIBLE);
+            if((!TextUtils.isEmpty(mDatas.get(position).isLiveOn))&&mDatas.get(position).isLiveOn.equals("1")){
+                viewIconImg.vLiveState.setVisibility(View.VISIBLE);
+            }else{
+                viewIconImg.vLiveState.setVisibility(View.INVISIBLE);
+            }
             int cint = DensityUtils.dip2px(VideoLiveListActivity.this,28);
             viewIconImg.vHeadCover.setRadians(cint, cint, cint, cint,0);
             viewIconImg.vHeadImage.setImageResource(R.drawable.icon_hd_live_item);

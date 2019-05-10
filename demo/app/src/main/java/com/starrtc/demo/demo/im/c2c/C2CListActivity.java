@@ -59,7 +59,7 @@ public class C2CListActivity extends BaseActivity {
         vHistoryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MLOC.setHistory(mHistoryList.get(position),true);
+                MLOC.addHistory(mHistoryList.get(position),true);
                 mTargetId = (String) mHistoryList.get(position).getConversationId();
                 Intent intent = new Intent(C2CListActivity.this,C2CActivity.class);
                 intent.putExtra("targetId",mTargetId);

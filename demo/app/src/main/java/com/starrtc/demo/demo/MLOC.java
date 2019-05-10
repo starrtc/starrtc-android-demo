@@ -36,23 +36,44 @@ public class MLOC {
     public static String authKey = "";
     public static String userId = "";
 
-    public static String STAR_LOGIN_URL = "ips2.starrtc.com:9920";
+    public static String STAR_LOGIN_URL             = "ips2.starrtc.com:9920";
+    public static String IM_SCHEDULE_URL            = "ips2.starrtc.com:9904";
+    public static String LIVE_SRC_SCHEDULE_URL      = "ips2.starrtc.com:9929";
+    public static String LIVE_VDN_SCHEDULE_URL      = "ips2.starrtc.com:9926";
+    public static String CHAT_ROOM_SCHEDULE_URL     = "ips2.starrtc.com:9907";
+    public static String VOIP_SCHEDULE_URL          = "voip2.starrtc.com:10086";
 
-    public static String IM_SCHEDULE_URL = "ips2.starrtc.com:9904";
-    public static String LIVE_SRC_SCHEDULE_URL = "ips2.starrtc.com:9929";
-    public static String LIVE_VDN_SCHEDULE_URL = "ips2.starrtc.com:9926";
-    public static String CHAT_ROOM_SCHEDULE_URL = "ips2.starrtc.com:9907";
-    public static String VOIP_SCHEDULE_URL = "voip2.starrtc.com:10086";
+    public static String VOIP_SERVER_URL          = "129.204.145.78:10086";
+    public static String IM_SERVER_URL            = "129.204.145.78:19903";
+    public static String CHATROOM_SERVER_URL      = "129.204.145.78:19906";
+    public static String LIVE_VDN_SERVER_URL      = "129.204.145.78:19928";
+    public static String LIVE_SRC_SERVER_URL      = "129.204.145.78:19931";
+    public static String LIVE_SRC_FORWARD_RTSP_URL = "129.204.145.78:19932";
 
-    public static String VOIP_SERVER_URL = "129.204.145.78:10086";
-    public static String IM_SERVER_URL = "129.204.145.78:19903";
-    public static String LIVE_SRC_SERVER_URL = "129.204.145.78:19931";
-    public static String LIVE_VDN_SERVER_URL = "129.204.145.78:19925";
-    public static String CHAT_ROOM_SERVER_URL = "129.204.145.78:19906";
+//    129.204.145.78
+//    public static String VOIP_SERVER_URL = "xxx.xxx.xxx:10086";
+//    public static String IM_SERVER_URL = "xxx.xxx.xxx:19903";
+//    public static String LIVE_SRC_SERVER_URL = "xxx.xxx.xxx:19931";
+//    public static String LIVE_VDN_SERVER_URL = "xxx.xxx.xxx:19928";
+//    public static String CHATROOM_SERVER_URL = "xxx.xxx.xxx:19906";
+//    public static String LIVE_SRC_FORWARD_RTSP_URL = "xxx.xxx.xxx:19932";
 
     public static String SERVER_TYPE_PUBLIC = "PUBLIC";
     public static String SERVER_TYPE_CUSTOM = "CUSTOM";
     public static String SERVER_TYPE = SERVER_TYPE_PUBLIC;
+
+    public static final int CHATROOM_LIST_TYPE_CHATROOM = 0;
+    public static final int CHATROOM_LIST_TYPE_LIVE = 1;
+    public static final int CHATROOM_LIST_TYPE_LIVE_PUSH = 2;
+    public static final int CHATROOM_LIST_TYPE_MEETING = 3;
+    public static final int CHATROOM_LIST_TYPE_MEETING_PUSH = 4;
+    public static final int CHATROOM_LIST_TYPE_CLASS = 5;
+    public static final int CHATROOM_LIST_TYPE_CLASS_PUSH = 6;
+
+    public static final String CHATROOM_LIST_TYPE_LIVE_ALL = CHATROOM_LIST_TYPE_LIVE+","+CHATROOM_LIST_TYPE_LIVE_PUSH;
+    public static final String CHATROOM_LIST_TYPE_MEETING_ALL = CHATROOM_LIST_TYPE_MEETING+","+CHATROOM_LIST_TYPE_MEETING_PUSH;
+    public static final String CHATROOM_LIST_TYPE_CLASS_ALL = CHATROOM_LIST_TYPE_CLASS+","+CHATROOM_LIST_TYPE_CLASS_PUSH;
+    public static final String CHATROOM_LIST_TYPE_PUSH_ALL = CHATROOM_LIST_TYPE_LIVE_PUSH+","+CHATROOM_LIST_TYPE_MEETING_PUSH+","+CHATROOM_LIST_TYPE_CLASS_PUSH;
 
     public static Boolean hasLogout = false;
 
@@ -81,8 +102,9 @@ public class MLOC {
         VOIP_SERVER_URL = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
         IM_SERVER_URL = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
         LIVE_SRC_SERVER_URL = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
+        LIVE_SRC_FORWARD_RTSP_URL = LIVE_SRC_SERVER_URL.replace("19931","19932");
         LIVE_VDN_SERVER_URL = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
-        CHAT_ROOM_SERVER_URL = loadSharedData(context,"CHAT_ROOM_SERVER_URL",CHAT_ROOM_SERVER_URL);
+        CHATROOM_SERVER_URL = loadSharedData(context,"CHATROOM_SERVER_URL", CHATROOM_SERVER_URL);
         SERVER_TYPE = loadSharedData(context,"SERVER_TYPE", SERVER_TYPE_PUBLIC);
     }
 
@@ -137,9 +159,21 @@ public class MLOC {
         }
     }
 
-    public static void setHistory(HistoryBean history,Boolean hasRead){
+    public static void addHistory(HistoryBean history, Boolean hasRead){
         if(coreDB!=null){
-            coreDB.setHistory(history,hasRead);
+            coreDB.addHistory(history,hasRead);
+        }
+    }
+
+    public static void updateHistory(HistoryBean history){
+        if(coreDB!=null){
+            coreDB.updateHistory(history);
+        }
+    }
+
+    public static void removeHistory(HistoryBean history){
+        if(coreDB!=null){
+            coreDB.removeHistory(history);
         }
     }
 
@@ -233,8 +267,8 @@ public class MLOC {
     }
 
     public static void saveChatroomServerUrl(String chatroomServerUrl){
-        MLOC.CHAT_ROOM_SERVER_URL = chatroomServerUrl;
-        saveSharedData(appContext,"CHAT_ROOM_SERVER_URL",CHAT_ROOM_SERVER_URL);
+        MLOC.CHATROOM_SERVER_URL = chatroomServerUrl;
+        saveSharedData(appContext,"CHATROOM_SERVER_URL", CHATROOM_SERVER_URL);
     }
 
     public static void saveImServerUrl(String imServerUrl){

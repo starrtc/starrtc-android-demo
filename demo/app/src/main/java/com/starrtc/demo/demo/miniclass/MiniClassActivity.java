@@ -31,6 +31,7 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHLiveManager;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
@@ -39,20 +40,22 @@ import com.starrtc.starrtcsdk.core.player.StarWhitePanel2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class MiniClassActivity extends BaseActivity{
 
-    public static String CLASS_ID = "CLASS_ID";          //会议ID
-    public static String CLASS_NAME = "CLASS_NAME";         //会议名称
-    public static String CLASS_TYPE = "CLASS_TYPE";         //会议类型
-    public static String CLASS_CREATER = "CLASS_CREATER";      //会议创建者
+    public static String CLASS_ID = "CLASS_ID";             //ID
+    public static String CLASS_NAME = "CLASS_NAME";         //名称
+    public static String CLASS_TYPE = "CLASS_TYPE";         //类型
+    public static String CLASS_CREATOR = "CLASS_CREATOR";   //创建者
 
-    private String meetingId;
-    private String meetingName;
-    private String createrId;
+    private String classId;
+    private String className;
+    private String creatorId;
 
     private TextView vMeetingName;
 
@@ -123,11 +126,11 @@ public class MiniClassActivity extends BaseActivity{
         }
 
         addListener();
-        meetingId = getIntent().getStringExtra(CLASS_ID);
-        meetingName = getIntent().getStringExtra(CLASS_NAME);
-        createrId = getIntent().getStringExtra(CLASS_CREATER);
+        classId = getIntent().getStringExtra(CLASS_ID);
+        className = getIntent().getStringExtra(CLASS_NAME);
+        creatorId = getIntent().getStringExtra(CLASS_CREATOR);
         vMeetingName = (TextView) findViewById(R.id.live_id_text);
-        vMeetingName.setText("ID："+meetingName);
+        vMeetingName.setText("ID："+ className);
         vPaintPlayer = (StarWhitePanel2) findViewById(R.id.painter_view);
 
         findViewById(R.id.chat_btn).setOnClickListener(new View.OnClickListener() {
@@ -314,7 +317,7 @@ public class MiniClassActivity extends BaseActivity{
                             }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
-                                    classManager.applyToBroadcaster(createrId);
+                                    classManager.applyToBroadcaster(creatorId);
                                 }
                             }
                     ).show();
@@ -338,7 +341,7 @@ public class MiniClassActivity extends BaseActivity{
     }
 
     private void init(){
-        if(createrId.equals(MLOC.userId)){
+        if(creatorId.equals(MLOC.userId)){
             vLinkBtn.setVisibility(View.GONE);
             vCameraBtn.setVisibility(View.VISIBLE);
             vMicBtn.setVisibility(View.VISIBLE);
@@ -346,8 +349,8 @@ public class MiniClassActivity extends BaseActivity{
             vRevokeBtn.setVisibility(View.VISIBLE);
             vSelectColorBtn.setVisibility(View.VISIBLE);
             vLaserPenBtn.setVisibility(View.VISIBLE);
-            if(meetingId==null){
-                createNewMeeting();
+            if(classId ==null){
+                createNewClass();
             }else {
                 startClass();
             }
@@ -359,7 +362,7 @@ public class MiniClassActivity extends BaseActivity{
             vRevokeBtn.setVisibility(View.GONE);
             vSelectColorBtn.setVisibility(View.GONE);
             vLaserPenBtn.setVisibility(View.GONE);
-            if(meetingId==null){
+            if(classId ==null){
                 MLOC.showMsg(MiniClassActivity.this,"课堂ID为空");
             }else {
                 joinClass();
@@ -367,18 +370,36 @@ public class MiniClassActivity extends BaseActivity{
         }
     }
 
-    private void createNewMeeting(){
+    private void createNewClass(){
         isUploader = true;
         //创建新直播
-        XHLiveItem meetingItem = new XHLiveItem();
-        meetingItem.setLiveName(meetingName);
-        meetingItem.setLiveType((XHConstants.XHLiveType) getIntent().getSerializableExtra(CLASS_TYPE));
-        classManager.createLive(meetingItem, new IXHResultCallback() {
+        XHLiveItem classItem = new XHLiveItem();
+        classItem.setLiveName(className);
+        classItem.setLiveType((XHConstants.XHLiveType) getIntent().getSerializableExtra(CLASS_TYPE));
+        classManager.createLive(classItem, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                meetingId = (String) data;
-                InterfaceUrls.demoReportMiniClass(meetingId,meetingName,createrId);
+                classId = (String) data;
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportMiniClass(classId, className, creatorId);
+                }else{
+                    try {
+                        JSONObject info = new JSONObject();
+                        info.put("id",classId);
+                        info.put("creator",MLOC.userId);
+                        info.put("name",className);
+                        String infostr = info.toString();
+                        infostr = URLEncoder.encode(infostr,"utf-8");
+                        classManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_CLASS,classId,infostr,null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 startClass();
+
             }
             @Override
             public void failed(final String errMsg) {
@@ -407,7 +428,7 @@ public class MiniClassActivity extends BaseActivity{
         isUploader = true;
         //开始直播
         vPaintPlayer.publish(MLOC.userId);
-        classManager.startLive(meetingId, new IXHResultCallback() {
+        classManager.startLive(classId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("XHLiveManager","startLive success "+data);
@@ -423,7 +444,7 @@ public class MiniClassActivity extends BaseActivity{
     private void joinClass(){
         isUploader = false;
         //观看直播
-        classManager.watchLive(meetingId, new IXHResultCallback() {
+        classManager.watchLive(classId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("XHLiveManager","watchLive success "+data);

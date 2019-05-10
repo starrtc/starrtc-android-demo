@@ -28,6 +28,7 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,7 +102,7 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
         }
     }
     private void queryAllList(){
-        XHClient.getInstance().getMeetingManager().queryMeetingList(new IXHResultCallback() {
+        XHClient.getInstance().getMeetingManager().queryList("",MLOC.CHATROOM_LIST_TYPE_MEETING_ALL,new IXHResultCallback() {
             @Override
             public void success(final Object data) {
                 refreshLayout.setRefreshing(false);

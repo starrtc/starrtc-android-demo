@@ -36,7 +36,6 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
         targetId = getIntent().getStringExtra("targetId");
         findViewById(R.id.ring_hangoff).setOnClickListener(this);
         findViewById(R.id.ring_pickup).setOnClickListener(this);
-        findViewById(R.id.ring_pickup_audio).setOnClickListener(this);
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
         findViewById(R.id.head_bg).setBackgroundColor(ColorUtils.getColor(VoipRingingActivity.this,targetId));
         ((CircularCoverView)findViewById(R.id.head_cover)).setCoverColor(Color.parseColor("#000000"));
@@ -48,7 +47,7 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
         historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
         historyBean.setConversationId(targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,true);
+        MLOC.addHistory(historyBean,true);
 
     }
 
@@ -110,14 +109,6 @@ public class VoipRingingActivity extends BaseActivity implements View.OnClickLis
                 Intent intent = new Intent(VoipRingingActivity.this,VoipActivity.class);
                 intent.putExtra("targetId",targetId);
                 intent.putExtra(VoipActivity.ACTION,VoipActivity.RING);
-                startActivity(intent);
-                finish();
-                break;
-            }
-            case R.id.ring_pickup_audio: {
-                Intent intent = new Intent(VoipRingingActivity.this, VoipAudioActivity.class);
-                intent.putExtra("targetId", targetId);
-                intent.putExtra(VoipAudioActivity.ACTION, VoipAudioActivity.RING);
                 startActivity(intent);
                 finish();
                 break;

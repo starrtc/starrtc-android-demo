@@ -84,7 +84,7 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
             public void onClick(View v) {
                 Intent intent = new Intent(MessageGroupActivity.this,MessageGroupSettingActivity.class);
                 intent.putExtra("groupId",mGroupId);
-                intent.putExtra("createrId",mCreaterId);
+                intent.putExtra("creator",mCreaterId);
                 startActivity(intent);
             }
         });
@@ -151,7 +151,7 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
         historyBean.setLastMsg(imMessage.contentData);
         historyBean.setConversationId(imMessage.targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,true);
+        MLOC.addHistory(historyBean,true);
 
         MessageBean messageBean = new MessageBean();
         messageBean.setConversationId(imMessage.targetId);
@@ -216,7 +216,7 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
                     historyBean.setLastMsg(revMsg.contentData);
                     historyBean.setConversationId(revMsg.targetId);
                     historyBean.setNewMsgCount(1);
-                    MLOC.setHistory(historyBean,true);
+                    MLOC.addHistory(historyBean,true);
 
                     MessageBean messageBean = new MessageBean();
                     messageBean.setConversationId(revMsg.fromId);

@@ -37,6 +37,7 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.camera.StarCameraManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
@@ -47,6 +48,8 @@ import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -118,7 +121,6 @@ public class VideoLiveActivity extends BaseActivity {
         liveName = getIntent().getStringExtra(LIVE_NAME);
         liveId = getIntent().getStringExtra(LIVE_ID);
         liveType = (XHConstants.XHLiveType) getIntent().getSerializableExtra(LIVE_TYPE);
-
         if(TextUtils.isEmpty(liveId)){
             if(createrId.equals(MLOC.userId)){
                 if(TextUtils.isEmpty(liveName)||liveType==null){
@@ -301,8 +303,26 @@ public class VideoLiveActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 liveId = (String) data;
-                InterfaceUrls.demoReportLive(liveId,liveName,createrId);
                 starLive();
+
+                //上报到直播列表
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportLive(liveId,liveName,createrId);
+                }else{
+                    try {
+                        JSONObject info = new JSONObject();
+                        info.put("id",liveId);
+                        info.put("creator",MLOC.userId);
+                        info.put("name",liveName);
+                        String infostr = info.toString();
+                        infostr = URLEncoder.encode(infostr,"utf-8");
+                        liveManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_LIVE,liveId,infostr,null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             @Override
             public void failed(final String errMsg) {
@@ -345,7 +365,6 @@ public class VideoLiveActivity extends BaseActivity {
             }
         });
     }
-
 
     private void sendChatMsg(String msg){
         MLOC.d("XHLiveManager","sendChatMsg "+msg);
@@ -472,6 +491,7 @@ public class VideoLiveActivity extends BaseActivity {
         });
         resetLayout();
         player.setZOrderMediaOverlay(true);
+        player.setScalType(StarPlayerScaleType.DRAW_TYPE_CENTER);
 
         if(mPlayerList.size()==1){
             liveManager.attachPlayerView(addUserID,player,true);
@@ -684,6 +704,7 @@ public class VideoLiveActivity extends BaseActivity {
                             player.setLayoutParams(lp);
                             player.setY((i-1)*borderH/3);
                             player.setX(borderW/4*3);
+                            player.setScalType(StarPlayerScaleType.DRAW_TYPE_TOTAL_GRAPH);
                         }
                     }
                     break;

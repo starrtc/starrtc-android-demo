@@ -76,7 +76,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
 
         if(action.equals(CALLING)){
             MLOC.d("newVoip","call");
-            voipManager.call(this,targetId, new IXHResultCallback() {
+            voipManager.audioCall(this,targetId, new IXHResultCallback() {
                 @Override
                 public void success(Object data) {
                     MLOC.d("newVoip","call success");
@@ -140,7 +140,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         historyBean.setLastTime(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
         historyBean.setConversationId(targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,true);
+        MLOC.addHistory(historyBean,true);
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHSDKHelper;
 import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.camera.StarCameraManager;
@@ -26,10 +27,6 @@ public class LoopTestActivity extends BaseActivity{
     private StarPlayer selfSmallPlayer;
     private StarPlayer targetPlayer;
     private StarPlayer targetSmallPlayer;
-
-    private TextView vVideoSizeText;
-    private TextView vVideoFpsText;
-    private TextView vMediaConfigText;
 
     private StarRTCAudioManager starRTCAudioManager;
     @Override
@@ -49,7 +46,6 @@ public class LoopTestActivity extends BaseActivity{
                 MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
             }
         });
-
 
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);

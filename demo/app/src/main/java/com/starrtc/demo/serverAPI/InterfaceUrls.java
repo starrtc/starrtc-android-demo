@@ -15,6 +15,7 @@ import com.starrtc.demo.demo.audiolive.AudioLiveInfo;
 import com.starrtc.demo.demo.im.chatroom.ChatroomInfo;
 import com.starrtc.demo.demo.im.group.MessageGroupInfo;
 import com.starrtc.demo.demo.miniclass.MiniClassInfo;
+import com.starrtc.demo.demo.thirdstream.RtspInfo;
 import com.starrtc.demo.demo.videolive.LiveInfo;
 import com.starrtc.demo.demo.videomeeting.MeetingInfo;
 import com.starrtc.demo.utils.AEvent;
@@ -161,9 +162,9 @@ public class InterfaceUrls {
                             ArrayList<MiniClassInfo> res = new ArrayList<MiniClassInfo>();
                             for (int i = 0;i<datas.length();i++){
                                 MiniClassInfo meetingInfo = new MiniClassInfo();
-                                meetingInfo.createrId = datas.getJSONObject(i).getString("Creator");
-                                meetingInfo.meetingName = datas.getJSONObject(i).getString("Name");
-                                meetingInfo.meetingId = datas.getJSONObject(i).getString("ID");
+                                meetingInfo.creator = datas.getJSONObject(i).getString("Creator");
+                                meetingInfo.name = datas.getJSONObject(i).getString("Name");
+                                meetingInfo.id = datas.getJSONObject(i).getString("ID");
                                 res.add(meetingInfo);
                             }
                             AEvent.notifyListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,true,res);
@@ -558,6 +559,126 @@ public class InterfaceUrls {
         httpPost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
     }
 
+    //推送rtsp流
+    public static void demoRequestPushList(){
+        String url = "https://api.starrtc.com/public/user/stream?appid="+MLOC.agentId+"&userid="+MLOC.userId;
+        String params = "";
+        StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpGet.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    JSONArray datas = null;
+                    try {
+                        datas = new JSONArray(data);
+                        ArrayList<RtspInfo> res = new ArrayList<RtspInfo>();
+                        for (int i = 0; i < datas.length(); i++) {
+                            RtspInfo rtspInfo = new RtspInfo();
+                            rtspInfo.creator = datas.getJSONObject(i).getString("Creator");
+                            rtspInfo.name = datas.getJSONObject(i).getString("Name");
+                            rtspInfo.id = datas.getJSONObject(i).getString("ID");
+                            rtspInfo.isLiveOn = datas.getJSONObject(i).getString("liveState");
+                            res.add(rtspInfo);
+                        }
+                        AEvent.notifyListener(AEvent.AEVENT_RTSP_GOT_LIST,true,res);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        AEvent.notifyListener(AEvent.AEVENT_RTSP_GOT_LIST,false,statusCode+" "+data);
+                    }
+
+                }else{
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_GOT_LIST,false,statusCode+" "+data);
+                }
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+
+    //转发rtsp流
+    public static void demoPushRtsp(String server,String name,String chatroomId,int listtype,String rtspUrl){
+        String url = "http://"+server+"/push?streamType=rtsp&streamUrl="+rtspUrl+"&roomLiveType="+listtype+"&roomId="+chatroomId+"&extra="+name;
+        String params = "";
+        StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpGet.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_FORWARD,true,data);
+                }else{
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_FORWARD,false,statusCode+" "+data);
+                }
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+    //恢复转发rtsp流 //rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
+    public static void demoResumePushRtsp(String server,String liveId,String rtsp){
+        String url = "http://"+server+"/push?streamType=rtsp&streamUrl="+rtsp+"&channelId="+liveId.substring(0,16);
+        String params = "";
+        StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpGet.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_RESUME,true,null);
+                }else{
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_RESUME,false,statusCode+" "+data);
+                }
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+
+    //停止转发rtsp流 //aisee.f3322.org:19932
+    public static void demoStopPushRtsp(String server,String liveId){
+        String url = "http://"+server+"/close?channelId="+liveId.substring(0,16);
+        String params = "";
+        StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpGet.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_STOP,true,null);
+                }else{
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_STOP,false,statusCode+" "+data);
+                }
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+
+    //删除rtsp流记录
+    public static void demoDeleteRtsp(String server,String liveId){
+        String url = "http://"+server+"/delete?channelId="+liveId.substring(0,16);
+        String params = "";
+        StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpGet.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_DELETE,true,null);
+                }else{
+                    AEvent.notifyListener(AEvent.AEVENT_RTSP_DELETE,false,statusCode+" "+data);
+                }
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
 
 
 }

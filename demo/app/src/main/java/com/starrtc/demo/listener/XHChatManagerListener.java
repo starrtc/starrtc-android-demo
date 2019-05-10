@@ -20,7 +20,7 @@ public class XHChatManagerListener implements IXHChatManagerListener {
         historyBean.setLastMsg(message.contentData);
         historyBean.setConversationId(message.fromId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,false);
+        MLOC.addHistory(historyBean,false);
 
         MessageBean messageBean = new MessageBean();
         messageBean.setConversationId(message.fromId);

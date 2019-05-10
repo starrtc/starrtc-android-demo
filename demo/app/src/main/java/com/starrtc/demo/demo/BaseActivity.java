@@ -20,6 +20,28 @@ public class BaseActivity extends Activity implements IEventListener {
     @Override
     protected void onResume() {
         super.onResume();
+        if(findViewById(R.id.c2c_new)!=null){
+            findViewById(R.id.c2c_new).setVisibility(MLOC.hasNewC2CMsg?View.VISIBLE:View.INVISIBLE);
+        }
+        if(findViewById(R.id.im_new)!=null) {
+            findViewById(R.id.im_new).setVisibility((MLOC.hasNewC2CMsg || MLOC.hasNewGroupMsg) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(findViewById(R.id.group_new)!=null){
+            findViewById(R.id.group_new).setVisibility(MLOC.hasNewGroupMsg?View.VISIBLE:View.INVISIBLE);
+        }
+        if(findViewById(R.id.im_new)!=null) {
+            findViewById(R.id.im_new).setVisibility((MLOC.hasNewC2CMsg || MLOC.hasNewGroupMsg) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(findViewById(R.id.voip_new)!=null){
+            findViewById(R.id.voip_new).setVisibility(MLOC.hasNewVoipMsg?View.VISIBLE:View.INVISIBLE);
+        }
+        if(findViewById(R.id.loading)!=null) {
+            if (XHClient.getInstance().getIsOnline()) {
+                findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+            } else {
+                findViewById(R.id.loading).setVisibility(View.VISIBLE);
+            }
+        }
         addListener();
     }
     @Override
@@ -60,19 +82,20 @@ public class BaseActivity extends Activity implements IEventListener {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }else{
-                    Intent intent = new Intent(BaseActivity.this,VoipRingingActivity.class);
-                    intent.putExtra("targetId",eventObj.toString());
-                    startActivity(intent);
                 }
+//                else{
+//                    Intent intent = new Intent(BaseActivity.this,VoipRingingActivity.class);
+//                    intent.putExtra("targetId",eventObj.toString());
+//                    startActivity(intent);
+//                }
                 break;
             case AEvent.AEVENT_VOIP_P2P_REV_CALLING:
-                if(MLOC.canPickupVoip){
-                    MLOC.hasNewVoipMsg = true;
-                    Intent intent = new Intent(BaseActivity.this,VoipP2PRingingActivity.class);
-                    intent.putExtra("targetId",eventObj.toString());
-                    startActivity(intent);
-                }
+//                if(MLOC.canPickupVoip){
+//                    MLOC.hasNewVoipMsg = true;
+//                    Intent intent = new Intent(BaseActivity.this,VoipP2PRingingActivity.class);
+//                    intent.putExtra("targetId",eventObj.toString());
+//                    startActivity(intent);
+//                }
                 break;
             case AEvent.AEVENT_C2C_REV_MSG:
                 MLOC.hasNewC2CMsg = true;

@@ -105,7 +105,7 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
         historyBean.setLastMsg(message.contentData);
         historyBean.setConversationId(message.targetId);
         historyBean.setNewMsgCount(1);
-        MLOC.setHistory(historyBean,true);
+        MLOC.addHistory(historyBean,true);
 
         MessageBean messageBean = new MessageBean();
         messageBean.setConversationId(message.targetId);
@@ -167,7 +167,7 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
                     historyBean.setLastMsg(revMsg.contentData);
                     historyBean.setConversationId(revMsg.fromId);
                     historyBean.setNewMsgCount(1);
-                    MLOC.setHistory(historyBean,true);
+                    MLOC.addHistory(historyBean,true);
 
                     MessageBean messageBean = new MessageBean();
                     messageBean.setConversationId(revMsg.fromId);

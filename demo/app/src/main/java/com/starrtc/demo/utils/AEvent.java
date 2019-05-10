@@ -89,6 +89,7 @@ public class AEvent {
 
     //事件类型在这里定义
     public static final String AEVENT_LOGIN                     = "AEVENT_LOGIN";
+    public static final String AEVENT_LOGOUT                    = "AEVENT_LOGOUT";
     public static final String AEVENT_RESET                     = "AEVENT_RESET";
 
     public static final String AEVENT_MEETING_GOT_LIST          = "AEVENT_MEETING_GOT_LIST";
@@ -102,13 +103,17 @@ public class AEvent {
 
     public static final String AEVENT_VOIP_INIT_COMPLETE        = "AEVENT_VOIP_INIT_COMPLETE";
     public static final String AEVENT_VOIP_REV_CALLING          = "AEVENT_VOIP_REV_CALLING";
+    public static final String AEVENT_VOIP_REV_CALLING_AUDIO    = "AEVENT_VOIP_REV_CALLING_AUDIO";
     public static final String AEVENT_VOIP_REV_REFUSED          = "AEVENT_VOIP_REV_REFUSED";
     public static final String AEVENT_VOIP_REV_HANGUP           = "AEVENT_VOIP_REV_HANGUP";
     public static final String AEVENT_VOIP_REV_BUSY             = "AEVENT_VOIP_REV_BUSY";
+    public static final String AEVENT_VOIP_REV_MISS             = "AEVENT_VOIP_REV_MISS";
     public static final String AEVENT_VOIP_REV_CONNECT          = "AEVENT_VOIP_REV_CONNECT";
     public static final String AEVENT_VOIP_REV_ERROR            = "AEVENT_VOIP_REV_ERROR";
     public static final String AEVENT_VOIP_REV_REALTIME_DATA    = "AEVENT_VOIP_REV_REALTIME_DATA";
     public static final String AEVENT_VOIP_P2P_REV_CALLING      = "AEVENT_VOIP_P2P_REV_CALLING";
+    public static final String AEVENT_VOIP_P2P_REV_CALLING_AUDIO= "AEVENT_VOIP_P2P_REV_CALLING_AUDIO";
+    public static final String AEVENT_VOIP_TRANS_STATE_CHANGED  = "AEVENT_VOIP_TRANS_STATE_CHANGED";
 
     public static final String AEVENT_LIVE_ADD_UPLOADER         = "AEVENT_LIVE_ADD_UPLOADER";
     public static final String AEVENT_LIVE_REMOVE_UPLOADER      = "AEVENT_LIVE_REMOVE_UPLOADER";
@@ -154,4 +159,10 @@ public class AEvent {
     public static final String AEVENT_USER_KICKED               ="AEVENT_USER_KICKED";
     public static final String AEVENT_USER_ONLINE               ="AEVENT_USER_ONLINE";
     public static final String AEVENT_USER_OFFLINE              ="AEVENT_USER_OFFLINE";
+
+    public static final String AEVENT_RTSP_FORWARD              ="AEVENT_RTSP_FORWARD";
+    public static final String AEVENT_RTSP_GOT_LIST             ="AEVENT_RTSP_GOT_LIST";
+    public static final String AEVENT_RTSP_STOP                 ="AEVENT_RTSP_STOP";
+    public static final String AEVENT_RTSP_RESUME               ="AEVENT_RTSP_RESUME";
+    public static final String AEVENT_RTSP_DELETE               ="AEVENT_RTSP_DELETE";
 }

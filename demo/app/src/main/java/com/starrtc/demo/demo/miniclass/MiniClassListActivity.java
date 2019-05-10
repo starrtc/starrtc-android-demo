@@ -17,12 +17,19 @@ import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -51,9 +58,6 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
                 startActivity(new Intent(MiniClassListActivity.this,MiniClassCreateActivity.class));
             }
         });
-
-        AEvent.addListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
-
         refreshLayout = (SwipeRefreshLayout)findViewById(R.id.refresh_layout);
         //设置刷新时动画的颜色，可以设置4个
         refreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
@@ -86,13 +90,18 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
     @Override
     public void onResume(){
         super.onResume();
-        AEvent.addListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
-        InterfaceUrls.demoRequestMiniClassList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            AEvent.addListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
+        }
+        onRefresh();
     }
 
     @Override
-    public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
+    public void onPause(){
+        super.onPause();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)) {
+            AEvent.removeListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST, this);
+        }
         super.onStop();
     }
 
@@ -116,17 +125,52 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MiniClassInfo clickMeetingInfo = mDatas.get(position);
         Intent intent = new Intent(MiniClassListActivity.this, MiniClassActivity.class);
-        intent.putExtra(MiniClassActivity.CLASS_ID,clickMeetingInfo.meetingId);
-        intent.putExtra(MiniClassActivity.CLASS_NAME,clickMeetingInfo.meetingName);
-        intent.putExtra(MiniClassActivity.CLASS_CREATER,clickMeetingInfo.createrId);
+        intent.putExtra(MiniClassActivity.CLASS_ID,clickMeetingInfo.id);
+        intent.putExtra(MiniClassActivity.CLASS_NAME,clickMeetingInfo.name);
+        intent.putExtra(MiniClassActivity.CLASS_CREATOR,clickMeetingInfo.creator);
         startActivity(intent);
     }
 
     @Override
     public void onRefresh() {
-        InterfaceUrls.demoRequestMiniClassList();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestMiniClassList();
+        }else{
+            queryAllList();
+        }
     }
+    private void queryAllList(){
+        XHClient.getInstance().getLiveManager().queryList("",MLOC.CHATROOM_LIST_TYPE_CLASS_ALL,new IXHResultCallback() {
+            @Override
+            public void success(final Object data) {
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                try {
+                    JSONArray array = (JSONArray) data;
+                    for(int i = array.length()-1;i>=0;i--){
+                        MiniClassInfo info = new MiniClassInfo();
+                        JSONObject obj = array.getJSONObject(i);
+                        info.creator = obj.getString("creator");
+                        info.id = obj.getString("id");
+                        info.name = obj.getString("name");
+                        mDatas.add(info);
+                    }
+                    myListAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("VideoMettingListActivity",errMsg);
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                myListAdapter.notifyDataSetChanged();
+            }
+        });
+
+    }
 
     class MyListAdapter extends BaseAdapter{
         @Override
@@ -159,9 +203,9 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
             }else{
                 viewIconImg = (ViewHolder)convertView.getTag();
             }
-            viewIconImg.vRoomName.setText(mDatas.get(position).meetingName);
-            viewIconImg.vCreaterId.setText(mDatas.get(position).createrId);
-            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(MiniClassListActivity.this,mDatas.get(position).meetingId));
+            viewIconImg.vRoomName.setText(mDatas.get(position).name);
+            viewIconImg.vCreaterId.setText(mDatas.get(position).creator);
+            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(MiniClassListActivity.this,mDatas.get(position).id));
             viewIconImg.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
             int cint = DensityUtils.dip2px(MiniClassListActivity.this,28);
             viewIconImg.vHeadCover.setRadians(cint, cint, cint, cint,0);

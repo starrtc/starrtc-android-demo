@@ -14,6 +14,7 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.service.FloatWindowsService;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
+import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
 
 public class SetupServerHostActivity extends Activity {
@@ -120,6 +121,7 @@ public class SetupServerHostActivity extends Activity {
                 }
 
                 XHClient.getInstance().getLoginManager().logout();
+                AEvent.notifyListener(AEvent.AEVENT_LOGOUT,true,null);
                 stopService(new Intent(SetupServerHostActivity.this, FloatWindowsService.class));
                 MLOC.hasLogout = true;
                 finish();
@@ -140,7 +142,7 @@ public class SetupServerHostActivity extends Activity {
         ((EditText)findViewById(R.id.voip_schedule)).setText(MLOC.VOIP_SCHEDULE_URL);
         ((EditText)findViewById(R.id.voip_server)).setText(MLOC.VOIP_SERVER_URL);
         ((EditText)findViewById(R.id.im_server)).setText(MLOC.IM_SERVER_URL);
-        ((EditText)findViewById(R.id.chatroom_server)).setText(MLOC.CHAT_ROOM_SERVER_URL);
+        ((EditText)findViewById(R.id.chatroom_server)).setText(MLOC.CHATROOM_SERVER_URL);
         ((EditText)findViewById(R.id.src_server)).setText(MLOC.LIVE_SRC_SERVER_URL);
         ((EditText)findViewById(R.id.vdn_server)).setText(MLOC.LIVE_VDN_SERVER_URL);
 

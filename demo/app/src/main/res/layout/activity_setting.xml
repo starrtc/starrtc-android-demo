@@ -83,6 +83,38 @@
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
             <LinearLayout
+                android:id="@+id/btn_test_rtsp"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="第三方流测试"/>
+
+                <View
+                    android:layout_width="315dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <ImageView
+                    android:layout_width="6dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/icon_right"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
                 android:id="@+id/btn_test_p2p"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
@@ -115,7 +147,6 @@
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
             <LinearLayout
-                android:id="@+id/btn_dy_bt_fp"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:paddingLeft="10dp"
@@ -147,7 +178,6 @@
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
             <LinearLayout
-                android:id="@+id/btn_dy_bt_fp"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:paddingLeft="10dp"
@@ -267,6 +297,78 @@
 
                 <TextView
                     android:id="@+id/video_config_small_text"
+                    android:layout_width="299dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#cccccc"
+                    android:textSize="12sp"
+                    android:gravity="right"/>
+                <ImageView
+                    android:layout_width="6dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/icon_right"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
+                android:id="@+id/btn_video_codec_type"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="视频编码格式设置"/>
+
+                <TextView
+                    android:id="@+id/video_codec_type_text"
+                    android:layout_width="299dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#cccccc"
+                    android:textSize="12sp"
+                    android:gravity="right"/>
+                <ImageView
+                    android:layout_width="6dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/icon_right"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
+                android:id="@+id/btn_audio_codec_type"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="音频编码格式设置"/>
+
+                <TextView
+                    android:id="@+id/audio_codec_type_text"
                     android:layout_width="299dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

@@ -5,7 +5,7 @@ package com.starrtc.demo.demo.miniclass;
  */
 
 public class MiniClassInfo {
-    public String meetingName;
-    public String createrId;
-    public String meetingId;
+    public String name;
+    public String creator;
+    public String id;
 }

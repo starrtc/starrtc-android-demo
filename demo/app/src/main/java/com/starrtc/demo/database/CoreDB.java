@@ -84,7 +84,24 @@ public class CoreDB implements IEventListener {
         return list;
     }
 
-    public void setHistory(HistoryBean historyBean,Boolean hasRead){
+    public void updateHistory(HistoryBean historyBean){
+        if(historyBean.getConversationId()==null||historyBean.getType()==null)return;
+        Cursor cursor = coreDBM.rawQuery("select * from " + HISTORY_TABLE + " where type=? and conversationId=?",
+                new String[]{historyBean.getType(), historyBean.getConversationId()});
+        if(cursor!=null&&cursor.moveToNext()){
+            if (cursor != null) cursor.close();
+            coreDBM.execSQL("UPDATE "+HISTORY_TABLE+" SET newMsg = ?," +
+                            " lastMsg = ?," +
+                            " lastTime = ?" +
+                            " where type=? and conversationId=?",
+                    new Object[]{
+                            historyBean.getNewMsgCount(), historyBean.getLastMsg(),
+                            historyBean.getLastTime(),
+                            historyBean.getType(), historyBean.getConversationId()});
+        }
+    }
+
+    public void addHistory(HistoryBean historyBean, Boolean hasRead){
         if(historyBean.getConversationId()==null||historyBean.getType()==null)return;
         Cursor cursor = coreDBM.rawQuery("select * from " + HISTORY_TABLE + " where type=? and conversationId=?",
                 new String[]{historyBean.getType(), historyBean.getConversationId()});
@@ -115,6 +132,13 @@ public class CoreDB implements IEventListener {
                             historyBean.getGroupCreaterId()});
         }
 
+    }
+
+    public void removeHistory(HistoryBean historyBean){
+        if(historyBean.getConversationId()==null||historyBean.getType()==null)return;
+        coreDBM.rawQuery("delete from " + HISTORY_TABLE + " where type=? and conversationId=?",
+                new String[]{historyBean.getType(), historyBean.getConversationId()});
+        coreDBM.rawQuery("delete from " + MSG_TABLE + " where conversationId=?", new String[]{historyBean.getConversationId()});
     }
 
     public List<MessageBean> getMessageList(String conversationId){

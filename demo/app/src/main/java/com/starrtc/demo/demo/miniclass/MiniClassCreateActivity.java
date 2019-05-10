@@ -46,7 +46,7 @@ public class MiniClassCreateActivity extends BaseActivity {
                 }else{
                     Intent intent = new Intent(MiniClassCreateActivity.this, MiniClassActivity.class);
                     intent.putExtra(MiniClassActivity.CLASS_NAME,inputId);
-                    intent.putExtra(MiniClassActivity.CLASS_CREATER,MLOC.userId);
+                    intent.putExtra(MiniClassActivity.CLASS_CREATOR,MLOC.userId);
                     intent.putExtra(MiniClassActivity.CLASS_TYPE,type);
                     startActivity(intent);
                     finish();

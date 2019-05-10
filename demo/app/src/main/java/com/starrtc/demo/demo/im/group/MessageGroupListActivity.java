@@ -131,6 +131,7 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
 
                 @Override
                 public void failed(String errMsg) {
+                    AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,errMsg);
                     MLOC.d("IM_GROUP","applyGetGroupList failed:"+errMsg);
                 }
             });
@@ -163,21 +164,24 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
         switch (aEventID){
             case AEvent.AEVENT_GROUP_GOT_LIST:
                 mDatas.clear();
+                List<HistoryBean> historyList = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_GROUP);
                 if(success){
                     ArrayList<MessageGroupInfo> res = (ArrayList<MessageGroupInfo>) eventObj;
-                    List<HistoryBean> historyList = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_GROUP);
                     //删除已经不再的群
                     for(int i=historyList.size()-1;i>=0;i--){
                         HistoryBean historyBean = historyList.get(i);
                         Boolean needRemove = true;
                         for(int j = 0;j<res.size();j++){
                             if(historyBean.getConversationId().equals(res.get(j).groupId)){
+                                historyBean.setGroupName(res.get(j).groupName);
+                                historyBean.setGroupCreaterId(res.get(j).createrId);
+                                MLOC.updateHistory(historyBean);
                                 needRemove = false;
                                 break;
                             }
                         }
                         if(needRemove){
-                            historyList.remove(i);
+                            MLOC.removeHistory(historyList.remove(i));
                         }
                     }
                     //添加新加的群
@@ -199,11 +203,15 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
                             historyBean.setGroupCreaterId(res.get(i).createrId);
                             historyBean.setLastMsg("");
                             historyBean.setLastTime("");
-                            MLOC.setHistory(historyBean,true);
+                            MLOC.addHistory(historyBean,true);
                             historyList.add(historyBean);
                         }
                     }
                     mDatas.addAll(historyList);
+                }else{
+                    for(int i=historyList.size()-1;i>=0;i--){
+                        MLOC.removeHistory(historyList.remove(i));
+                    }
                 }
                 refreshLayout.setRefreshing(false);
                 myListAdapter.notifyDataSetChanged();
@@ -218,7 +226,7 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         HistoryBean clickInfo = mDatas.get(position);
 
-        MLOC.setHistory(clickInfo,true);
+        MLOC.addHistory(clickInfo,true);
 
         Intent intent = new Intent(MessageGroupListActivity.this, MessageGroupActivity.class);
         intent.putExtra(MessageGroupActivity.TYPE,MessageGroupActivity.GROUP_ID);

@@ -160,6 +160,8 @@ public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
                 String retData = null;
                 if(jsonObject.has("data")){
                     retData = jsonObject.getString("data");
+                }else{
+                    retData = content;
                 }
                 icallback.callback(true, statusCode, retData);
             } catch (JSONException e) {
