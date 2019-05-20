@@ -143,6 +143,7 @@ public class VideoMeetingActivity extends BaseActivity{
         final Dialog dialog = new Dialog(this,R.style.dialog_popup);
         dialog.setContentView(R.layout.dialog_input_rtmp_url);
         ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://");
+        ((EditText)dialog.findViewById(R.id.rtmpurl)).setText("rtmp://62.234.134.38/live/starrtc");
         Window win = dialog.getWindow();
         win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         win.setGravity(Gravity.CENTER);

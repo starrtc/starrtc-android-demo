@@ -21,8 +21,6 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.setting.SetupServerHostActivity;
-import com.starrtc.demo.demo.videolive.LiveInfo;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
@@ -31,7 +29,6 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -209,15 +206,28 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(i==0){
                     //停止
-                    InterfaceUrls.demoStopPushRtsp(MLOC.LIVE_SRC_FORWARD_RTSP_URL,rtspInfo.id);
+                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+                        InterfaceUrls.demoStopPushRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    }else{
+                        InterfaceUrls.demoStopPushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id);
+                    }
+
                 }else if(i==1){
                     //恢复
                     if(!TextUtils.isEmpty(rtspInfo.rtsp)){
-                        InterfaceUrls.demoResumePushRtsp(MLOC.LIVE_SRC_FORWARD_RTSP_URL,rtspInfo.id,rtspInfo.rtsp);
+                        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+                            InterfaceUrls.demoResumePushRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id,rtspInfo.rtsp);
+                        }else{
+                            InterfaceUrls.demoResumePushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id,rtspInfo.rtsp);
+                        }
                     }
                 }else{
                     //删除
-                    InterfaceUrls.demoDeleteRtsp(MLOC.LIVE_SRC_FORWARD_RTSP_URL,rtspInfo.id);
+                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+                        InterfaceUrls.demoDeleteRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    }else{
+                        InterfaceUrls.demoDeleteRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id);
+                    }
                     if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
                         XHClient.getInstance().getChatroomManager().deleteFromList(MLOC.userId,rtspInfo.type, rtspInfo.id.substring(16), new IXHResultCallback() {
                             @Override

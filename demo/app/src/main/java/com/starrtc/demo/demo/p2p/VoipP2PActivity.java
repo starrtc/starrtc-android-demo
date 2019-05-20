@@ -174,7 +174,7 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
 
                             @Override
                             public void failed(final String errMsg) {
-                                MLOC.d("","AEVENT_VOIP_ON_STOP errMsg:"+errMsg);
+                                MLOC.d(TAG,"AEVENT_VOIP_ON_STOP errMsg:"+errMsg);
                                 MLOC.showMsg(VoipP2PActivity.this,errMsg);
                             }
                         });
@@ -255,11 +255,13 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                 voipP2PManager.cancel(new IXHResultCallback() {
                     @Override
                     public void success(Object data) {
+                        MLOC.d(TAG,"cancel success");
                         VoipP2PActivity.this.stopAndFinish();
                     }
 
                     @Override
                     public void failed(String errMsg) {
+                        MLOC.d(TAG,"cancel success");
                         VoipP2PActivity.this.stopAndFinish();
                     }
                 });
@@ -268,11 +270,13 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
                 voipP2PManager.hangup(new IXHResultCallback() {
                     @Override
                     public void success(Object data) {
+                        MLOC.d(TAG,"hangup success");
                         VoipP2PActivity.this.stopAndFinish();
                     }
 
                     @Override
                     public void failed(String errMsg) {
+                        MLOC.d(TAG,"hangup failed");
                         VoipP2PActivity.this.stopAndFinish();
                     }
                 });

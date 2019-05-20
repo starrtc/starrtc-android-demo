@@ -11,6 +11,8 @@ import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.im.c2c.C2CListActivity;
 import com.starrtc.demo.demo.im.chatroom.ChatroomListActivity;
 import com.starrtc.demo.demo.im.group.MessageGroupListActivity;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 
 public class IMDemoActivity extends BaseActivity {
 
@@ -42,6 +44,28 @@ public class IMDemoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(IMDemoActivity.this, MessageGroupListActivity.class));
+            }
+        });
+        XHClient.getInstance().getAliveUserNum(new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("!!!!!!!!!!!!!",data.toString());
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("!!!!!!!!!!!!!",errMsg.toString());
+            }
+        });
+        XHClient.getInstance().getAliveUserList(1,new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("!!!!!!!!!!!!!",data.toString());
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("!!!!!!!!!!!!!",errMsg.toString());
             }
         });
     }

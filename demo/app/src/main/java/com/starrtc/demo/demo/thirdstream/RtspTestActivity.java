@@ -16,7 +16,6 @@ import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,7 +135,12 @@ public class RtspTestActivity extends BaseActivity {
                 @Override
                 public void success(final Object data) {
                     roomId = data.toString();
-                    InterfaceUrls.demoPushRtsp(MLOC.LIVE_SRC_FORWARD_RTSP_URL,name,roomId,type,rtsp);
+                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+                        InterfaceUrls.demoPushRtsp(MLOC.LIVE_PROXY_SERVER_URL,name,roomId,type,rtsp);
+                    }else{
+                        InterfaceUrls.demoPushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,name,roomId,type,rtsp);
+                    }
+
                 }
 
                 @Override

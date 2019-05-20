@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
-
     <com.starrtc.starrtcsdk.core.player.StarPlayer
         android:id="@+id/voip_surface_target"
         android:layout_width="match_parent"

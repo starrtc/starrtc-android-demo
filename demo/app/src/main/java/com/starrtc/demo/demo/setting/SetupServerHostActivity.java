@@ -95,6 +95,10 @@ public class SetupServerHostActivity extends Activity {
                 if(!TextUtils.isEmpty(vdn_host)){
                     MLOC.saveVdnSchduleUrl(vdn_host);
                 }
+                String proxy_host = ((EditText)findViewById(R.id.proxy_schedule)).getText().toString().trim();
+                if(!TextUtils.isEmpty(proxy_host)){
+                    MLOC.saveProxySchduleUrl(proxy_host);
+                }
                 String voip_host = ((EditText)findViewById(R.id.voip_schedule)).getText().toString().trim();
                 if(!TextUtils.isEmpty(voip_host)){
                     MLOC.saveVoipSchduleUrl(voip_host);
@@ -119,6 +123,10 @@ public class SetupServerHostActivity extends Activity {
                 if(!TextUtils.isEmpty(vdn_host)){
                     MLOC.saveVdnServerUrl(vdn_server);
                 }
+                String proxy_server = ((EditText)findViewById(R.id.proxy_server)).getText().toString().trim();
+                if(!TextUtils.isEmpty(proxy_server)){
+                    MLOC.saveProxyServerUrl(proxy_server);
+                }
 
                 XHClient.getInstance().getLoginManager().logout();
                 AEvent.notifyListener(AEvent.AEVENT_LOGOUT,true,null);
@@ -139,12 +147,14 @@ public class SetupServerHostActivity extends Activity {
         ((EditText)findViewById(R.id.chatroom_schedule)).setText(MLOC.CHAT_ROOM_SCHEDULE_URL);
         ((EditText)findViewById(R.id.src_schedule)).setText(MLOC.LIVE_SRC_SCHEDULE_URL);
         ((EditText)findViewById(R.id.vdn_schedule)).setText(MLOC.LIVE_VDN_SCHEDULE_URL);
+        ((EditText)findViewById(R.id.proxy_schedule)).setText(MLOC.LIVE_PROXY_SCHEDULE_URL);
         ((EditText)findViewById(R.id.voip_schedule)).setText(MLOC.VOIP_SCHEDULE_URL);
         ((EditText)findViewById(R.id.voip_server)).setText(MLOC.VOIP_SERVER_URL);
         ((EditText)findViewById(R.id.im_server)).setText(MLOC.IM_SERVER_URL);
         ((EditText)findViewById(R.id.chatroom_server)).setText(MLOC.CHATROOM_SERVER_URL);
         ((EditText)findViewById(R.id.src_server)).setText(MLOC.LIVE_SRC_SERVER_URL);
         ((EditText)findViewById(R.id.vdn_server)).setText(MLOC.LIVE_VDN_SERVER_URL);
+        ((EditText)findViewById(R.id.proxy_server)).setText(MLOC.LIVE_PROXY_SERVER_URL);
 
         if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
             findViewById(R.id.more_box).setVisibility(View.VISIBLE);
