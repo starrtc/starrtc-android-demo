@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHSDKHelper;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
     /***
@@ -57,6 +61,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_video_config_small).setOnClickListener(this);
         findViewById(R.id.btn_video_codec_type).setOnClickListener(this);
         findViewById(R.id.btn_audio_codec_type).setOnClickListener(this);
+        findViewById(R.id.btn_audio_source).setOnClickListener(this);
+        findViewById(R.id.btn_audio_stream_type).setOnClickListener(this);
         findViewById(R.id.opengl_switch).setOnClickListener(this);
         findViewById(R.id.opensl_switch).setOnClickListener(this);
         findViewById(R.id.dy_bt_fp_switch).setOnClickListener(this);
@@ -68,6 +74,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_logout).setOnClickListener(this);
         findViewById(R.id.btn_uploadlogs).setOnClickListener(this);
+
+
     }
     @Override
     public void onResume(){
@@ -93,6 +101,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.no_video_switch).setSelected(!XHCustomConfig.getInstance().getVideoEnable());
         ((TextView)findViewById(R.id.video_codec_type_text)).setText(XHCustomConfig.getInstance().getVideoCodecTypeName());
         ((TextView)findViewById(R.id.audio_codec_type_text)).setText(XHCustomConfig.getInstance().getAudioCodecTypeName());
+        ((TextView)findViewById(R.id.audio_source)).setText(XHCustomConfig.getInstance().getAudioSourceName());
+        ((TextView)findViewById(R.id.audio_stream_type)).setText(XHCustomConfig.getInstance().getAudioStreamTypeName());
+
 
     }
     @Override
@@ -159,7 +170,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 dialog.show();
                 break;
             }
-
             case R.id.btn_audio_codec_type:{
                 AlertDialog.Builder builder=new AlertDialog.Builder(this);
                 builder.setItems(XHConstants.XHAudioCodecConfigEnumName, new DialogInterface.OnClickListener() {
@@ -173,6 +183,44 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                         }
                         XHCustomConfig.getInstance().setDefConfigAudioCodecType(selected);
                         onResume();
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                break;
+            }
+            case R.id.btn_audio_source:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(XHConstants.XHAudioSourceEnumName, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        for (XHConstants.XHAudioSourceEnum e : XHConstants.XHAudioSourceEnum.values()) {
+                            if(i==e.ordinal()) {
+                                XHCustomConfig.getInstance().setDefConfigAudioSource(e);
+                                onResume();
+                                return;
+                            }
+                        }
+                    }
+                });
+                builder.setCancelable(true);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                break;
+            }
+            case R.id.btn_audio_stream_type:{
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setItems(XHConstants.XHAudioStreamTypeEnumName, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        for (XHConstants.XHAudioStreamTypeEnum e : XHConstants.XHAudioStreamTypeEnum.values()) {
+                            if(i==e.ordinal()) {
+                                XHCustomConfig.getInstance().setDefConfigAudioStreamType(e);
+                                onResume();
+                                return;
+                            }
+                        }
                     }
                 });
                 builder.setCancelable(true);
