@@ -87,23 +87,6 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
         });
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            AEvent.addListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
-        }
-        onRefresh();
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)) {
-            AEvent.removeListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST, this);
-        }
-        super.onStop();
-    }
 
     @Override
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
@@ -131,6 +114,23 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
         startActivity(intent);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            AEvent.addListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST,this);
+        }
+        onRefresh();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)) {
+            AEvent.removeListener(AEvent.AEVENT_MINI_CLASS_GOT_LIST, this);
+        }
+        super.onStop();
+    }
     @Override
     public void onRefresh() {
         if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
@@ -169,7 +169,6 @@ public class MiniClassListActivity extends BaseActivity implements AdapterView.O
                 myListAdapter.notifyDataSetChanged();
             }
         });
-
     }
 
     class MyListAdapter extends BaseAdapter{

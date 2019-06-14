@@ -35,6 +35,8 @@ import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -88,7 +90,7 @@ public class AudioLiveActivity extends BaseActivity {
         starRTCAudioManager = StarRTCAudioManager.create(this);
         starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
             @Override
-            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set availableAudioDevices) {
 
             }
         });
@@ -303,8 +305,25 @@ public class AudioLiveActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 liveId = (String) data;
-                InterfaceUrls.demoReportAudioLive(liveId,liveName,createrId);
+                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+                    InterfaceUrls.demoReportAudioLive(liveId,liveName,createrId);
+                }else{
+                    try {
+                        JSONObject info = new JSONObject();
+                        info.put("id",liveId);
+                        info.put("creator",MLOC.userId);
+                        info.put("name",liveName);
+                        String infostr = info.toString();
+                        infostr = URLEncoder.encode(infostr,"utf-8");
+                        liveManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_AUDIO_LIVE,liveId,infostr,null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
                 starLive();
+
             }
             @Override
             public void failed(final String errMsg) {

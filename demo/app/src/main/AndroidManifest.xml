@@ -128,6 +128,17 @@
             android:name=".demo.videomeeting.VideoMeetingCreateActivity"
             android:screenOrientation="portrait" />
 
+        <!-- 超级聊天室 -->
+        <activity
+            android:name=".demo.superroom.SuperRoomActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".demo.superroom.SuperRoomCreateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".demo.superroom.SuperRoomListActivity"
+            android:screenOrientation="portrait" />
+
         <!-- 测试 -->
         <activity
             android:name=".demo.test.LoopTestActivity"

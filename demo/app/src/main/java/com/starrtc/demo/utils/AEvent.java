@@ -96,6 +96,7 @@ public class AEvent {
     public static final String AEVENT_MINI_CLASS_GOT_LIST       = "AEVENT_MINI_CLASS_GOT_LIST";
     public static final String AEVENT_LIVE_GOT_LIST             = "AEVENT_LIVE_GOT_LIST";
     public static final String AEVENT_AUDIO_LIVE_GOT_LIST       = "AEVENT_AUDIO_LIVE_GOT_LIST";
+    public static final String AEVENT_SUPER_ROOM_GOT_LIST       = "AEVENT_SUPER_ROOM_GOT_LIST";
     public static final String AEVENT_CHATROOM_GOT_LIST         = "AEVENT_CHATROOM_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_LIST            = "AEVENT_GROUP_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_MEMBER_LIST     = "AEVENT_GROUP_GOT_MEMBER_LIST";
@@ -129,6 +130,18 @@ public class AEvent {
     public static final String AEVENT_LIVE_INVITE_LINK_RESULT    = "AEVENT_LIVE_INVITE_LINK_RESULT";
     public static final String AEVENT_LIVE_SELF_COMMANDED_TO_STOP  = "AEVENT_LIVE_SELF_COMMANDED_TO_STOP";
     public static final String AEVENT_LIVE_REV_REALTIME_DATA    = "AEVENT_LIVE_REV_REALTIME_DATA";
+
+    public static final String AEVENT_SUPER_ROOM_ADD_UPLOADER         = "AEVENT_SUPER_ROOM_ADD_UPLOADER";
+    public static final String AEVENT_SUPER_ROOM_REMOVE_UPLOADER      = "AEVENT_SUPER_ROOM_REMOVE_UPLOADER";
+    public static final String AEVENT_SUPER_ROOM_ERROR                = "AEVENT_SUPER_ROOM_ERROR";
+    public static final String AEVENT_SUPER_ROOM_GET_ONLINE_NUMBER    = "AEVENT_SUPER_ROOM_GET_ONLINE_NUMBER";
+    public static final String AEVENT_SUPER_ROOM_SELF_KICKED          = "AEVENT_SUPER_ROOM_SELF_KICKED";
+    public static final String AEVENT_SUPER_ROOM_SELF_BANNED          = "AEVENT_SUPER_ROOM_SELF_BANNED";
+    public static final String AEVENT_SUPER_ROOM_REV_MSG              = "AEVENT_SUPER_ROOM_REV_MSG";
+    public static final String AEVENT_SUPER_ROOM_REV_PRIVATE_MSG      = "AEVENT_SUPER_ROOM_REV_PRIVATE_MSG";
+    public static final String AEVENT_SUPER_ROOM_APPLY_LINK           = "AEVENT_SUPER_ROOM_APPLY_LINK";
+    public static final String AEVENT_SUPER_ROOM_SELF_COMMANDED_TO_STOP  = "AEVENT_SUPER_ROOM_SELF_COMMANDED_TO_STOP";
+    public static final String AEVENT_SUPER_ROOM_REV_REALTIME_DATA    = "AEVENT_SUPER_ROOM_REV_REALTIME_DATA";
 
     public static final String AEVENT_MEETING_ADD_UPLOADER          = "AEVENT_MEETING_ADD_UPLOADER";
     public static final String AEVENT_MEETING_REMOVE_UPLOADER       = "AEVENT_MEETING_REMOVE_UPLOADER";

@@ -10,8 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.SplashActivity;
-import com.starrtc.demo.demo.beauty.DemoBeautyCallback;
+import com.starrtc.demo.demo.beauty.DemoVideoSourceCallback;
 import com.starrtc.demo.demo.p2p.VoipP2PRingingActivity;
 import com.starrtc.demo.demo.voip.VoipAudioRingingActivity;
 import com.starrtc.demo.demo.voip.VoipRingingActivity;
@@ -27,7 +26,7 @@ import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.beauty.XHBeautyManager;
+import com.starrtc.starrtcsdk.core.videosrc.XHVideoSourceManager;
 
 import java.util.Random;
 
@@ -99,13 +98,13 @@ public class KeepLiveService extends Service implements IEventListener {
             },new Handler());
 //            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
-            customConfig.setDefConfigCamera2Enable(false);
+//            customConfig.setDefConfigCamera2Enable(false);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+            XHVideoSourceManager.getInstance().setVideoSourceCallback(new DemoVideoSourceCallback());
             checkNetworkConnectAndLogin();
         }
 
@@ -142,7 +141,7 @@ public class KeepLiveService extends Service implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHBeautyManager.getInstance().setBeautyDataCallback(new DemoBeautyCallback());
+            XHVideoSourceManager.getInstance().setVideoSourceCallback(new DemoVideoSourceCallback());
 
             XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
                 @Override

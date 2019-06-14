@@ -62,12 +62,21 @@ public class MLOC {
     public static final int CHATROOM_LIST_TYPE_MEETING_PUSH = 4;
     public static final int CHATROOM_LIST_TYPE_CLASS = 5;
     public static final int CHATROOM_LIST_TYPE_CLASS_PUSH = 6;
+    public static final int CHATROOM_LIST_TYPE_AUDIO_LIVE = 7;
+    public static final int CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH = 8;
+    public static final int CHATROOM_LIST_TYPE_SUPER_ROOM = 9;
+    public static final int CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH = 10;
 
     public static final String CHATROOM_LIST_TYPE_LIVE_ALL = CHATROOM_LIST_TYPE_LIVE+","+CHATROOM_LIST_TYPE_LIVE_PUSH;
     public static final String CHATROOM_LIST_TYPE_MEETING_ALL = CHATROOM_LIST_TYPE_MEETING+","+CHATROOM_LIST_TYPE_MEETING_PUSH;
     public static final String CHATROOM_LIST_TYPE_CLASS_ALL = CHATROOM_LIST_TYPE_CLASS+","+CHATROOM_LIST_TYPE_CLASS_PUSH;
-    public static final String CHATROOM_LIST_TYPE_PUSH_ALL = CHATROOM_LIST_TYPE_LIVE_PUSH+","+CHATROOM_LIST_TYPE_MEETING_PUSH+","+CHATROOM_LIST_TYPE_CLASS_PUSH;
-
+    public static final String CHATROOM_LIST_TYPE_AUDIO_LIVE_ALL = CHATROOM_LIST_TYPE_AUDIO_LIVE+","+CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH;
+    public static final String CHATROOM_LIST_TYPE_SUPER_ROOM_ALL = CHATROOM_LIST_TYPE_SUPER_ROOM+","+CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH;
+    public static final String CHATROOM_LIST_TYPE_PUSH_ALL = CHATROOM_LIST_TYPE_LIVE_PUSH
+                                                        +","+CHATROOM_LIST_TYPE_MEETING_PUSH
+                                                        +","+CHATROOM_LIST_TYPE_CLASS_PUSH
+                                                        +","+CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH
+                                                        +","+CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH;
     public static Boolean hasLogout = false;
 
     public static boolean hasNewC2CMsg = false;

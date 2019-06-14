@@ -25,20 +25,10 @@ public class MiniClassCreateActivity extends BaseActivity {
                 finish();
             }
         });
-        findViewById(R.id.switch_type).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.switch_type).setSelected(!findViewById(R.id.switch_type).isSelected());
-            }
-        });
         findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-//                XHConstants.XHMeetingType type =
-//                        findViewById(R.id.switch_type).isSelected()?
-//                                XHConstants.XHMeetingType.XHMeetingTypeGlobalPublic:
-//                                XHConstants.XHMeetingType.XHMeetingTypeLoginPublic;
                 XHConstants.XHLiveType type = XHConstants.XHLiveType.XHLiveTypeGlobalPublic;
 
                 if(TextUtils.isEmpty(inputId)){

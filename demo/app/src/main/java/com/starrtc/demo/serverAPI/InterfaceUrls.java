@@ -15,6 +15,7 @@ import com.starrtc.demo.demo.audiolive.AudioLiveInfo;
 import com.starrtc.demo.demo.im.chatroom.ChatroomInfo;
 import com.starrtc.demo.demo.im.group.MessageGroupInfo;
 import com.starrtc.demo.demo.miniclass.MiniClassInfo;
+import com.starrtc.demo.demo.superroom.SuperRoomInfo;
 import com.starrtc.demo.demo.thirdstream.RtspInfo;
 import com.starrtc.demo.demo.videolive.LiveInfo;
 import com.starrtc.demo.demo.videomeeting.MeetingInfo;
@@ -36,6 +37,8 @@ public class InterfaceUrls {
     public static String LIVE_LIST_URL;
     //音频直播列表
     public static String AUDIO_LIVE_LIST_URL;
+    //音频直播列表
+    public static String SUPER_ROOM_LIST_URL;
     //小班课列表
     public static String MINI_CLASS_LIST_URL;
     //上报直播间使用的聊天室ID（直播里的文字聊天用了一个聊天室）
@@ -53,6 +56,8 @@ public class InterfaceUrls {
     public static String REPORT_LIVE_INFO_URL;
     //上报语音直播
     public static String REPORT_AUDIO_LIVE_INFO_URL;
+    //上报语音直播
+    public static String REPORT_SUPER_ROOM_INFO_URL;
     //上报小班课
     public static String REPORT_MINI_CLASS_INFO_URL;
     //上报会议
@@ -66,6 +71,7 @@ public class InterfaceUrls {
         MEETING_LIST_URL = BASE_URL+"/meeting/list";
         LIVE_LIST_URL = BASE_URL+"/live/list";
         AUDIO_LIVE_LIST_URL = BASE_URL+"/audio/list";
+        SUPER_ROOM_LIST_URL = BASE_URL+"/super_room/list";
         MINI_CLASS_LIST_URL = BASE_URL+"/class/list";
         LIVE_SET_CHAT_URL = BASE_URL+"/live/set_chat";
         CHATROOM_LIST_URL = BASE_URL+"/chat/list";
@@ -74,6 +80,7 @@ public class InterfaceUrls {
         GROUP_MEMBERS_URL = BASE_URL+"/group/members";
         REPORT_LIVE_INFO_URL = BASE_URL+"/live/store";
         REPORT_AUDIO_LIVE_INFO_URL = BASE_URL+"/audio/store";
+        REPORT_SUPER_ROOM_INFO_URL = BASE_URL+"/super_room/store";
         REPORT_MINI_CLASS_INFO_URL = BASE_URL+"/class/store";
         REPORT_MEETING_INFO_URL = BASE_URL+"/meeting/store";
         REPORT_CHATROOM_INFO_URL = BASE_URL+"/chat/store";
@@ -352,7 +359,6 @@ public class InterfaceUrls {
     public static void demoRequestLiveList(){
         String url = LIVE_LIST_URL+"?appid="+MLOC.agentId;
         String params = "";
-
         StarHttpUtil httpPost = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpPost.addListener(new ICallback() {
             @Override
@@ -403,9 +409,9 @@ public class InterfaceUrls {
                             ArrayList<AudioLiveInfo> res = new ArrayList<AudioLiveInfo>();
                             for (int i = 0;i<datas.length();i++){
                                 AudioLiveInfo videoLiveInfo = new AudioLiveInfo();
-                                videoLiveInfo.createrId = datas.getJSONObject(i).getString("Creator");
-                                videoLiveInfo.liveName = datas.getJSONObject(i).getString("Name");
-                                videoLiveInfo.liveId = datas.getJSONObject(i).getString("ID");
+                                videoLiveInfo.creator = datas.getJSONObject(i).getString("Creator");
+                                videoLiveInfo.name = datas.getJSONObject(i).getString("Name");
+                                videoLiveInfo.id = datas.getJSONObject(i).getString("ID");
                                 videoLiveInfo.isLiveOn = datas.getJSONObject(i).getString("liveState");
                                 res.add(videoLiveInfo);
                             }
@@ -418,6 +424,45 @@ public class InterfaceUrls {
                     }
                 }
                 AEvent.notifyListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST,false,"数据解析失败");
+
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpPost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+    //音频直播列表
+    public static void demoRequestSuperRoomList(){
+        String url = SUPER_ROOM_LIST_URL+"?appid="+MLOC.agentId;
+        String params = "";
+
+        StarHttpUtil httpPost = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
+        httpPost.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+                if(reqSuccess){
+                    if(statusCode.equals("1")){
+                        try {
+                            JSONArray datas = new JSONArray(data);
+                            ArrayList<SuperRoomInfo> res = new ArrayList<SuperRoomInfo>();
+                            for (int i = 0;i<datas.length();i++){
+                                SuperRoomInfo videoLiveInfo = new SuperRoomInfo();
+                                videoLiveInfo.creator = datas.getJSONObject(i).getString("Creator");
+                                videoLiveInfo.name = datas.getJSONObject(i).getString("Name");
+                                videoLiveInfo.id = datas.getJSONObject(i).getString("ID");
+                                videoLiveInfo.isLiveOn = datas.getJSONObject(i).getString("liveState");
+                                res.add(videoLiveInfo);
+                            }
+                            AEvent.notifyListener(AEvent.AEVENT_SUPER_ROOM_GOT_LIST,true,res);
+                            return;
+                        } catch (JSONException e) {
+                            AEvent.notifyListener(AEvent.AEVENT_SUPER_ROOM_GOT_LIST,false,"数据解析失败");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                AEvent.notifyListener(AEvent.AEVENT_SUPER_ROOM_GOT_LIST,false,"数据解析失败");
 
             }
         });
@@ -455,6 +500,32 @@ public class InterfaceUrls {
     //上报语音直播
     public static void demoReportAudioLive(String liveID,String liveName,String creatorID){
         String url = REPORT_AUDIO_LIVE_INFO_URL+"?appid="+MLOC.agentId;
+        String params = "";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("ID",liveID);
+            jsonObject.put("Name",liveName);
+            jsonObject.put("Creator",creatorID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        params = jsonObject.toString();
+
+        StarHttpUtil httpPost = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_POST);
+        httpPost.addListener(new ICallback() {
+            @Override
+            public void callback(boolean reqSuccess, String statusCode, String data) {
+
+            }
+        });
+        Bundle bundle = new Bundle();
+        bundle.putString(StarHttpUtil.URL,url);
+        bundle.putString(StarHttpUtil.DATA,params);
+        httpPost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
+    }
+    //上报语音直播
+    public static void demoReportSuperRoom(String liveID,String liveName,String creatorID){
+        String url = REPORT_SUPER_ROOM_INFO_URL+"?appid="+MLOC.agentId;
         String params = "";
         JSONObject jsonObject = new JSONObject();
         try {

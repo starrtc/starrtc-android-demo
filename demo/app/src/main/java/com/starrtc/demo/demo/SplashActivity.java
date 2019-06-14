@@ -8,12 +8,9 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,25 +20,11 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 
 import com.starrtc.demo.R;
-import com.starrtc.demo.demo.beauty.DemoBeautyCallback;
 import com.starrtc.demo.demo.service.KeepLiveService;
-import com.starrtc.demo.listener.XHVoipP2PManagerListener;
-import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.utils.AEvent;
-import com.starrtc.demo.utils.IEventListener;
-import com.starrtc.demo.listener.XHChatManagerListener;
-import com.starrtc.starrtcsdk.api.XHClient;
-import com.starrtc.demo.listener.XHGroupManagerListener;
-import com.starrtc.demo.listener.XHLoginManagerListener;
-import com.starrtc.starrtcsdk.api.XHCustomConfig;
-import com.starrtc.demo.listener.XHVoipManagerListener;
-import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
-import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.beauty.XHBeautyManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class SplashActivity extends Activity {
     private boolean isLogin = false;

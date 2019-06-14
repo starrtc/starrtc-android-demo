@@ -5,8 +5,8 @@ package com.starrtc.demo.demo.audiolive;
  */
 
 public class AudioLiveInfo {
-    public String createrId;
-    public String liveName;
-    public String liveId;
+    public String creator;
+    public String name;
+    public String id;
     public String isLiveOn;
 }

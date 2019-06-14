@@ -22,8 +22,10 @@ import android.widget.Toast;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.demo.audiolive.AudioLiveListActivity;
 import com.starrtc.demo.demo.p2p.VoipP2PDemoActivity;
 import com.starrtc.demo.demo.service.FloatWindowsService;
+import com.starrtc.demo.demo.superroom.SuperRoomListActivity;
 import com.starrtc.demo.demo.test.LoopTestActivity;
 import com.starrtc.demo.demo.thirdstream.RtspTestListActivity;
 import com.starrtc.demo.utils.AEvent;
@@ -74,6 +76,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_about).setOnClickListener(this);
         findViewById(R.id.btn_logout).setOnClickListener(this);
         findViewById(R.id.btn_uploadlogs).setOnClickListener(this);
+        findViewById(R.id.btn_test_superroom).setOnClickListener(this);
 
 
     }
@@ -132,6 +135,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_test_rtsp:
                 startActivity(new Intent(this,RtspTestListActivity.class));
+                break;
+            case R.id.btn_test_superroom:
+                startActivity(new Intent(this, AudioLiveListActivity.class));
                 break;
             case R.id.btn_test_p2p:
                 startActivity(new Intent(this,VoipP2PDemoActivity.class));

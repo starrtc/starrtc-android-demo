@@ -26,20 +26,11 @@ public class ChatroomCreateActivity extends BaseActivity {
                 finish();
             }
         });
-        findViewById(R.id.switch_type).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.switch_type).setSelected(!findViewById(R.id.switch_type).isSelected());
-            }
-        });
         findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String inputId = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-                XHConstants.XHChatroomType type =
-                        findViewById(R.id.switch_type).isSelected()?
-                                XHConstants.XHChatroomType.XHChatroomTypePublic:
-                                XHConstants.XHChatroomType.XHChatroomTypeLogin;
+                XHConstants.XHChatroomType type = XHConstants.XHChatroomType.XHChatroomTypePublic;
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(ChatroomCreateActivity.this,"id不能为空");
                 }else{

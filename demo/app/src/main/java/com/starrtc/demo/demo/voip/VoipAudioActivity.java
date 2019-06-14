@@ -52,7 +52,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         starRTCAudioManager = StarRTCAudioManager.create(this.getApplicationContext());
         starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
             @Override
-            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set availableAudioDevices) {
                 MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
             }
         });

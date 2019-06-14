@@ -1,5 +1,6 @@
 package com.starrtc.demo.demo.voip;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -56,6 +58,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private StarRTCAudioManager starRTCAudioManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +66,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         starRTCAudioManager = StarRTCAudioManager.create(this.getApplicationContext());
         starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
             @Override
-            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set availableAudioDevices) {
                 MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
             }
         });
@@ -107,6 +110,11 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
         findViewById(R.id.screen_btn).setOnClickListener(this);
+
+        findViewById(R.id.mic_btn).setSelected(true);
+        findViewById(R.id.mic_btn).setOnClickListener(this);
+        findViewById(R.id.camera_btn).setSelected(true);
+        findViewById(R.id.camera_btn).setOnClickListener(this);
 
         if(action.equals(CALLING)){
             showCallingView();
@@ -339,6 +347,24 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     }
                 }else{
                     MLOC.showMsg(this,"系统版本过低，无法使用录屏功能");
+                }
+                break;
+            case R.id.camera_btn:
+                if(findViewById(R.id.camera_btn).isSelected()){
+                    findViewById(R.id.camera_btn).setSelected(false);
+                    voipManager.setVideoEnable(false);
+                }else{
+                    findViewById(R.id.camera_btn).setSelected(true);
+                    voipManager.setVideoEnable(true);
+                }
+                break;
+            case R.id.mic_btn:
+                if(findViewById(R.id.mic_btn).isSelected()){
+                    findViewById(R.id.mic_btn).setSelected(false);
+                    voipManager.setAudioEnable(false);
+                }else{
+                    findViewById(R.id.mic_btn).setSelected(true);
+                    voipManager.setAudioEnable(true);
                 }
                 break;
         }

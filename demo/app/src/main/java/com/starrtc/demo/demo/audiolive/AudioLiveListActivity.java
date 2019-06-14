@@ -17,12 +17,19 @@ import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
 import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
+import com.starrtc.starrtcsdk.api.XHClient;
+import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -83,18 +90,6 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-        AEvent.addListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST,this);
-        InterfaceUrls.demoRequestAudioLiveList();
-    }
-    @Override
-    public void onPause(){
-        AEvent.removeListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST,this);
-        super.onPause();
-    }
-
-    @Override
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
@@ -124,18 +119,69 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
         AudioLiveInfo clickLiveInfo = mDatas.get(position);
 
         Intent intent = new Intent(AudioLiveListActivity.this, AudioLiveActivity.class);
-        intent.putExtra(AudioLiveActivity.LIVE_NAME,clickLiveInfo.liveName);
-        intent.putExtra(AudioLiveActivity.CREATER_ID,clickLiveInfo.createrId);
-        intent.putExtra(AudioLiveActivity.LIVE_ID,clickLiveInfo.liveId);
+        intent.putExtra(AudioLiveActivity.LIVE_NAME,clickLiveInfo.name);
+        intent.putExtra(AudioLiveActivity.CREATER_ID,clickLiveInfo.creator);
+        intent.putExtra(AudioLiveActivity.LIVE_ID,clickLiveInfo.id);
         startActivity(intent);
 
     }
 
     @Override
-    public void onRefresh() {
-        InterfaceUrls.demoRequestAudioLiveList();
+    public void onResume(){
+        super.onResume();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            AEvent.addListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST,this);
+        }
+        onRefresh();
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)) {
+            AEvent.removeListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST, this);
+        }
+        super.onStop();
+    }
+    @Override
+    public void onRefresh() {
+        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
+            InterfaceUrls.demoRequestAudioLiveList();
+        }else{
+            queryAllList();
+        }
+    }
+    private void queryAllList(){
+        XHClient.getInstance().getLiveManager().queryList("",MLOC.CHATROOM_LIST_TYPE_AUDIO_LIVE_ALL,new IXHResultCallback() {
+            @Override
+            public void success(final Object data) {
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                try {
+                    JSONArray array = (JSONArray) data;
+                    for(int i = array.length()-1;i>=0;i--){
+                        AudioLiveInfo info = new AudioLiveInfo();
+                        JSONObject obj = array.getJSONObject(i);
+                        info.creator = obj.getString("creator");
+                        info.id = obj.getString("id");
+                        info.name = obj.getString("name");
+                        mDatas.add(info);
+                    }
+                    myListAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("VideoMettingListActivity",errMsg);
+                refreshLayout.setRefreshing(false);
+                mDatas.clear();
+                myListAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     class MyListAdapter extends BaseAdapter{
         @Override
@@ -169,11 +215,16 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
             }else{
                 viewIconImg = (ViewHolder)convertView.getTag();
             }
-            viewIconImg.vRoomName.setText(mDatas.get(position).liveName);
-            viewIconImg.vCreaterId.setText(mDatas.get(position).createrId);
-            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(AudioLiveListActivity.this,mDatas.get(position).liveName));
+            viewIconImg.vRoomName.setText(mDatas.get(position).name);
+            viewIconImg.vCreaterId.setText(mDatas.get(position).creator);
+            viewIconImg.vHeadBg.setBackgroundColor(ColorUtils.getColor(AudioLiveListActivity.this,mDatas.get(position).name));
             viewIconImg.vHeadCover.setCoverColor(Color.parseColor("#FFFFFF"));
-            viewIconImg.vLiveState.setVisibility(mDatas.get(position).isLiveOn.equals("1")?View.VISIBLE:View.INVISIBLE);
+            if(mDatas.get(position).isLiveOn!=null){
+                viewIconImg.vLiveState.setVisibility(mDatas.get(position).isLiveOn.equals("1")?View.VISIBLE:View.INVISIBLE);
+            }else{
+                viewIconImg.vLiveState.setVisibility(View.INVISIBLE);
+            }
+
             int cint = DensityUtils.dip2px(AudioLiveListActivity.this,28);
             viewIconImg.vHeadCover.setRadians(cint, cint, cint, cint,0);
             viewIconImg.vHeadImage.setImageResource(R.drawable.icon_main_mic);

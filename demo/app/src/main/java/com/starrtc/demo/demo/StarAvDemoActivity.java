@@ -12,6 +12,7 @@ import com.starrtc.demo.demo.audiolive.AudioLiveListActivity;
 import com.starrtc.demo.demo.im.IMDemoActivity;
 import com.starrtc.demo.demo.miniclass.MiniClassListActivity;
 import com.starrtc.demo.demo.setting.SettingActivity;
+import com.starrtc.demo.demo.superroom.SuperRoomListActivity;
 import com.starrtc.demo.demo.videolive.VideoLiveListActivity;
 import com.starrtc.demo.demo.videomeeting.VideoMeetingListActivity;
 import com.starrtc.demo.demo.voip.VoipListActivity;
@@ -95,7 +96,7 @@ public class StarAvDemoActivity extends BaseActivity implements View.OnClickList
                 startActivity(intent8);
                 break;
             case R.id.btn_main_audio:
-                Intent intent9= new Intent(this, AudioLiveListActivity.class);
+                Intent intent9= new Intent(this, SuperRoomListActivity.class);
                 startActivity(intent9);
                 break;
         }

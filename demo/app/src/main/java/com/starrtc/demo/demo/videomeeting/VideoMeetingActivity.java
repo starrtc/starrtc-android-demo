@@ -82,7 +82,7 @@ public class VideoMeetingActivity extends BaseActivity{
         starRTCAudioManager = StarRTCAudioManager.create(getApplicationContext());
         starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
             @Override
-            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set<StarRTCAudioManager.AudioDevice> availableAudioDevices) {
+            public void onAudioDeviceChanged(StarRTCAudioManager.AudioDevice selectedAudioDevice, Set availableAudioDevices) {
 
             }
         });
