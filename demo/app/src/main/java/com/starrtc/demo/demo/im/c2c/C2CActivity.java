@@ -92,10 +92,12 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
         XHIMMessage message = XHClient.getInstance().getChatManager().sendMessage(msg, mTargetId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
+                MLOC.d("IM_C2C  成功","消息序号："+data);
             }
 
             @Override
             public void failed(String errMsg) {
+                MLOC.d("IM_C2C  失败","消息序号："+errMsg);
             }
         });
 
@@ -123,8 +125,6 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
 
     private void addListener(){
         AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
-        AEvent.addListener(AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS,this);
-        AEvent.addListener(AEvent.AEVENT_C2C_SEND_MESSAGE_FAILED,this);
     }
 
     @Override
@@ -147,8 +147,6 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
     @Override
     public void onStop(){
         AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
-        AEvent.removeListener(AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS,this);
-        AEvent.removeListener(AEvent.AEVENT_C2C_SEND_MESSAGE_FAILED,this);
         super.onStop();
     }
 
@@ -177,9 +175,6 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
                     mDatas.add(messageBean);
                     mAdapter.notifyDataSetChanged();
                 }
-                break;
-            case AEvent.AEVENT_C2C_SEND_MESSAGE_SUCCESS:
-                MLOC.d("IM_C2C","消息序号："+eventObj);
                 break;
         }
     }

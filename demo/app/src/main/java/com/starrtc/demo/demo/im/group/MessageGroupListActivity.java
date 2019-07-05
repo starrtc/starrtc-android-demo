@@ -58,7 +58,6 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
             }
         });
 
-        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_LIST,this);
         findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,8 +68,6 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
         //设置刷新时动画的颜色，可以设置4个
         refreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
         refreshLayout.setOnRefreshListener(this);
-
-
 
         mDatas = new ArrayList<>();
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -95,84 +92,79 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
         });
 
+
+
     }
 
     @Override
     public void onResume(){
         super.onResume();
         MLOC.hasNewGroupMsg = false;
+        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_LIST,this);
         queryGroupList();
     }
 
     private void queryGroupList(){
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryImGroupList(MLOC.userId);
+        }else{
             XHClient.getInstance().getGroupManager().queryGroupList(new IXHResultCallback() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void success(final Object data) {
-                    MLOC.d("IM_GROUP","applyGetGroupList success:"+data);
+                    MLOC.d("IM_GROUP", "applyGetGroupList success:" + data);
                     try {
                         JSONArray datas = (JSONArray) data;
                         ArrayList<MessageGroupInfo> res = new ArrayList<MessageGroupInfo>();
-                        for (int i = 0;i<datas.length();i++){
+                        for (int i = 0; i < datas.length(); i++) {
                             MessageGroupInfo groupInfo = new MessageGroupInfo();
                             groupInfo.createrId = datas.getJSONObject(i).getString("creator");
                             groupInfo.groupId = datas.getJSONObject(i).getString("groupId");
                             groupInfo.groupName = datas.getJSONObject(i).getString("groupName");
                             res.add(groupInfo);
                         }
-                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,true,res);
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST, true, res);
                         return;
                     } catch (JSONException e) {
-                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,"数据解析失败");
+                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST, false, "数据解析失败");
                         e.printStackTrace();
                     }
                 }
-
                 @Override
                 public void failed(String errMsg) {
                     AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_LIST,false,errMsg);
                     MLOC.d("IM_GROUP","applyGetGroupList failed:"+errMsg);
                 }
             });
-        }else{
-            InterfaceUrls.demoRequestGroupList(MLOC.userId);
         }
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-
     }
 
     @Override
     public void onRestart(){
         super.onRestart();
-        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_LIST,this);
     }
 
     @Override
-    public void onStop(){
+    public void onPause(){
         AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_LIST,this);
-        super.onStop();
+        super.onPause();
     }
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
-        switch (aEventID){
+        switch (aEventID) {
             case AEvent.AEVENT_GROUP_GOT_LIST:
                 mDatas.clear();
                 List<HistoryBean> historyList = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_GROUP);
-                if(success){
+                if (success) {
                     ArrayList<MessageGroupInfo> res = (ArrayList<MessageGroupInfo>) eventObj;
                     //删除已经不再的群
-                    for(int i=historyList.size()-1;i>=0;i--){
+                    for (int i = historyList.size() - 1; i >= 0; i--) {
                         HistoryBean historyBean = historyList.get(i);
                         Boolean needRemove = true;
-                        for(int j = 0;j<res.size();j++){
-                            if(historyBean.getConversationId().equals(res.get(j).groupId)){
+                        for (int j = 0; j < res.size(); j++) {
+                            if (historyBean.getConversationId().equals(res.get(j).groupId)) {
                                 historyBean.setGroupName(res.get(j).groupName);
                                 historyBean.setGroupCreaterId(res.get(j).createrId);
                                 MLOC.updateHistory(historyBean);
@@ -180,21 +172,22 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
                                 break;
                             }
                         }
-                        if(needRemove){
+                        if (needRemove) {
                             MLOC.removeHistory(historyList.remove(i));
                         }
                     }
+
                     //添加新加的群
-                    for(int i=0;i<res.size();i++){
+                    for (int i = 0; i < res.size(); i++) {
                         MessageGroupInfo groupInfo = res.get(i);
                         boolean needAdd = true;
-                        for(int j = 0;j<historyList.size();j++){
-                            if(groupInfo.groupId.equals(historyList.get(j).getConversationId())){
+                        for (int j = 0; j < historyList.size(); j++) {
+                            if (groupInfo.groupId.equals(historyList.get(j).getConversationId())) {
                                 needAdd = false;
                                 break;
                             }
                         }
-                        if(needAdd){
+                        if (needAdd) {
                             HistoryBean historyBean = new HistoryBean();
                             historyBean.setType(CoreDB.HISTORY_TYPE_GROUP);
                             historyBean.setNewMsgCount(0);
@@ -203,25 +196,19 @@ public class MessageGroupListActivity extends BaseActivity implements AdapterVie
                             historyBean.setGroupCreaterId(res.get(i).createrId);
                             historyBean.setLastMsg("");
                             historyBean.setLastTime("");
-                            MLOC.addHistory(historyBean,true);
+                            MLOC.addHistory(historyBean, true);
                             historyList.add(historyBean);
                         }
                     }
                     mDatas.addAll(historyList);
-                }else{
-                    for(int i=historyList.size()-1;i>=0;i--){
-                        MLOC.removeHistory(historyList.remove(i));
-                    }
+                    refreshLayout.setRefreshing(false);
+                    myListAdapter.notifyDataSetChanged();
+                    return;
                 }
-                refreshLayout.setRefreshing(false);
-                myListAdapter.notifyDataSetChanged();
-
-                break;
-            default:
-                onResume();
                 break;
         }
     }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         HistoryBean clickInfo = mDatas.get(position);

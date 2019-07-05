@@ -37,9 +37,7 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
-import com.starrtc.starrtcsdk.core.camera.StarCameraManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
@@ -304,24 +302,23 @@ public class VideoLiveActivity extends BaseActivity {
             public void success(Object data) {
                 liveId = (String) data;
                 starLive();
-
-                //上报到直播列表
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportLive(liveId,liveName,createrId);
-                }else{
-                    try {
-                        JSONObject info = new JSONObject();
-                        info.put("id",liveId);
-                        info.put("creator",MLOC.userId);
-                        info.put("name",liveName);
-                        String infostr = info.toString();
-                        infostr = URLEncoder.encode(infostr,"utf-8");
-                        liveManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_LIVE,liveId,infostr,null);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+//上报到直播列表
+                try {
+                    JSONObject info = new JSONObject();
+                    info.put("id",liveId);
+                    info.put("creator",MLOC.userId);
+                    info.put("name",liveName);
+                    String infostr = info.toString();
+                    infostr = URLEncoder.encode(infostr,"utf-8");
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_LIVE,liveId,infostr);
+                    }else {
+                        liveManager.saveToList(MLOC.userId, MLOC.LIST_TYPE_LIVE, liveId, infostr, null);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
             }
             @Override

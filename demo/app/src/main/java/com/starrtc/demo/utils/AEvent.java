@@ -92,12 +92,6 @@ public class AEvent {
     public static final String AEVENT_LOGOUT                    = "AEVENT_LOGOUT";
     public static final String AEVENT_RESET                     = "AEVENT_RESET";
 
-    public static final String AEVENT_MEETING_GOT_LIST          = "AEVENT_MEETING_GOT_LIST";
-    public static final String AEVENT_MINI_CLASS_GOT_LIST       = "AEVENT_MINI_CLASS_GOT_LIST";
-    public static final String AEVENT_LIVE_GOT_LIST             = "AEVENT_LIVE_GOT_LIST";
-    public static final String AEVENT_AUDIO_LIVE_GOT_LIST       = "AEVENT_AUDIO_LIVE_GOT_LIST";
-    public static final String AEVENT_SUPER_ROOM_GOT_LIST       = "AEVENT_SUPER_ROOM_GOT_LIST";
-    public static final String AEVENT_CHATROOM_GOT_LIST         = "AEVENT_CHATROOM_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_LIST            = "AEVENT_GROUP_GOT_LIST";
     public static final String AEVENT_GROUP_GOT_MEMBER_LIST     = "AEVENT_GROUP_GOT_MEMBER_LIST";
     public static final String AEVENT_GOT_ONLINE_USER_LIST      = "AEVENT_GOT_ONLINE_USER_LIST";
@@ -165,8 +159,6 @@ public class AEvent {
     public static final String AEVENT_CHATROOM_GET_ONLINE_NUMBER="AEVENT_CHATROOM_GET_ONLINE_NUMBER";
 
     public static final String AEVENT_C2C_REV_MSG               ="AEVENT_C2C_REV_MSG";
-    public static final String AEVENT_C2C_SEND_MESSAGE_SUCCESS  ="AEVENT_C2C_SEND_MESSAGE_SUCCESS";
-    public static final String AEVENT_C2C_SEND_MESSAGE_FAILED   ="AEVENT_C2C_SEND_MESSAGE_FAILED";
     public static final String AEVENT_GROUP_REV_MSG             ="AEVENT_GROUP_REV_MSG";
 
     public static final String AEVENT_USER_KICKED               ="AEVENT_USER_KICKED";
@@ -174,8 +166,9 @@ public class AEvent {
     public static final String AEVENT_USER_OFFLINE              ="AEVENT_USER_OFFLINE";
 
     public static final String AEVENT_RTSP_FORWARD              ="AEVENT_RTSP_FORWARD";
-    public static final String AEVENT_RTSP_GOT_LIST             ="AEVENT_RTSP_GOT_LIST";
     public static final String AEVENT_RTSP_STOP                 ="AEVENT_RTSP_STOP";
     public static final String AEVENT_RTSP_RESUME               ="AEVENT_RTSP_RESUME";
     public static final String AEVENT_RTSP_DELETE               ="AEVENT_RTSP_DELETE";
+
+    public static final String AEVENT_GOT_LIST                  ="AEVENT_GOT_LIST";
 }

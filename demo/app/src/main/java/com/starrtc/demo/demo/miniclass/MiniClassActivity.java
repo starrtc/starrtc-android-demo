@@ -31,7 +31,6 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHLiveManager;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
@@ -380,24 +379,23 @@ public class MiniClassActivity extends BaseActivity{
             @Override
             public void success(Object data) {
                 classId = (String) data;
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportMiniClass(classId, className, creatorId);
-                }else{
-                    try {
-                        JSONObject info = new JSONObject();
-                        info.put("id",classId);
-                        info.put("creator",MLOC.userId);
-                        info.put("name",className);
-                        String infostr = info.toString();
-                        infostr = URLEncoder.encode(infostr,"utf-8");
-                        classManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_CLASS,classId,infostr,null);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                try {
+                    JSONObject info = new JSONObject();
+                    info.put("id",classId);
+                    info.put("creator",MLOC.userId);
+                    info.put("name",className);
+                    String infostr = info.toString();
+                    infostr = URLEncoder.encode(infostr,"utf-8");
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_CLASS,classId,infostr);
+                    }else{
+                        classManager.saveToList(MLOC.userId,MLOC.LIST_TYPE_CLASS,classId,infostr,null);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-
                 startClass();
 
             }

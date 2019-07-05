@@ -30,7 +30,6 @@ import java.util.Set;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
-import com.starrtc.demo.demo.im.group.MessageGroupSettingActivity;
 import com.starrtc.demo.listener.XHMeetingManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
@@ -42,7 +41,6 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHMeetingItem;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
@@ -222,23 +220,22 @@ public class VideoMeetingActivity extends BaseActivity{
             @Override
             public void success(Object data) {
                 meetingId = (String) data;
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportMeeting(meetingId,meetingName,createrId);
-                }else{
-                    try {
-                        JSONObject info = new JSONObject();
-                        info.put("id",meetingId);
-                        info.put("creator",MLOC.userId);
-                        info.put("name",meetingName);
-                        String infostr = info.toString();
-                        infostr = URLEncoder.encode(infostr,"utf-8");
-                        meetingManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_MEETING,meetingId,infostr,null);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                try {
+                    JSONObject info = new JSONObject();
+                    info.put("id",meetingId);
+                    info.put("creator",MLOC.userId);
+                    info.put("name",meetingName);
+                    String infostr = info.toString();
+                    infostr = URLEncoder.encode(infostr,"utf-8");
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_MEETING,meetingId,infostr);
+                    }else{
+                        meetingManager.saveToList(MLOC.userId,MLOC.LIST_TYPE_MEETING,meetingId,infostr,null);
                     }
-
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
                 joinMeeting();
             }

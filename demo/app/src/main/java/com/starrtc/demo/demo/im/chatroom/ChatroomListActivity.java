@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import com.starrtc.demo.R;
@@ -28,7 +30,6 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +61,7 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
             }
         });
 
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
 
         findViewById(R.id.create_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,53 +103,70 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     @Override
     public void onRestart(){
         super.onRestart();
-        AEvent.addListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestChatroomList();
-        }else{
-           queryAllList();
-        }
+        queryAllList();
     }
 
     private void queryAllList(){
-        XHClient.getInstance().getChatroomManager().queryList("",""+MLOC.CHATROOM_LIST_TYPE_CHATROOM,new IXHResultCallback() {
-            @Override
-            public void success(final Object data) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                try {
-                    JSONArray array = (JSONArray) data;
-                    for(int i = array.length()-1;i>=0;i--){
-                        ChatroomInfo info = new ChatroomInfo();
-                        JSONObject obj = array.getJSONObject(i);
-                        info.createrId = obj.getString("creator");
-                        info.roomId = obj.getString("id");
-                        info.roomName = obj.getString("name");
-                        mDatas.add(info);
-                    }
-                    myListAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryList(""+MLOC.LIST_TYPE_CHATROOM);
+        }else{
+            XHClient.getInstance().getChatroomManager().queryList("",""+MLOC.LIST_TYPE_CHATROOM,new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    String[] res = (String[]) data;
+                    JSONArray array = new JSONArray();
+                    for (int i=0;i<res.length;i++){
+                        String info = res[i];
+                        try {
+                            info = URLDecoder.decode(info,"utf-8");
+                            JSONObject jsonObject = new JSONObject(info);
+                            array.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
 
-            @Override
-            public void failed(String errMsg) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
+                    }
+
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    try {
+//                    JSONArray array = (JSONArray) data;
+                        for(int i = array.length()-1;i>=0;i--){
+                            ChatroomInfo info = new ChatroomInfo();
+                            JSONObject obj = array.getJSONObject(i);
+                            info.createrId = obj.getString("creator");
+                            info.roomId = obj.getString("id");
+                            info.roomName = obj.getString("name");
+                            mDatas.add(info);
+                        }
+                        myListAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void failed(String errMsg) {
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    myListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+
     }
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_CHATROOM_GOT_LIST,this);
+        AEvent.removeListener(AEvent.AEVENT_GOT_LIST,this);
         super.onStop();
     }
 
@@ -156,12 +174,28 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_CHATROOM_GOT_LIST:
+            case AEvent.AEVENT_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
+
                 if(success){
-                    ArrayList<ChatroomInfo> res = (ArrayList<ChatroomInfo>) eventObj;
-                    mDatas.addAll(res);
+                    JSONArray datas = (JSONArray) eventObj;
+                    for(int i = 0;i<datas.length();i++){
+                        try {
+                            JSONObject json = datas.getJSONObject(i);
+                            String tmp = json.getString("data");
+                            JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp,"utf-8"));
+                            ChatroomInfo item = new ChatroomInfo();
+                            item.createrId = tmpObj.getString("creator");
+                            item.roomId = tmpObj.getString("id");
+                            item.roomName = tmpObj.getString("name");
+                            mDatas.add(item);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     myListAdapter.notifyDataSetChanged();
                 }
                 break;
@@ -180,11 +214,7 @@ public class ChatroomListActivity extends BaseActivity implements AdapterView.On
 
     @Override
     public void onRefresh() {
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestChatroomList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
 
     class MyListAdapter extends BaseAdapter{

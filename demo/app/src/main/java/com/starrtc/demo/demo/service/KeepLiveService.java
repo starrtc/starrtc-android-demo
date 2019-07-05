@@ -61,55 +61,10 @@ public class KeepLiveService extends Service implements IEventListener {
 
     private void initSDK(){
         MLOC.init(this);
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            init();
-        }else{
-            initFree();
-        }
+        initFree();
     }
 
     private boolean isLogin = false;
-    private final boolean checkNetState = false;
-    //正常SDK登录
-    private void init(){
-        MLOC.d("KeepLiveService","initFree");
-
-        isLogin = XHClient.getInstance().getIsOnline();
-        if(!isLogin){
-            if(MLOC.userId.equals("")){
-                MLOC.userId = ""+(new Random().nextInt(900000)+100000);
-                MLOC.saveUserId(MLOC.userId);
-            }
-            addListener();
-            //初始化 完整版
-            XHCustomConfig customConfig =  XHCustomConfig.getInstance();
-            customConfig.setAppId(MLOC.agentId);
-            customConfig.setLoginServerUrl(MLOC.STAR_LOGIN_URL);
-            customConfig.setChatroomScheduleUrl(MLOC.CHAT_ROOM_SCHEDULE_URL);
-            customConfig.setLiveSrcScheduleUrl(MLOC.LIVE_SRC_SCHEDULE_URL);
-            customConfig.setLiveVdnScheduleUrl(MLOC.LIVE_VDN_SCHEDULE_URL);
-            customConfig.setImScheduleUrl(MLOC.IM_SCHEDULE_URL);
-            customConfig.setVoipServerUrl(MLOC.VOIP_SCHEDULE_URL);
-            customConfig.initSDK(this, MLOC.userId, new IXHErrorCallback() {
-                @Override
-                public void error(final String errMsg, Object data) {
-                    MLOC.showMsg(KeepLiveService.this,errMsg);
-                }
-            },new Handler());
-//            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
-            customConfig.setDefConfigOpenGLESEnable(false);
-//            customConfig.setDefConfigCamera2Enable(false);
-            XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
-            XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
-            XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
-            XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
-            XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHVideoSourceManager.getInstance().setVideoSourceCallback(new DemoVideoSourceCallback());
-            checkNetworkConnectAndLogin();
-        }
-
-    }
-
     //开放版SDK初始化
     private void initFree(){
         MLOC.d("KeepLiveService","initFree");
@@ -120,12 +75,12 @@ public class KeepLiveService extends Service implements IEventListener {
                 MLOC.saveUserId(MLOC.userId);
             }
             addListener();
-            //初始化 开放版 无调度 直接指定Server地址
+
             XHCustomConfig customConfig =  XHCustomConfig.getInstance();
             customConfig.setChatroomServerUrl(MLOC.CHATROOM_SERVER_URL);
             customConfig.setLiveSrcServerUrl(MLOC.LIVE_SRC_SERVER_URL);
             customConfig.setLiveVdnServerUrl(MLOC.LIVE_VDN_SERVER_URL);
-            customConfig.setImServereUrl(MLOC.IM_SERVER_URL);
+            customConfig.setImServerUrl(MLOC.IM_SERVER_URL);
             customConfig.setVoipServerUrl(MLOC.VOIP_SERVER_URL);
             customConfig.initSDKForFree(this, MLOC.userId, new IXHErrorCallback() {
                 @Override
@@ -135,7 +90,8 @@ public class KeepLiveService extends Service implements IEventListener {
             },new Handler());
 //        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
-            customConfig.setDefConfigCamera2Enable(false);
+//            customConfig.setDefConfigCamera2Enable(false);
+//            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_360BW_640BH_180SW_320SH);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
@@ -156,47 +112,6 @@ public class KeepLiveService extends Service implements IEventListener {
             });
         }
 
-    }
-    private void checkNetworkConnectAndLogin(){
-        if(isConnectInternet(this)){
-            InterfaceUrls.demoLogin(MLOC.userId);
-//                loginPublicTest();
-        }else{
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkNetworkConnectAndLogin();
-                }
-            },3000);
-        }
-    }
-
-    private void loginPublicTest(){
-        XHClient.getInstance().getLoginManager().loginPublic( new IXHResultCallback() {
-            @Override
-            public void success(Object data) {
-                isLogin = true;
-            }
-
-            @Override
-            public void failed(final String errMsg) {
-                MLOC.d("",errMsg);
-                MLOC.showMsg(KeepLiveService.this,errMsg);
-            }
-        });
-    }
-
-    public boolean isConnectInternet(Context mContext) {
-        if(!checkNetState){
-            return true;
-        }else{
-            ConnectivityManager conManager = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = conManager.getActiveNetworkInfo();
-            if (networkInfo != null) {
-                return networkInfo.isAvailable();
-            }
-            return false;
-        }
     }
 
     @Override
@@ -244,24 +159,6 @@ public class KeepLiveService extends Service implements IEventListener {
             case AEvent.AEVENT_GROUP_REV_MSG:
                 MLOC.hasNewGroupMsg = true;
                 break;
-            case AEvent.AEVENT_LOGIN:
-                if(success){
-                    MLOC.d("KeepLiveService", (String) eventObj);
-                    XHClient.getInstance().getLoginManager().login(MLOC.authKey, new IXHResultCallback() {
-                        @Override
-                        public void success(Object data) {
-                            isLogin = true;
-                        }
-                        @Override
-                        public void failed(final String errMsg) {
-                            MLOC.d("KeepLiveService",errMsg);
-                            MLOC.showMsg(KeepLiveService.this,errMsg);
-                        }
-                    });
-                }else{
-                    MLOC.d("KeepLiveService", (String) eventObj);
-                }
-                break;
             case AEvent.AEVENT_LOGOUT:
                 removeListener();
                 this.stopSelf();
@@ -272,7 +169,6 @@ public class KeepLiveService extends Service implements IEventListener {
 
 
     private void addListener(){
-        AEvent.addListener(AEvent.AEVENT_LOGIN,this);
         AEvent.addListener(AEvent.AEVENT_LOGOUT,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
         AEvent.addListener(AEvent.AEVENT_VOIP_REV_CALLING_AUDIO,this);
@@ -281,7 +177,6 @@ public class KeepLiveService extends Service implements IEventListener {
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
     }
     private void removeListener(){
-        AEvent.removeListener(AEvent.AEVENT_LOGIN,this);
         AEvent.removeListener(AEvent.AEVENT_LOGOUT,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING_AUDIO,this);

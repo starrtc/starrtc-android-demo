@@ -69,6 +69,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.opensl_switch).setOnClickListener(this);
         findViewById(R.id.dy_bt_fp_switch).setOnClickListener(this);
         findViewById(R.id.voip_p2p_switch).setOnClickListener(this);
+        findViewById(R.id.rnn_switch).setOnClickListener(this);
         findViewById(R.id.audio_process_switch).setOnClickListener(this);
         findViewById(R.id.audio_process_qulity_switch).setOnClickListener(this);
         findViewById(R.id.log_switch).setOnClickListener(this);
@@ -77,6 +78,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_logout).setOnClickListener(this);
         findViewById(R.id.btn_uploadlogs).setOnClickListener(this);
         findViewById(R.id.btn_test_superroom).setOnClickListener(this);
+        findViewById(R.id.aec_switch).setOnClickListener(this);
 
 
     }
@@ -95,6 +97,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.opensl_switch).setSelected(XHCustomConfig.getInstance().getOpenSLESEnable());
         findViewById(R.id.dy_bt_fp_switch).setSelected(XHCustomConfig.getInstance().getDynamicBitrateAndFpsEnable());
         findViewById(R.id.voip_p2p_switch).setSelected(XHCustomConfig.getInstance().getVoipP2PEnable());
+        findViewById(R.id.rnn_switch).setSelected(XHCustomConfig.getInstance().getRnnEnable());
         findViewById(R.id.audio_process_switch).setSelected(XHCustomConfig.getInstance().getAudioProcessEnable());
         findViewById(R.id.audio_process_qulity_switch).setSelected(XHCustomConfig.getInstance().getAECConfigQulity() ==
                 XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
@@ -106,7 +109,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         ((TextView)findViewById(R.id.audio_codec_type_text)).setText(XHCustomConfig.getInstance().getAudioCodecTypeName());
         ((TextView)findViewById(R.id.audio_source)).setText(XHCustomConfig.getInstance().getAudioSourceName());
         ((TextView)findViewById(R.id.audio_stream_type)).setText(XHCustomConfig.getInstance().getAudioStreamTypeName());
-
+        findViewById(R.id.aec_switch).setSelected(MLOC.AEventCenterEnable);
 
     }
     @Override
@@ -313,8 +316,12 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 findViewById(R.id.dy_bt_fp_switch).setSelected(XHCustomConfig.getInstance().getDynamicBitrateAndFpsEnable());
                 break;
             case R.id.voip_p2p_switch:
-                XHCustomConfig.getInstance().setDefConfigVoipP2PEnable(XHCustomConfig.getInstance().getVoipP2PEnable() ?false:true);
+                XHCustomConfig.getInstance().setDefConfigVoipP2PEnable(XHCustomConfig.getInstance().getVoipP2PEnable()?false:true);
                 findViewById(R.id.voip_p2p_switch).setSelected(XHCustomConfig.getInstance().getVoipP2PEnable());
+                break;
+            case R.id.rnn_switch:
+                XHCustomConfig.getInstance().setDefConfigRnnEnable(XHCustomConfig.getInstance().getRnnEnable()?false:true);
+                findViewById(R.id.rnn_switch).setSelected(XHCustomConfig.getInstance().getRnnEnable());
                 break;
             case R.id.audio_process_switch:
                 XHCustomConfig.getInstance().setDefConfigAudioProcessEnable(XHCustomConfig.getInstance().getAudioProcessEnable() ?false:true);
@@ -328,6 +335,17 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                                 :XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY);
                 findViewById(R.id.audio_process_qulity_switch).setSelected(XHCustomConfig.getInstance().getAECConfigQulity() ==
                         XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
+                break;
+            case R.id.aec_switch:
+                if(MLOC.AEventCenterEnable ){
+                    MLOC.AEventCenterEnable = false;
+                    findViewById(R.id.aec_switch).setSelected(false);
+                    MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","0");
+                }else{
+                    MLOC.AEventCenterEnable = true;
+                    findViewById(R.id.aec_switch).setSelected(true);
+                    MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","1");
+                }
                 break;
         }
     }

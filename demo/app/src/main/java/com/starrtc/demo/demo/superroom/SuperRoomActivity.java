@@ -29,7 +29,6 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHSuperRoomItem;
 import com.starrtc.starrtcsdk.api.XHSuperRoomManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.apiInterface.IXHSuperRoomManagerListener;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
@@ -271,22 +270,22 @@ public class SuperRoomActivity extends BaseActivity {
             public void success(Object data) {
                 liveId = (String) data;
                 MLOC.showMsg(SuperRoomActivity.this,"创建成功");
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportSuperRoom(liveId,liveName,createrId);
-                }else{
-                    try {
-                        JSONObject info = new JSONObject();
-                        info.put("id",liveId);
-                        info.put("creator",MLOC.userId);
-                        info.put("name",liveName);
-                        String infostr = info.toString();
-                        infostr = URLEncoder.encode(infostr,"utf-8");
-                        superRoomManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_SUPER_ROOM,liveId,infostr,null);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                try {
+                    JSONObject info = new JSONObject();
+                    info.put("id",liveId);
+                    info.put("creator",MLOC.userId);
+                    info.put("name",liveName);
+                    String infostr = info.toString();
+                    infostr = URLEncoder.encode(infostr,"utf-8");
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_SUPER_ROOM,liveId,infostr);
+                    }else{
+                        superRoomManager.saveToList(MLOC.userId,MLOC.LIST_TYPE_SUPER_ROOM,liveId,infostr,null);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
                 joinLive();
             }

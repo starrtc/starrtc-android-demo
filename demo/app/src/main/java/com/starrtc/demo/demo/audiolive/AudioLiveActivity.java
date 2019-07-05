@@ -305,9 +305,6 @@ public class AudioLiveActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 liveId = (String) data;
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportAudioLive(liveId,liveName,createrId);
-                }else{
                     try {
                         JSONObject info = new JSONObject();
                         info.put("id",liveId);
@@ -315,13 +312,16 @@ public class AudioLiveActivity extends BaseActivity {
                         info.put("name",liveName);
                         String infostr = info.toString();
                         infostr = URLEncoder.encode(infostr,"utf-8");
-                        liveManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_AUDIO_LIVE,liveId,infostr,null);
+                        if(MLOC.AEventCenterEnable){
+                            InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_AUDIO_LIVE,liveId,infostr);
+                        }else {
+                            liveManager.saveToList(MLOC.userId, MLOC.LIST_TYPE_AUDIO_LIVE, liveId, infostr, null);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                }
                 starLive();
 
             }

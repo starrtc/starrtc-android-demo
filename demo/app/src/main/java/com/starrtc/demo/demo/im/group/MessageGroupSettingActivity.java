@@ -62,7 +62,6 @@ public class MessageGroupSettingActivity extends BaseActivity{
 
         groupManager = XHClient.getInstance().getGroupManager();
 
-        addListener();
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +133,9 @@ public class MessageGroupSettingActivity extends BaseActivity{
     }
 
     private void queryGroupMemberList(){
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryImGroupInfo(MLOC.userId,mGroupId);
+        }else{
             groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
@@ -149,10 +150,22 @@ public class MessageGroupSettingActivity extends BaseActivity{
                             String uid = datas.getJSONObject(i).getString("userId");
                             res.add(uid);
                         }
-                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,true,res);
+
+                        mMembersDatas.clear();
+                        for(int i=0;i<res.size();i++){
+                            Map<String,String> user = new HashMap<>();
+                            user.put("userId",res.get(i));
+                            mMembersDatas.add(user);
+                        }
+                        if(mGroupCreaterId.equals(MLOC.userId)){
+                            Map<String,String> user = new HashMap<>();
+                            user.put("userId","btnAdd");
+                            mMembersDatas.add(user);
+                        }
+                        myAdapter.notifyDataSetChanged();
+
                         return;
                     } catch (JSONException e) {
-                        AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
                         e.printStackTrace();
                     }
                 }
@@ -161,50 +174,50 @@ public class MessageGroupSettingActivity extends BaseActivity{
                     MLOC.d("IM_GROUP","applyGetUserList failed:"+errMsg);
                 }
             });
-        }else{
-            InterfaceUrls.demoRequestGroupMembers(mGroupId);
         }
     }
 
-    private void addListener(){
+    @Override
+    public  void onResume(){
+        super.onResume();
         AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
     }
 
     @Override
-    public void onRestart(){
-        super.onRestart();
-        addListener();
-    }
-
-    @Override
-    public void onStop(){
+    public  void onPause(){
+        super.onPause();
         AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
-        super.onStop();
     }
 
     @Override
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
-        MLOC.d("IM_GROUP",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
-                mMembersDatas.clear();
-                if(success){
-                    List<String> rec = (List) eventObj;
-                    for(int i=0;i<rec.size();i++){
+                try {
+                    String[] userIdList = ((JSONObject) eventObj).getString("userIdList").split(",");
+                    int ignore = ((JSONObject) eventObj).getInt("isIgnore");
+                    findViewById(R.id.switch_btn).setSelected(ignore==1?true:false);
+
+
+                    mMembersDatas.clear();
+                    for(int i=0;i<userIdList.length;i++){
                         Map<String,String> user = new HashMap<>();
-                        user.put("userId",rec.get(i));
+                        user.put("userId",userIdList[i]);
                         mMembersDatas.add(user);
                     }
+                    if(mGroupCreaterId.equals(MLOC.userId)){
+                        Map<String,String> user = new HashMap<>();
+                        user.put("userId","btnAdd");
+                        mMembersDatas.add(user);
+                    }
+                    myAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                if(mGroupCreaterId.equals(MLOC.userId)){
-                    Map<String,String> user = new HashMap<>();
-                    user.put("userId","btnAdd");
-                    mMembersDatas.add(user);
-                }
-                myAdapter.notifyDataSetChanged();
                 break;
         }
+
     }
     private void addUserToGroup(String addUserId){
         ArrayList<String> idList = new ArrayList<>();

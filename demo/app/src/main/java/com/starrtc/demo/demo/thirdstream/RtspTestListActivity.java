@@ -34,6 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 public class RtspTestListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -95,20 +97,16 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
     @Override
     public void onResume(){
         super.onResume();
-        AEvent.addListener(AEvent.AEVENT_RTSP_GOT_LIST,this);
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
         AEvent.addListener(AEvent.AEVENT_RTSP_FORWARD,this);
         AEvent.addListener(AEvent.AEVENT_RTSP_STOP,this);
         AEvent.addListener(AEvent.AEVENT_RTSP_RESUME,this);
         AEvent.addListener(AEvent.AEVENT_RTSP_DELETE,this);
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestPushList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
     @Override
     public void onPause(){
-        AEvent.removeListener(AEvent.AEVENT_RTSP_GOT_LIST,this);
+        AEvent.removeListener(AEvent.AEVENT_GOT_LIST,this);
         AEvent.removeListener(AEvent.AEVENT_RTSP_FORWARD,this);
         AEvent.removeListener(AEvent.AEVENT_RTSP_STOP,this);
         AEvent.removeListener(AEvent.AEVENT_RTSP_RESUME,this);
@@ -116,61 +114,87 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
         super.onPause();
     }
     private void queryAllList(){
-        XHClient.getInstance().getChatroomManager().queryList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_PUSH_ALL,new IXHResultCallback() {
-            @Override
-            public void success(final Object data) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                try {
-                    JSONArray array = (JSONArray) data;
-                    for(int i = array.length()-1;i>=0;i--){
-                        RtspInfo info = new RtspInfo();
-                        JSONObject obj = array.getJSONObject(i);
-                        info.creator = obj.getString("creator");
-                        info.id = obj.getString("id");
-                        info.name = obj.getString("name");
-                        info.rtsp = obj.getString("rtsp");
-                        if(obj.has("type")){
-                            info.type = obj.getInt("type");
-                        }else{
-                            info.type = MLOC.CHATROOM_LIST_TYPE_CHATROOM;
+
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryList(MLOC.LIST_TYPE_PUSH_ALL);
+        }else{
+            XHClient.getInstance().getChatroomManager().queryList(MLOC.userId,MLOC.LIST_TYPE_PUSH_ALL,new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    String[] res = (String[]) data;
+                    JSONArray array = new JSONArray();
+                    for (int i=0;i<res.length;i++){
+                        String info = res[i];
+                        try {
+                            info = URLDecoder.decode(info,"utf-8");
+                            JSONObject jsonObject = new JSONObject(info);
+                            array.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
-                        mDatas.add(info);
                     }
-                    myListAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    try {
+//                    JSONArray array = (JSONArray) data;
+                        for(int i = array.length()-1;i>=0;i--){
+                            RtspInfo info = new RtspInfo();
+                            JSONObject obj = array.getJSONObject(i);
+                            info.creator = obj.getString("creator");
+                            info.id = obj.getString("id");
+                            info.name = obj.getString("name");
+                            info.rtsp = obj.getString("rtsp");
+                            if(obj.has("type")){
+                                info.type = obj.getInt("type");
+                            }else{
+                                info.type = MLOC.LIST_TYPE_CHATROOM;
+                            }
+                            mDatas.add(info);
+                        }
+                        myListAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void failed(String errMsg) {
-                MLOC.d("VideoMettingListActivity",errMsg);
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
-
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("VideoMettingListActivity",errMsg);
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    myListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
     @Override
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_RTSP_GOT_LIST:
+            case AEvent.AEVENT_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
                 if(success){
-                    ArrayList<RtspInfo> res = (ArrayList<RtspInfo>) eventObj;
-                    if(res==null) return;
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("1")){
-                            mDatas.add(res.get(i));
-                        }
-                    }
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("0")){
-                            mDatas.add(res.get(i));
+                    JSONArray datas = (JSONArray) eventObj;
+                    for(int i = 0;i<datas.length();i++){
+                        try {
+                            JSONObject json = datas.getJSONObject(i);
+                            String tmp = json.getString("data");
+                            JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp,"utf-8"));
+                            RtspInfo item = new RtspInfo();
+                            item.creator = tmpObj.getString("creator");
+                            item.id = tmpObj.getString("id");
+                            item.name = tmpObj.getString("name");
+                            item.rtsp = tmpObj.getString("rtsp");
+                            item.type = tmpObj.getInt("type");
+                            mDatas.add(item);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                     }
                     myListAdapter.notifyDataSetChanged();
@@ -185,12 +209,7 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
                 }else{
                     MLOC.showMsg(RtspTestListActivity.this,"操作失败："+eventObj);
                 }
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoRequestPushList();
-                }else{
-                    queryAllList();
-                }
-
+                queryAllList();
                 break;
         }
     }
@@ -206,29 +225,18 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(i==0){
                     //停止
-                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
-                        InterfaceUrls.demoStopPushRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
-                    }else{
-                        InterfaceUrls.demoStopPushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id);
-                    }
-
+                    InterfaceUrls.demoStopPushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
                 }else if(i==1){
                     //恢复
                     if(!TextUtils.isEmpty(rtspInfo.rtsp)){
-                        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
-                            InterfaceUrls.demoResumePushRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id,rtspInfo.rtsp);
-                        }else{
-                            InterfaceUrls.demoResumePushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id,rtspInfo.rtsp);
-                        }
+                        InterfaceUrls.demoResumePushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id,rtspInfo.rtsp);
                     }
                 }else{
                     //删除
-                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
-                        InterfaceUrls.demoDeleteRtsp(MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    InterfaceUrls.demoDeleteRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoDeleteFromList(MLOC.userId,rtspInfo.type, rtspInfo.id);
                     }else{
-                        InterfaceUrls.demoDeleteRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,rtspInfo.id);
-                    }
-                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
                         XHClient.getInstance().getChatroomManager().deleteFromList(MLOC.userId,rtspInfo.type, rtspInfo.id.substring(16), new IXHResultCallback() {
                             @Override
                             public void success(Object data) {
@@ -251,11 +259,7 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
 
     @Override
     public void onRefresh() {
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestPushList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
 
 

@@ -22,19 +22,18 @@ public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
 
     ICallback icallback;
     private static int TIMEOUT = 8000;
-    private static final String CHARSET = "utf-8"; // 设置编码
+    private static final String CHARSET = "UTF-8"; // 设置编码
     private static String requestMethod = "";
 
     public static String URL = "url";
-    public static String DATA = "data";
     public static String REQUEST_METHOD_POST = "POST";
+    public static String DATA = "data";
     public static String REQUEST_METHOD_GET = "GET";
 
     public void addListener(ICallback _icallback){
         icallback = _icallback;
     }
     private final String TEXTTAG = "StarHttpUtil";
-    private String token;
 
     public StarHttpUtil(String method){
         requestMethod = method;
@@ -83,6 +82,8 @@ public class StarHttpUtil extends AsyncTask<Bundle, Object, Bundle> {
                 postConn.setRequestMethod(requestMethod);
 //                postConn.setRequestProperty("Content-Type", "application/json");
 //                postConn.setRequestProperty("Content-Length", data.length+"");
+//                postConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+//                postConn.setRequestProperty("Charset","UTF-8");
                 postConn.setDoOutput(true);
                 postConn.setDoInput(true);
                 postConn.connect();

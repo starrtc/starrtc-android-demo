@@ -20,7 +20,6 @@ import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
-import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ColorUtils;
@@ -41,14 +40,12 @@ public class VoipListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voip_list);
 
-        AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
         ((TextView)findViewById(R.id.title_text)).setText("VOIP会话列表");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
-                AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,VoipListActivity.this);
             }
         });
 
@@ -98,24 +95,11 @@ public class VoipListActivity extends BaseActivity {
         super.onResume();
         MLOC.hasNewVoipMsg = false;
         mHistoryList.clear();
-
         List<HistoryBean> list = MLOC.getHistoryList(CoreDB.HISTORY_TYPE_VOIP);
         if(list!=null&&list.size()>0){
             mHistoryList.addAll(list);
         }
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            AEvent.addListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
-            InterfaceUrls.demoRequestOnlineUsers();
-        }
         myListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            AEvent.removeListener(AEvent.AEVENT_GOT_ONLINE_USER_LIST,this);
-        }
     }
 
     @Override
@@ -151,7 +135,6 @@ public class VoipListActivity extends BaseActivity {
             }
         }
     }
-
     public class MyListAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         public MyListAdapter(){

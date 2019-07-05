@@ -42,16 +42,16 @@ public class RtspTestActivity extends BaseActivity {
                 finish();
             }
         });
-        findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.yes_btn_live).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAndPush(1);
+                createAndPush(MLOC.LIST_TYPE_LIVE_PUSH);
             }
         });
-        findViewById(R.id.yes_btn_2).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.yes_btn_meeting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAndPush(2);
+                createAndPush(MLOC.LIST_TYPE_MEETING_PUSH);
             }
         });
     }
@@ -76,41 +76,47 @@ public class RtspTestActivity extends BaseActivity {
                 try {
                     JSONObject jsonObject = new JSONObject((String) eventObj);
                     if(jsonObject.has("channelId")){
-                        if(!MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                            try {
-                                if(createType==1) {
-                                    JSONObject info = new JSONObject();
-                                    info.put("id",jsonObject.getString("channelId")+roomId);
-                                    info.put("creator",MLOC.userId);
-                                    info.put("name",name);
-                                    info.put("rtsp",rtsp);
-                                    info.put("type",MLOC.CHATROOM_LIST_TYPE_MEETING_PUSH);
-                                    String infostr = info.toString();
-                                    infostr = URLEncoder.encode(infostr,"utf-8");
-                                    chatroomManager.saveToList(MLOC.userId, MLOC.CHATROOM_LIST_TYPE_MEETING_PUSH, roomId, infostr, null);
-                                }else {
-                                    JSONObject info = new JSONObject();
-                                    info.put("id",jsonObject.getString("channelId")+roomId);
-                                    info.put("creator",MLOC.userId);
-                                    info.put("name",name);
-                                    info.put("rtsp",rtsp);
-                                    info.put("type",MLOC.CHATROOM_LIST_TYPE_LIVE_PUSH);
-                                    String infostr = info.toString();
-                                    infostr = URLEncoder.encode(infostr,"utf-8");
-                                    chatroomManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_LIVE_PUSH,roomId,infostr,null);
+                        try {
+                            if(createType==1) {
+                                JSONObject info = new JSONObject();
+                                info.put("id",jsonObject.getString("channelId")+roomId);
+                                info.put("creator",MLOC.userId);
+                                info.put("name",name);
+                                info.put("rtsp",rtsp);
+                                info.put("type",MLOC.LIST_TYPE_LIVE_PUSH);
+                                String infostr = info.toString();
+                                infostr = URLEncoder.encode(infostr,"utf-8");
+                                if(MLOC.AEventCenterEnable){
+                                    InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_LIVE_PUSH,jsonObject.getString("channelId")+roomId,infostr);
+                                }else{
+                                    chatroomManager.saveToList(MLOC.userId, MLOC.LIST_TYPE_LIVE_PUSH, roomId, infostr, null);
                                 }
-                                MLOC.d("@@@@@@@","saveTo");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (UnsupportedEncodingException e) {
-                                e.printStackTrace();
+                                MLOC.showMsg(RtspTestActivity.this,"拉流成功,请到互动直播查看");
+                            }else {
+                                JSONObject info = new JSONObject();
+                                info.put("id",jsonObject.getString("channelId")+roomId);
+                                info.put("creator",MLOC.userId);
+                                info.put("name",name);
+                                info.put("rtsp",rtsp);
+                                info.put("type",MLOC.LIST_TYPE_MEETING_PUSH);
+                                String infostr = info.toString();
+                                infostr = URLEncoder.encode(infostr,"utf-8");
+                                if(MLOC.AEventCenterEnable){
+                                    InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_MEETING_PUSH,jsonObject.getString("channelId")+roomId,infostr);
+                                }else {
+                                    chatroomManager.saveToList(MLOC.userId, MLOC.LIST_TYPE_MEETING_PUSH, roomId, infostr, null);
+                                }
+                                MLOC.showMsg(RtspTestActivity.this,"拉流成功,请到视频会议查看");
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                MLOC.showMsg(RtspTestActivity.this,"拉流成功");
                 RtspTestActivity.this.finish();
             }else{
                 MLOC.showMsg(RtspTestActivity.this,"拉流失败"+(String)eventObj);
@@ -123,7 +129,9 @@ public class RtspTestActivity extends BaseActivity {
     private void createAndPush(final int type){
         name = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
         rtsp = ((EditText)findViewById(R.id.rtsp_input)).getText().toString();
-        createType = type;
+//        rtsp = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
+//        rtsp = "rtmp://liveali.ifeng.com/live/FHZX";
+        createType = type;//1 meeting 2 live
         if(TextUtils.isEmpty(name)){
             MLOC.showMsg(RtspTestActivity.this,"名字不能为空");
         }else if(TextUtils.isEmpty(rtsp)){
@@ -131,16 +139,21 @@ public class RtspTestActivity extends BaseActivity {
         }else{
             chatroomManager = XHClient.getInstance().getChatroomManager();
             chatroomManager.addListener(new XHChatroomManagerListener());
-            chatroomManager.createChatroom(name,XHConstants.XHChatroomType.XHChatroomTypePublic, new IXHResultCallback() {
+            chatroomManager.createChatroom(name,XHConstants.XHChatroomType.XHChatroomTypePublic,new IXHResultCallback() {
                 @Override
                 public void success(final Object data) {
                     roomId = data.toString();
-                    if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
-                        InterfaceUrls.demoPushRtsp(MLOC.LIVE_PROXY_SERVER_URL,name,roomId,type,rtsp);
-                    }else{
-                        InterfaceUrls.demoPushRtsp(MLOC.LIVE_PROXY_SCHEDULE_URL,name,roomId,type,rtsp);
+                    String streamType = "";
+                    if(rtsp.indexOf("rtsp://")==0){
+                        streamType = "rtsp";
+                    }else if(rtsp.indexOf("rtmp://")==0){
+                        streamType = "rtmp";
                     }
-
+                    if(!streamType.equals("")){
+                        InterfaceUrls.demoPushStreamUrl(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,name,roomId,type,streamType,rtsp);
+                    }else{
+                        MLOC.showMsg(RtspTestActivity.this,"拉流地址不可用");
+                    }
                 }
 
                 @Override

@@ -58,7 +58,7 @@
                 android:layout_marginRight="40dp"
                 android:textColor="#131313"
                 android:textSize="14sp"
-                android:hint="填写rtsp地址..."
+                android:hint="填写rtsp或rtmp地址..."
                 android:text="rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov"
                 android:textColorHint="#ADADAD"/>
             <View
@@ -70,13 +70,13 @@
                 android:background="#ADADAD"
                 />
             <RelativeLayout
-                android:id="@+id/yes_btn_2"
+                android:id="@+id/yes_btn_live"
                 android:layout_width="291dp"
                 android:layout_height="49dp"
                 android:background="@drawable/bg_btn_orange"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="49dp">
+                android:layout_marginBottom="9dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="49dp"
@@ -87,12 +87,12 @@
                     />
             </RelativeLayout>
             <RelativeLayout
-                android:id="@+id/yes_btn"
+                android:id="@+id/yes_btn_meeting"
                 android:layout_width="291dp"
                 android:layout_height="49dp"
                 android:background="@drawable/bg_btn_orange"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="49dp">
+                android:layout_marginTop="9dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="49dp"

@@ -182,8 +182,8 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
 
 
     private void addListener(){
-        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
     }
 
     @Override
@@ -194,8 +194,8 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
         AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
         super.onStop();
     }
 
@@ -204,9 +204,6 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
     public void dispatchEvent(String aEventID, boolean success, final Object eventObj) {
         MLOC.d("IM_GROUP",aEventID+"||"+eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
-                if(!success)finish();
-                break;
             case AEvent.AEVENT_GROUP_REV_MSG:
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 if(revMsg.targetId.equals(mGroupId)){
@@ -228,11 +225,19 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
                     mAdapter.notifyDataSetChanged();
                 }
                 break;
+            case AEvent.AEVENT_GROUP_GOT_MEMBER_LIST:
+                if(!success){
+                    finish();
+                    MLOC.showMsg(MessageGroupActivity.this,"群信息获取失败");
+                }
+                break;
         }
     }
 
     private void queryGroupMemberList(){
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_CUSTOM)){
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryImGroupInfo(MLOC.userId,mGroupId);
+        }else{
             groupManager.queryGroupInfo(mGroupId, new IXHResultCallback() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
@@ -251,15 +256,14 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
                         AEvent.notifyListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,false,"数据解析失败");
                         e.printStackTrace();
                     }
-                }
+                    return;
+            }
 
                 @Override
                 public void failed(String errMsg) {
                     MLOC.d("IM_GROUP","applyGetUserList failed:"+errMsg);
                 }
             });
-        }else{
-            InterfaceUrls.demoRequestGroupMembers(mGroupId);
         }
     }
 

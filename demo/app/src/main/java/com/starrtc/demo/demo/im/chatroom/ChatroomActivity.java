@@ -38,7 +38,6 @@ import com.starrtc.starrtcsdk.api.XHChatroomManager;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 import org.json.JSONException;
@@ -103,6 +102,37 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
             createChatroom();
         }
 
+        if(mCreaterId.equals(MLOC.userId)){
+            findViewById(R.id.title_right_btn).setVisibility(View.VISIBLE);
+            ((ImageView)findViewById(R.id.title_right_icon)).setImageResource(R.drawable.icon_main_setting);
+            findViewById(R.id.title_right_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder=new AlertDialog.Builder(ChatroomActivity.this);
+                    builder.setItems(new String[]{"删除本聊天室"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            chatroomManager.deleteChatroom(mRoomId, new IXHResultCallback() {
+                                @Override
+                                public void success(Object data) {
+                                    MLOC.d("IM_CHATROOM","聊天室删除成功! "+data);
+                                    ChatroomActivity.this.finish();
+                                }
+
+                                @Override
+                                public void failed(String errMsg) {
+                                    MLOC.d("IM_CHATROOM","聊天室删除失败！"+errMsg);
+                                }
+                            });
+                        }
+                    });
+                    builder.setCancelable(true);
+                    AlertDialog dialog=builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
         ((TextView)findViewById(R.id.title_text)).setText(mRoomName);
         vEditText = (EditText) findViewById(R.id.id_input);
         mDatas = new ArrayList<>();
@@ -140,23 +170,24 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
             @Override
             public void success(final Object data) {
                 mRoomId = data.toString();
-                if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-                    InterfaceUrls.demoReportChatroom(mRoomId,mRoomName,mCreaterId);
-                }else{
-                    try {
-                        JSONObject info = new JSONObject();
-                        info.put("id",mRoomId);
-                        info.put("creator",MLOC.userId);
-                        info.put("name",mRoomName);
-                        String infostr = info.toString();
-                        infostr = URLEncoder.encode(infostr,"utf-8");
-                        chatroomManager.saveToList(MLOC.userId,MLOC.CHATROOM_LIST_TYPE_CHATROOM,mRoomId,infostr, null);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                try {
+                    JSONObject info = new JSONObject();
+                    info.put("id",mRoomId);
+                    info.put("creator",MLOC.userId);
+                    info.put("name",mRoomName);
+                    String infostr = info.toString();
+                    infostr = URLEncoder.encode(infostr,"utf-8");
+                    if(MLOC.AEventCenterEnable){
+                        InterfaceUrls.demoSaveToList(MLOC.userId,MLOC.LIST_TYPE_CHATROOM,mRoomId,infostr);
+                    }else{
+                        chatroomManager.saveToList(MLOC.userId,MLOC.LIST_TYPE_CHATROOM,mRoomId,infostr, null);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
+
                 joinChatroom();
             }
 

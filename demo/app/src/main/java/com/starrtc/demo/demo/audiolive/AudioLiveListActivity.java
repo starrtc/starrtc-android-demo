@@ -31,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 public class AudioLiveListActivity extends BaseActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -93,19 +95,25 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_AUDIO_LIVE_GOT_LIST:
+            case AEvent.AEVENT_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
                 if(success){
-                    ArrayList<AudioLiveInfo> res = (ArrayList<AudioLiveInfo>) eventObj;
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("1")){
-                            mDatas.add(res.get(i));
-                        }
-                    }
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("0")){
-                            mDatas.add(res.get(i));
+                    JSONArray datas = (JSONArray) eventObj;
+                    for(int i = 0;i<datas.length();i++){
+                        try {
+                            JSONObject json = datas.getJSONObject(i);
+                            String tmp = json.getString("data");
+                            JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp,"utf-8"));
+                            AudioLiveInfo item = new AudioLiveInfo();
+                            item.creator = tmpObj.getString("creator");
+                            item.id = tmpObj.getString("id");
+                            item.name = tmpObj.getString("name");
+                            mDatas.add(item);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                     }
                     myListAdapter.notifyDataSetChanged();
@@ -129,58 +137,70 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
     @Override
     public void onResume(){
         super.onResume();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            AEvent.addListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST,this);
-        }
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
         onRefresh();
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)) {
-            AEvent.removeListener(AEvent.AEVENT_AUDIO_LIVE_GOT_LIST, this);
-        }
+        AEvent.removeListener(AEvent.AEVENT_GOT_LIST, this);
         super.onStop();
     }
     @Override
     public void onRefresh() {
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestAudioLiveList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
     private void queryAllList(){
-        XHClient.getInstance().getLiveManager().queryList("",MLOC.CHATROOM_LIST_TYPE_AUDIO_LIVE_ALL,new IXHResultCallback() {
-            @Override
-            public void success(final Object data) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                try {
-                    JSONArray array = (JSONArray) data;
-                    for(int i = array.length()-1;i>=0;i--){
-                        AudioLiveInfo info = new AudioLiveInfo();
-                        JSONObject obj = array.getJSONObject(i);
-                        info.creator = obj.getString("creator");
-                        info.id = obj.getString("id");
-                        info.name = obj.getString("name");
-                        mDatas.add(info);
-                    }
-                    myListAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryList(MLOC.LIST_TYPE_AUDIO_LIVE_ALL);
+        }else{
+            XHClient.getInstance().getLiveManager().queryList("",MLOC.LIST_TYPE_AUDIO_LIVE_ALL,new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    String[] res = (String[]) data;
+                    JSONArray array = new JSONArray();
+                    for (int i=0;i<res.length;i++){
+                        String info = res[i];
+                        try {
+                            info = URLDecoder.decode(info,"utf-8");
+                            JSONObject jsonObject = new JSONObject(info);
+                            array.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
 
-            @Override
-            public void failed(String errMsg) {
-                MLOC.d("VideoMettingListActivity",errMsg);
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
+                    }
+
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    try {
+//                    JSONArray array = (JSONArray) data;
+                        for(int i = array.length()-1;i>=0;i--){
+                            AudioLiveInfo info = new AudioLiveInfo();
+                            JSONObject obj = array.getJSONObject(i);
+                            info.creator = obj.getString("creator");
+                            info.id = obj.getString("id");
+                            info.name = obj.getString("name");
+                            mDatas.add(info);
+                        }
+                        myListAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("VideoMettingListActivity",errMsg);
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    myListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+
     }
 
     class MyListAdapter extends BaseAdapter{

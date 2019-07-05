@@ -17,7 +17,6 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
 import com.starrtc.demo.database.MessageBean;
-import com.starrtc.demo.serverAPI.InterfaceUrls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,17 +31,8 @@ import java.util.TimerTask;
 
 public class MLOC {
     public static Context appContext;
-    public static String agentId = "stargWeHN8Y7";
     public static String authKey = "";
     public static String userId = "";
-
-    public static String STAR_LOGIN_URL             = "ips2.starrtc.com:9920";
-    public static String IM_SCHEDULE_URL            = "ips2.starrtc.com:9904";
-    public static String LIVE_SRC_SCHEDULE_URL      = "ips2.starrtc.com:9929";
-    public static String LIVE_VDN_SCHEDULE_URL      = "ips2.starrtc.com:9926";
-    public static String CHAT_ROOM_SCHEDULE_URL     = "ips2.starrtc.com:9907";
-    public static String VOIP_SCHEDULE_URL          = "voip2.starrtc.com:10086";
-    public static String LIVE_PROXY_SCHEDULE_URL = "liveproxy.starrtc.com:19932";
 
     public static String VOIP_SERVER_URL          = "129.204.145.78:10086";
     public static String IM_SERVER_URL            = "129.204.145.78:19903";
@@ -51,32 +41,30 @@ public class MLOC {
     public static String LIVE_SRC_SERVER_URL      = "129.204.145.78:19931";
     public static String LIVE_PROXY_SERVER_URL    = "129.204.145.78:19932";
 
-    public static String SERVER_TYPE_PUBLIC = "PUBLIC";
-    public static String SERVER_TYPE_CUSTOM = "CUSTOM";
-    public static String SERVER_TYPE = SERVER_TYPE_PUBLIC;
+    public static Boolean AEventCenterEnable = false;
 
-    public static final int CHATROOM_LIST_TYPE_CHATROOM = 0;
-    public static final int CHATROOM_LIST_TYPE_LIVE = 1;
-    public static final int CHATROOM_LIST_TYPE_LIVE_PUSH = 2;
-    public static final int CHATROOM_LIST_TYPE_MEETING = 3;
-    public static final int CHATROOM_LIST_TYPE_MEETING_PUSH = 4;
-    public static final int CHATROOM_LIST_TYPE_CLASS = 5;
-    public static final int CHATROOM_LIST_TYPE_CLASS_PUSH = 6;
-    public static final int CHATROOM_LIST_TYPE_AUDIO_LIVE = 7;
-    public static final int CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH = 8;
-    public static final int CHATROOM_LIST_TYPE_SUPER_ROOM = 9;
-    public static final int CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH = 10;
+    public static final int LIST_TYPE_CHATROOM = 0;
+    public static final int LIST_TYPE_LIVE = 1;
+    public static final int LIST_TYPE_LIVE_PUSH = 2;
+    public static final int LIST_TYPE_MEETING = 3;
+    public static final int LIST_TYPE_MEETING_PUSH = 4;
+    public static final int LIST_TYPE_CLASS = 5;
+    public static final int LIST_TYPE_CLASS_PUSH = 6;
+    public static final int LIST_TYPE_AUDIO_LIVE = 7;
+    public static final int LIST_TYPE_AUDIO_LIVE_PUSH = 8;
+    public static final int LIST_TYPE_SUPER_ROOM = 9;
+    public static final int LIST_TYPE_SUPER_ROOM_PUSH = 10;
 
-    public static final String CHATROOM_LIST_TYPE_LIVE_ALL = CHATROOM_LIST_TYPE_LIVE+","+CHATROOM_LIST_TYPE_LIVE_PUSH;
-    public static final String CHATROOM_LIST_TYPE_MEETING_ALL = CHATROOM_LIST_TYPE_MEETING+","+CHATROOM_LIST_TYPE_MEETING_PUSH;
-    public static final String CHATROOM_LIST_TYPE_CLASS_ALL = CHATROOM_LIST_TYPE_CLASS+","+CHATROOM_LIST_TYPE_CLASS_PUSH;
-    public static final String CHATROOM_LIST_TYPE_AUDIO_LIVE_ALL = CHATROOM_LIST_TYPE_AUDIO_LIVE+","+CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH;
-    public static final String CHATROOM_LIST_TYPE_SUPER_ROOM_ALL = CHATROOM_LIST_TYPE_SUPER_ROOM+","+CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH;
-    public static final String CHATROOM_LIST_TYPE_PUSH_ALL = CHATROOM_LIST_TYPE_LIVE_PUSH
-                                                        +","+CHATROOM_LIST_TYPE_MEETING_PUSH
-                                                        +","+CHATROOM_LIST_TYPE_CLASS_PUSH
-                                                        +","+CHATROOM_LIST_TYPE_AUDIO_LIVE_PUSH
-                                                        +","+CHATROOM_LIST_TYPE_SUPER_ROOM_PUSH;
+    public static final String LIST_TYPE_LIVE_ALL = LIST_TYPE_LIVE +","+ LIST_TYPE_LIVE_PUSH;
+    public static final String LIST_TYPE_MEETING_ALL = LIST_TYPE_MEETING +","+ LIST_TYPE_MEETING_PUSH;
+    public static final String LIST_TYPE_CLASS_ALL = LIST_TYPE_CLASS +","+ LIST_TYPE_CLASS_PUSH;
+    public static final String LIST_TYPE_AUDIO_LIVE_ALL = LIST_TYPE_AUDIO_LIVE +","+ LIST_TYPE_AUDIO_LIVE_PUSH;
+    public static final String LIST_TYPE_SUPER_ROOM_ALL = LIST_TYPE_SUPER_ROOM +","+ LIST_TYPE_SUPER_ROOM_PUSH;
+    public static final String LIST_TYPE_PUSH_ALL = LIST_TYPE_LIVE_PUSH
+                                                        +","+ LIST_TYPE_MEETING_PUSH
+                                                        +","+ LIST_TYPE_CLASS_PUSH
+                                                        +","+ LIST_TYPE_AUDIO_LIVE_PUSH
+                                                        +","+ LIST_TYPE_SUPER_ROOM_PUSH;
     public static Boolean hasLogout = false;
 
     public static boolean hasNewC2CMsg = false;
@@ -93,15 +81,6 @@ public class MLOC {
             coreDB = new CoreDB();
         }
         userId = loadSharedData(context,"userId",userId);
-        agentId = loadSharedData(context,"agentId",agentId);
-        InterfaceUrls.setBaseUrl(loadSharedData(context,"workServer","https://api.starrtc.com/public"));
-        STAR_LOGIN_URL = loadSharedData(context,"STAR_LOGIN_URL",STAR_LOGIN_URL);
-        IM_SCHEDULE_URL = loadSharedData(context,"IM_SCHEDULE_URL",IM_SCHEDULE_URL);
-        LIVE_SRC_SCHEDULE_URL = loadSharedData(context,"LIVE_SRC_SCHEDULE_URL",LIVE_SRC_SCHEDULE_URL);
-        LIVE_VDN_SCHEDULE_URL = loadSharedData(context,"LIVE_VDN_SCHEDULE_URL",LIVE_VDN_SCHEDULE_URL);
-        CHAT_ROOM_SCHEDULE_URL = loadSharedData(context,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
-        VOIP_SCHEDULE_URL = loadSharedData(context,"VOIP_SCHEDULE_URL",VOIP_SCHEDULE_URL);
-        LIVE_PROXY_SCHEDULE_URL = loadSharedData(context,"LIVE_PROXY_SCHEDULE_URL", LIVE_PROXY_SCHEDULE_URL);
 
         VOIP_SERVER_URL = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
         IM_SERVER_URL = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
@@ -109,7 +88,12 @@ public class MLOC {
         LIVE_PROXY_SERVER_URL =  loadSharedData(context,"LIVE_PROXY_SERVER_URL", LIVE_PROXY_SERVER_URL);
         LIVE_VDN_SERVER_URL = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
         CHATROOM_SERVER_URL = loadSharedData(context,"CHATROOM_SERVER_URL", CHATROOM_SERVER_URL);
-        SERVER_TYPE = loadSharedData(context,"SERVER_TYPE", SERVER_TYPE_PUBLIC);
+
+        if(loadSharedData(context,"AEC_ENABLE", "0").equals("0")){
+            AEventCenterEnable = false;
+        }else{
+            AEventCenterEnable = true;
+        }
     }
 
     private static Boolean debug = true;
@@ -211,54 +195,11 @@ public class MLOC {
         SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
         return sp.getString(key,defValue);
     }
-
-    public static void saveWorkServer(String host){
-        InterfaceUrls.BASE_URL = host;
-        MLOC.saveSharedData(appContext,"workServer",InterfaceUrls.BASE_URL);
-    }
-
     public static void saveUserId(String id){
         MLOC.userId = id;
         MLOC.saveSharedData(appContext,"userId",MLOC.userId);
     }
-    public static void saveAgentId(String id){
-        MLOC.agentId = id;
-        saveSharedData(appContext,"agentId",id);
-    }
 
-    public static void saveLoginServerUrl(String loginServerUrl){
-        MLOC.STAR_LOGIN_URL = loginServerUrl;
-        saveSharedData(appContext,"STAR_LOGIN_URL",STAR_LOGIN_URL);
-    }
-
-    public static void saveIMSchduleUrl(String imSchduleUrl){
-        MLOC.IM_SCHEDULE_URL = imSchduleUrl;
-        saveSharedData(appContext,"IM_SCHEDULE_URL",IM_SCHEDULE_URL);
-    }
-
-    public static void saveSrcSchduleUrl(String srcSchduleUrl){
-        MLOC.LIVE_SRC_SCHEDULE_URL = srcSchduleUrl;
-        saveSharedData(appContext,"LIVE_SRC_SCHEDULE_URL",LIVE_SRC_SCHEDULE_URL);
-    }
-
-    public static void saveVdnSchduleUrl(String vdnSchduleUrl){
-        MLOC.LIVE_VDN_SCHEDULE_URL = vdnSchduleUrl;
-        saveSharedData(appContext,"LIVE_VDN_SCHEDULE_URL",LIVE_VDN_SCHEDULE_URL);
-    }
-    public static void saveProxySchduleUrl(String proxySchduleUrl){
-        MLOC.LIVE_PROXY_SCHEDULE_URL = proxySchduleUrl;
-        saveSharedData(appContext,"LIVE_PROXY_SCHEDULE_URL", LIVE_PROXY_SCHEDULE_URL);
-    }
-
-    public static void saveChatroomSchduleUrl(String chatroomSchduleUrl){
-        MLOC.CHAT_ROOM_SCHEDULE_URL = chatroomSchduleUrl;
-        saveSharedData(appContext,"CHAT_ROOM_SCHEDULE_URL",CHAT_ROOM_SCHEDULE_URL);
-    }
-
-    public static void saveVoipSchduleUrl(String voipSchduleUrl){
-        MLOC.VOIP_SCHEDULE_URL = voipSchduleUrl;
-        saveSharedData(appContext,"VOIP_SCHEDULE_URL",VOIP_SCHEDULE_URL);
-    }
     public static void saveVoipServerUrl(String voipServerUrl){
         MLOC.VOIP_SERVER_URL = voipServerUrl;
         saveSharedData(appContext,"VOIP_SERVER_URL",VOIP_SERVER_URL);
@@ -287,11 +228,6 @@ public class MLOC {
     public static void saveImServerUrl(String imServerUrl){
         MLOC.IM_SERVER_URL = imServerUrl;
         saveSharedData(appContext,"IM_SERVER_URL",IM_SERVER_URL);
-    }
-
-    public static void saveServerType(String serverType){
-        MLOC.SERVER_TYPE = serverType;
-        saveSharedData(appContext,"SERVER_TYPE",SERVER_TYPE);
     }
 
     public static void saveC2CUserId(Context context,String uid){

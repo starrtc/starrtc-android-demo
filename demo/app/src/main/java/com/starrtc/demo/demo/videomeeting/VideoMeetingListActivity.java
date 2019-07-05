@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import com.starrtc.demo.R;
@@ -28,7 +30,6 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,8 +61,7 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
             }
         });
 
-        AEvent.addListener(AEvent.AEVENT_MEETING_GOT_LIST,this);
-
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
         refreshLayout = (SwipeRefreshLayout)findViewById(R.id.refresh_layout);
         //设置刷新时动画的颜色，可以设置4个
         refreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
@@ -94,49 +94,63 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
     @Override
     public void onResume(){
         super.onResume();
-        AEvent.addListener(AEvent.AEVENT_MEETING_GOT_LIST,this);
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestMeetingList();
-        }else{
-            queryAllList();
-        }
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
+
+        queryAllList();
     }
     private void queryAllList(){
-        XHClient.getInstance().getMeetingManager().queryList("",MLOC.CHATROOM_LIST_TYPE_MEETING_ALL,new IXHResultCallback() {
-            @Override
-            public void success(final Object data) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                try {
-                    JSONArray array = (JSONArray) data;
-                    for(int i = array.length()-1;i>=0;i--){
-                        MeetingInfo info = new MeetingInfo();
-                        JSONObject obj = array.getJSONObject(i);
-                        info.createrId = obj.getString("creator");
-                        info.meetingId = obj.getString("id");
-                        info.meetingName = obj.getString("name");
-                        mDatas.add(info);
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryList(MLOC.LIST_TYPE_MEETING_ALL);
+        }else{
+            XHClient.getInstance().getMeetingManager().queryList("",MLOC.LIST_TYPE_MEETING_ALL,new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    String[] res = (String[]) data;
+                    JSONArray array = new JSONArray();
+                    for (int i=0;i<res.length;i++){
+                        String info = res[i];
+                        try {
+                            info = URLDecoder.decode(info,"utf-8");
+                            JSONObject jsonObject = new JSONObject(info);
+                            array.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    myListAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    try {
+//                    JSONArray array = (JSONArray) data;
+                        for(int i = array.length()-1;i>=0;i--){
+                            MeetingInfo info = new MeetingInfo();
+                            JSONObject obj = array.getJSONObject(i);
+                            info.createrId = obj.getString("creator");
+                            info.meetingId = obj.getString("id");
+                            info.meetingName = obj.getString("name");
+                            mDatas.add(info);
+                        }
+                        myListAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-
-            @Override
-            public void failed(String errMsg) {
-                MLOC.d("VideoMettingListActivity",errMsg);
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
-
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("VideoMettingListActivity",errMsg);
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    myListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     @Override
     public void onStop(){
-        AEvent.removeListener(AEvent.AEVENT_MEETING_GOT_LIST,this);
+        AEvent.removeListener(AEvent.AEVENT_GOT_LIST,this);
         super.onStop();
     }
 
@@ -144,14 +158,30 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_MEETING_GOT_LIST:
+            case AEvent.AEVENT_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
-                if(success){
-                    ArrayList<MeetingInfo> res = (ArrayList<MeetingInfo>) eventObj;
-                    mDatas.addAll(res);
+                if(success) {
+                    JSONArray datas = (JSONArray) eventObj;
+                    for (int i = 0; i < datas.length(); i++) {
+                        try {
+                            JSONObject json = datas.getJSONObject(i);
+                            String tmp = json.getString("data");
+                            JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp, "utf-8"));
+                            MeetingInfo item = new MeetingInfo();
+                            item.createrId = tmpObj.getString("creator");
+                            item.meetingId = tmpObj.getString("id");
+                            item.meetingName = tmpObj.getString("name");
+                            mDatas.add(item);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     myListAdapter.notifyDataSetChanged();
                 }
+
                 break;
         }
     }
@@ -168,11 +198,7 @@ public class VideoMeetingListActivity extends BaseActivity implements AdapterVie
 
     @Override
     public void onRefresh() {
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestMeetingList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
 
 

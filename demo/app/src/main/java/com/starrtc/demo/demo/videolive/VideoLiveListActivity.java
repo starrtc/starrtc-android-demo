@@ -16,11 +16,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
+import com.starrtc.demo.demo.videomeeting.MeetingInfo;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
@@ -29,7 +32,6 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.demo.utils.StarListUtil;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,16 +96,13 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
     @Override
     public void onResume(){
         super.onResume();
-        AEvent.addListener(AEvent.AEVENT_LIVE_GOT_LIST,this);
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestLiveList();
-        }else{
-            queryAllList();
-        }
+        AEvent.addListener(AEvent.AEVENT_GOT_LIST,this);
+        queryAllList();
     }
+
     @Override
     public void onPause(){
-        AEvent.removeListener(AEvent.AEVENT_LIVE_GOT_LIST,this);
+        AEvent.removeListener(AEvent.AEVENT_GOT_LIST,this);
         super.onPause();
     }
 
@@ -111,19 +110,25 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
     public void dispatchEvent(String aEventID, final boolean success, final Object eventObj) {
         super.dispatchEvent(aEventID,success,eventObj);
         switch (aEventID){
-            case AEvent.AEVENT_LIVE_GOT_LIST:
+            case AEvent.AEVENT_GOT_LIST:
                 refreshLayout.setRefreshing(false);
                 mDatas.clear();
                 if(success){
-                    ArrayList<LiveInfo> res = (ArrayList<LiveInfo>) eventObj;
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("1")){
-                            mDatas.add(res.get(i));
-                        }
-                    }
-                    for(int i = 0;i<res.size();i++){
-                        if(res.get(i).isLiveOn.equals("0")){
-                            mDatas.add(res.get(i));
+                    JSONArray datas = (JSONArray) eventObj;
+                    for(int i = 0;i<datas.length();i++){
+                        try {
+                            JSONObject json = datas.getJSONObject(i);
+                            String tmp = json.getString("data");
+                            JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp,"utf-8"));
+                            LiveInfo item = new LiveInfo();
+                            item.createrId = tmpObj.getString("creator");
+                            item.liveId = tmpObj.getString("id");
+                            item.liveName = tmpObj.getString("name");
+                            mDatas.add(item);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                     }
                     myListAdapter.notifyDataSetChanged();
@@ -146,43 +151,56 @@ public class VideoLiveListActivity extends BaseActivity implements AdapterView.O
 
     @Override
     public void onRefresh() {
-        if(MLOC.SERVER_TYPE.equals(MLOC.SERVER_TYPE_PUBLIC)){
-            InterfaceUrls.demoRequestLiveList();
-        }else{
-            queryAllList();
-        }
+        queryAllList();
     }
     private void queryAllList(){
-        XHClient.getInstance().getLiveManager().queryList("",MLOC.CHATROOM_LIST_TYPE_LIVE_ALL,new IXHResultCallback() {
-            @Override
-            public void success(final Object data) {
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                try {
-                    JSONArray array = (JSONArray) data;
-                    for(int i = array.length()-1;i>=0;i--){
-                        LiveInfo info = new LiveInfo();
-                        JSONObject obj = array.getJSONObject(i);
-                        info.createrId = obj.getString("creator");
-                        info.liveId = obj.getString("id");
-                        info.liveName = obj.getString("name");
-                        mDatas.add(info);
+        if(MLOC.AEventCenterEnable){
+            InterfaceUrls.demoQueryList(MLOC.LIST_TYPE_LIVE_ALL);
+        }else{
+            XHClient.getInstance().getLiveManager().queryList("",MLOC.LIST_TYPE_LIVE_ALL,new IXHResultCallback() {
+                @Override
+                public void success(final Object data) {
+                    String[] res = (String[]) data;
+                    JSONArray array = new JSONArray();
+                    for (int i=0;i<res.length;i++){
+                        String info = res[i];
+                        try {
+                            info = URLDecoder.decode(info,"utf-8");
+                            JSONObject jsonObject = new JSONObject(info);
+                            array.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    myListAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    try {
+//                    JSONArray array = (JSONArray) data;
+                        for(int i = array.length()-1;i>=0;i--){
+                            LiveInfo info = new LiveInfo();
+                            JSONObject obj = array.getJSONObject(i);
+                            info.createrId = obj.getString("creator");
+                            info.liveId = obj.getString("id");
+                            info.liveName = obj.getString("name");
+                            mDatas.add(info);
+                        }
+                        myListAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-
-            @Override
-            public void failed(String errMsg) {
-                MLOC.d("VideoMettingListActivity",errMsg);
-                refreshLayout.setRefreshing(false);
-                mDatas.clear();
-                myListAdapter.notifyDataSetChanged();
-            }
-        });
-
+                @Override
+                public void failed(String errMsg) {
+                    MLOC.d("VideoMettingListActivity",errMsg);
+                    refreshLayout.setRefreshing(false);
+                    mDatas.clear();
+                    myListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     class MyListAdapter extends BaseAdapter{
