@@ -83,7 +83,7 @@ https://github.com/starrtc/starrtc-android-demo/raw/master/assets/rpi_car.MP4
 
 后台api与数据库
 ===
-https://github.com/starrtc/starrtc-demo-server-api-php
+https://github.com/starrtc/starrtc-server/tree/master/server-api
 
 自行部署服务端程序
 ===
