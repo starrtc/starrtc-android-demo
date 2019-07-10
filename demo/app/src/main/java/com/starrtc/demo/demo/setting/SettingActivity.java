@@ -365,14 +365,14 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         final SeekBar bitrateSeekBar = (SeekBar) dialog.findViewById(R.id.bitrate_seekbar);
 
         if(isbig){
-            fpsSeekBar.setMax(20);
+            fpsSeekBar.setMax(30);
             fpsSeekBar.setProgress(XHCustomConfig.getInstance().getBigVideoFPS());
             fpsTxt.setText("帧率:"+XHCustomConfig.getInstance().getBigVideoFPS());
             bitrateSeekBar.setMax(2000);
             bitrateSeekBar.setProgress(XHCustomConfig.getInstance().getBigVideoBitrate());
             bitrateTxt.setText("码率:"+XHCustomConfig.getInstance().getBigVideoBitrate());
         }else{
-            fpsSeekBar.setMax(10);
+            fpsSeekBar.setMax(30);
             fpsSeekBar.setProgress(XHCustomConfig.getInstance().getSmallVideoFPS());
             fpsTxt.setText("帧率:"+XHCustomConfig.getInstance().getSmallVideoFPS());
             bitrateSeekBar.setMax(200);

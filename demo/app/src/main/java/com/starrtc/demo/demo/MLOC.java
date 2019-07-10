@@ -17,6 +17,7 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
 import com.starrtc.demo.database.MessageBean;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,15 +35,14 @@ public class MLOC {
     public static String authKey = "";
     public static String userId = "";
 
-    public static String VOIP_SERVER_URL          = "129.204.145.78:10086";
-    public static String IM_SERVER_URL            = "129.204.145.78:19903";
-    public static String CHATROOM_SERVER_URL      = "129.204.145.78:19906";
-    public static String LIVE_VDN_SERVER_URL      = "129.204.145.78:19928";
-    public static String LIVE_SRC_SERVER_URL      = "129.204.145.78:19931";
-    public static String LIVE_PROXY_SERVER_URL    = "129.204.145.78:19932";
+    public static String VOIP_SERVER_URL          = "demo.starrtc.com:10086";
+    public static String IM_SERVER_URL            = "demo.starrtc.com:19903";
+    public static String CHATROOM_SERVER_URL      = "demo.starrtc.com:19906";
+    public static String LIVE_VDN_SERVER_URL      = "demo.starrtc.com:19928";
+    public static String LIVE_SRC_SERVER_URL      = "demo.starrtc.com:19931";
+    public static String LIVE_PROXY_SERVER_URL    = "demo.starrtc.com:19932";
 
     public static Boolean AEventCenterEnable = false;
-
     public static final int LIST_TYPE_CHATROOM = 0;
     public static final int LIST_TYPE_LIVE = 1;
     public static final int LIST_TYPE_LIVE_PUSH = 2;
