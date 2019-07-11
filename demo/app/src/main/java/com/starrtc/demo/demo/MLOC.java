@@ -32,7 +32,6 @@ import java.util.TimerTask;
 
 public class MLOC {
     public static Context appContext;
-    public static String authKey = "";
     public static String userId = "";
 
     public static String VOIP_SERVER_URL          = "demo.starrtc.com:10086";
@@ -316,19 +315,6 @@ public class MLOC {
                     }
                     dialogs[0].dismiss();
                     dialogs[0] = null;
-//                    if(type==0){
-//                        //C2C
-//                        Intent intent = new Intent(context,C2CListActivity.class);
-//                        context.startActivity(intent);
-//                    }else if(type==1){
-//                        //Group
-//                        Intent intent = new Intent(context, MessageGroupListActivity.class);
-//                        context.startActivity(intent);
-//                    }else if(type==2){
-//                        //VOIP
-//                        Intent intent = new Intent(context, VoipListActivity.class);
-//                        context.startActivity(intent);
-//                    }
                 }
             });
             dialogs[0].show();
