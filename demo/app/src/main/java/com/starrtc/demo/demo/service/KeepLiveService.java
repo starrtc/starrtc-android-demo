@@ -17,6 +17,7 @@ import com.starrtc.demo.demo.voip.VoipRingingActivity;
 import com.starrtc.demo.listener.XHChatManagerListener;
 import com.starrtc.demo.listener.XHGroupManagerListener;
 import com.starrtc.demo.listener.XHLoginManagerListener;
+import com.starrtc.demo.listener.XHSuperRoomManagerListener;
 import com.starrtc.demo.listener.XHVoipManagerListener;
 import com.starrtc.demo.listener.XHVoipP2PManagerListener;
 import com.starrtc.demo.serverAPI.InterfaceUrls;
@@ -97,6 +98,7 @@ public class KeepLiveService extends Service implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
+            XHClient.getInstance().getSuperRoomManager().addListener(new XHSuperRoomManagerListener());
             XHVideoSourceManager.getInstance().setVideoSourceCallback(new DemoVideoSourceCallback());
 
             XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {

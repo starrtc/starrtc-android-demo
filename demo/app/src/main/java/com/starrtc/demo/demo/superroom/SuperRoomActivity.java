@@ -133,9 +133,6 @@ public class SuperRoomActivity extends BaseActivity {
 
         superRoomManager = XHClient.getInstance().getSuperRoomManager(this);
         superRoomManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
-        superRoomManager.addListener(new XHSuperRoomManagerListener());
-
-
 
         addListener();
         vRoomId = (TextView) findViewById(R.id.live_id_text);
