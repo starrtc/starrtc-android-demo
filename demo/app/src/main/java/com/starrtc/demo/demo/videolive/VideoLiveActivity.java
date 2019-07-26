@@ -42,6 +42,7 @@ import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,6 +138,7 @@ public class VideoLiveActivity extends BaseActivity {
 
         liveManager = XHClient.getInstance().getLiveManager(this);
         liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
+        liveManager.setRecorder(new XHCameraRecorder());
         liveManager.addListener(new XHLiveManagerListener());
 
 

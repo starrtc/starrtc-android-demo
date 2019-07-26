@@ -71,6 +71,8 @@ public class MLOC {
     public static boolean hasNewVoipMsg = false;
     public static boolean canPickupVoip = true;
 
+    public static boolean deleteGroup = false;
+
 
     private static CoreDB coreDB;
 

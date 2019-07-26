@@ -92,6 +92,7 @@ public class KeepLiveService extends Service implements IEventListener {
 //        customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
             customConfig.setDefConfigOpenGLESEnable(false);
 //            customConfig.setDefConfigCamera2Enable(false);
+//            customConfig.setDefConfigCameraId(1);
 //            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_360BW_640BH_180SW_320SH);
             XHClient.getInstance().getChatManager().addListener(new XHChatManagerListener());
             XHClient.getInstance().getGroupManager().addListener(new XHGroupManagerListener());

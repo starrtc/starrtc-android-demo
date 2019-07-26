@@ -39,11 +39,12 @@ import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHMeetingItem;
+import com.starrtc.starrtcsdk.api.XHMeetingManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.apiInterface.IXHMeetingManager;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarPlayerScaleType;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 public class VideoMeetingActivity extends BaseActivity{
 
@@ -63,7 +64,7 @@ public class VideoMeetingActivity extends BaseActivity{
     private int borderW = 0;
     private int borderH = 0;
 
-    private IXHMeetingManager meetingManager;
+    private XHMeetingManager meetingManager;
     private StarRTCAudioManager starRTCAudioManager;
 
     private Boolean isPortrait = true;
@@ -94,6 +95,7 @@ public class VideoMeetingActivity extends BaseActivity{
 
         meetingManager = XHClient.getInstance().getMeetingManager(this);
         meetingManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
+        meetingManager.setRecorder(new XHCameraRecorder());
         meetingManager.addListener(new XHMeetingManagerListener());
 
         addListener();

@@ -23,6 +23,7 @@ import com.starrtc.starrtcsdk.api.XHVoipP2PManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import java.util.Set;
 
@@ -61,6 +62,7 @@ public class VoipP2PActivity extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.activity_voip_p2p);
         voipP2PManager = XHClient.getInstance().getVoipP2PManager();
         voipP2PManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
+        voipP2PManager.setRecorder(new XHCameraRecorder());
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");

@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#ffff0000"
-                android:text="编辑后点击下方保存按钮"/>
+                android:text="编辑后点击下方保存按钮\n服务地址不需要填“http://”"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

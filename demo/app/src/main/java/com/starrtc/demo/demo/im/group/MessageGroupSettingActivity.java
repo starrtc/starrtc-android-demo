@@ -258,6 +258,8 @@ public class MessageGroupSettingActivity extends BaseActivity{
             @Override
             public void success(Object data) {
                 MLOC.showMsg(MessageGroupSettingActivity.this, "群删除成功");
+                MLOC.deleteGroup = true;
+                finish();
             }
 
             @Override

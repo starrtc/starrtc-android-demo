@@ -1,22 +1,17 @@
 package com.starrtc.demo.demo.voip;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -31,12 +26,14 @@ import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
+import com.starrtc.starrtcsdk.api.XHSDKHelper;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
-import com.starrtc.starrtcsdk.core.pusher.ScreenRecorder;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
+import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
+import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;
 import java.util.Set;
@@ -57,6 +54,10 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
     private Boolean isTalking = false;
 
     private StarRTCAudioManager starRTCAudioManager;
+    private XHSDKHelper xhsdkHelper;
+
+    //test
+//    private PushYuvTest pushYuvTest;
 
 
     @Override
@@ -71,11 +72,18 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
+
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
+        voipManager.setRecorder(new XHCameraRecorder());
+//        XHCustomRecorder customRecorder = new XHCustomRecorder(640,480,270,true);
+//        pushYuvTest = new PushYuvTest(customRecorder);
+//        voipManager.setRecorder(customRecorder);
+
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
 
@@ -116,12 +124,26 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.camera_btn).setSelected(true);
         findViewById(R.id.camera_btn).setOnClickListener(this);
 
+
+
         if(action.equals(CALLING)){
             showCallingView();
             MLOC.d("newVoip","call");
+
+            xhsdkHelper = new XHSDKHelper();
+            xhsdkHelper.setDefaultCameraId(1);
+            xhsdkHelper.startPerview(this,((StarPlayer)findViewById(R.id.voip_surface_target)));
+
             voipManager.call(this,targetId, new IXHResultCallback() {
                 @Override
                 public void success(Object data) {
+                    xhsdkHelper.stopPerview();
+//                    StarCameraConfig cameraConfig = new StarCameraConfig();
+//                    cameraConfig.previewW = StarRtcCore.cameraPreviewW;
+//                    cameraConfig.previewH = StarRtcCore.cameraPreviewH;
+//                    cameraConfig.frameRate = StarRtcCore.cameraPreviewFramrate;
+//                    cameraConfig.uploadGap = 1000/StarRtcCore.fpsBig;
+//                    pushYuvTest.initCamera(VoipActivity.this,cameraConfig,true);
                     MLOC.d("newVoip","call success");
                 }
                 @Override
@@ -130,6 +152,8 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     stopAndFinish();
                 }
             });
+
+
         }else{
             MLOC.d("newVoip","onPickup");
             onPickup();
@@ -138,7 +162,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private void setupViews(){
         voipManager.setupView(selfPlayer, targetPlayer, new IXHResultCallback() {
-            //        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
@@ -332,16 +355,14 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     return;
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if(mMediaProjectionManager==null){
-                        mMediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-                    }
                     if (mRecorder != null) {
-    //                    ((TextView)findViewById(R.id.screen_btn)).setText("屏");
                         findViewById(R.id.screen_btn).setSelected(false);
-                        mRecorder.quit();
+                        voipManager.resetRecorder(new XHCameraRecorder());
                         mRecorder = null;
-                        StarRtcCore.getInstance().voipShareCamera();
                     } else {
+                        if(mMediaProjectionManager==null){
+                            mMediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+                        }
                         Intent captureIntent = mMediaProjectionManager.createScreenCaptureIntent();
                         startActivityForResult(captureIntent, REQUEST_CODE);
                     }
@@ -372,33 +393,20 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private static final int REQUEST_CODE = 1;
     private MediaProjectionManager mMediaProjectionManager;
-    private ScreenRecorder mRecorder;
+    private XHScreenRecorder mRecorder;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-        if (mediaProjection == null) {
-            Log.e("@@", "media projection is null");
-            return;
-        }
+        mRecorder = new XHScreenRecorder(this,resultCode,data);
+        voipManager.resetRecorder(mRecorder);
         findViewById(R.id.screen_btn).setSelected(true);
-
-        // video size
-        final int width = StarRtcCore.bigVideoW;
-        final int height = StarRtcCore.bigVideoH;
-        final int bitrate = StarRtcCore.bitRateBig*1000;
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        final int dpi = metrics.densityDpi;
-        mRecorder = new ScreenRecorder(width, height, bitrate, dpi, mediaProjection);
-        StarRtcCore.getInstance().voipShareScreen(mRecorder);
     }
 
     private void stopAndFinish(){
         if(starRTCAudioManager !=null){
             starRTCAudioManager.stop();
         }
+//        pushYuvTest.stopCamera();
         VoipActivity.this.finish();
     }
 

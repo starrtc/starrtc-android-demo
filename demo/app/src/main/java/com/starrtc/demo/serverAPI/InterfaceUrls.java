@@ -113,7 +113,7 @@ public class InterfaceUrls {
 
     //转发rtsp流
     public static void demoPushStreamUrl(String userId,String server, String name, String chatroomId, int listtype, String streamType, String streamUrl){
-        String url = "http://"+server+"/push?userId="+userId+"&streamType="+streamType+"&streamUrl="+streamUrl+"&roomLiveType="+listtype+"&roomId="+chatroomId+"&extra="+name;
+        String url = "http://"+server+"/start?userId="+userId+"&streamType="+streamType+"&streamUrl="+streamUrl+"&roomLiveType="+listtype+"&roomId="+chatroomId+"&extra="+name;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {
@@ -133,7 +133,7 @@ public class InterfaceUrls {
     }
     //恢复转发rtsp流 //rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
     public static void demoResumePushRtsp(String userId,String server,String liveId,String rtsp){
-        String url = "http://"+server+"/push?userId="+userId+"&streamType=rtsp&streamUrl="+rtsp+"&channelId="+liveId.substring(0,16);
+        String url = "http://"+server+"/start?userId="+userId+"&streamType=rtsp&streamUrl="+rtsp+"&channelId="+liveId.substring(0,16);
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {

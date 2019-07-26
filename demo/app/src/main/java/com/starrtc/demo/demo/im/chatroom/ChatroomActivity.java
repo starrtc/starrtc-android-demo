@@ -116,6 +116,11 @@ public class ChatroomActivity extends BaseActivity implements AdapterView.OnItem
                                 @Override
                                 public void success(Object data) {
                                     MLOC.d("IM_CHATROOM","聊天室删除成功! "+data);
+                                    if(MLOC.AEventCenterEnable){
+                                        InterfaceUrls.demoDeleteFromList(MLOC.userId,MLOC.LIST_TYPE_CHATROOM,mRoomId);
+                                    }else{
+                                        chatroomManager.deleteFromList(MLOC.userId, MLOC.LIST_TYPE_CHATROOM, mRoomId, null);
+                                    }
                                     ChatroomActivity.this.finish();
                                 }
 

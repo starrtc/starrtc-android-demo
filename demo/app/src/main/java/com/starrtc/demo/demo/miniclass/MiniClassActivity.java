@@ -29,12 +29,13 @@ import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHLiveItem;
+import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.apiInterface.IXHLiveManager;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.player.StarWhitePanel2;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +76,7 @@ public class MiniClassActivity extends BaseActivity{
     private int borderW = 0;
     private int borderH = 0;
 
-    private IXHLiveManager classManager;
+    private XHLiveManager classManager;
     private StarWhitePanel2 vPaintPlayer;
 
     private Boolean isPortrait = true;
@@ -100,6 +101,7 @@ public class MiniClassActivity extends BaseActivity{
 
         classManager = XHClient.getInstance().getLiveManager(this);
         classManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
+        classManager.setRecorder(new XHCameraRecorder());
         classManager.addListener(new XHLiveManagerListener());
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -131,6 +133,7 @@ public class MiniClassActivity extends BaseActivity{
         vMeetingName = (TextView) findViewById(R.id.live_id_text);
         vMeetingName.setText("ID："+ className);
         vPaintPlayer = (StarWhitePanel2) findViewById(R.id.painter_view);
+        vPaintPlayer.setImageHost("api.starrtc.com");
 
         findViewById(R.id.chat_btn).setOnClickListener(new View.OnClickListener() {
             @Override

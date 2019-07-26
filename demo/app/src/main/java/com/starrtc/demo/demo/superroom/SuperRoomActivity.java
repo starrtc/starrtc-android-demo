@@ -31,6 +31,7 @@ import com.starrtc.starrtcsdk.api.XHSuperRoomManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +79,11 @@ public class SuperRoomActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MLOC.d("liveVideoVdn","+==================================================");
+        MLOC.d("liveVideoVdn","+==================================================");
+        MLOC.d("liveVideoVdn","+==================================================");
+        MLOC.d("liveVideoVdn","+==================================================");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -133,6 +139,7 @@ public class SuperRoomActivity extends BaseActivity {
 
         superRoomManager = XHClient.getInstance().getSuperRoomManager(this);
         superRoomManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
+        superRoomManager.setRecorder(new XHCameraRecorder());
 
         addListener();
         vRoomId = (TextView) findViewById(R.id.live_id_text);
@@ -206,6 +213,10 @@ public class SuperRoomActivity extends BaseActivity {
                 if(lastAction!=event.getAction()){
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
+                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
+                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
+                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
+                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
                             vPushBtn.setSelected(true);
                             superRoomManager.pickUpMic(new IXHResultCallback() {
                                 @Override
@@ -661,6 +672,17 @@ public class SuperRoomActivity extends BaseActivity {
 
     private void stopAndFinish(){
         starRTCAudioManager.stop();
+        superRoomManager.leaveSuperRoom(new IXHResultCallback() {
+            @Override
+            public void success(Object data) {
+                MLOC.d("SuperRoomActivity","leaveSuperRoom  success");
+            }
+
+            @Override
+            public void failed(String errMsg) {
+                MLOC.d("SuperRoomActivity","leaveSuperRoom  failed");
+            }
+        });
         removeListener();
         finish();
     }

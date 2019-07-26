@@ -11,7 +11,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             moduleName "app"
-            abiFilters 'armeabi-v7a'
+            abiFilters 'armeabi-v7a'//,'arm64-v8a'
         }
     }
     buildTypes {

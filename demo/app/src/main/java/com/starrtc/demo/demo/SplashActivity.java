@@ -28,6 +28,7 @@ import java.util.List;
 
 public class SplashActivity extends Activity {
     private boolean isLogin = false;
+    private final boolean checkNetState = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
