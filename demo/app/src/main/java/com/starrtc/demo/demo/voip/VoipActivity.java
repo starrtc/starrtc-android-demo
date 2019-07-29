@@ -79,12 +79,8 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
-        voipManager.setRecorder(new XHCameraRecorder());
-//        XHCustomRecorder customRecorder = new XHCustomRecorder(640,480,270,true);
-//        pushYuvTest = new PushYuvTest(customRecorder);
-//        voipManager.setRecorder(customRecorder);
-
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
+        voipManager.setRecorder(new XHCameraRecorder());
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");

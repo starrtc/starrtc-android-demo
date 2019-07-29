@@ -24,6 +24,7 @@ import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import java.text.SimpleDateFormat;
 import java.util.Set;
@@ -59,6 +60,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
 
         voipManager = XHClient.getInstance().getVoipManager();
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
+        voipManager.setRecorder(new XHCameraRecorder());
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");
