@@ -3,6 +3,7 @@ package com.starrtc.demo.serverAPI;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.im.group.MessageGroupInfo;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.ICallback;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class InterfaceUrls {
     //存列表
     public static void demoSaveToList(String userId,int listType,String id,String data){
-        String url = "http://www.starrtc.com/aec/list/save.php";
+        String url = MLOC.LIST_SAVE_URL;
         String params = "";
         JSONObject jsonObject = new JSONObject();
         try {
@@ -48,7 +49,7 @@ public class InterfaceUrls {
     }
     //刪除列表
     public static void demoDeleteFromList(String userId,int listType,String id){
-        String url = "http://www.starrtc.com/aec/list/del.php";
+        String url = MLOC.LIST_DELETE_URL;
         String params = "";
         JSONObject jsonObject = new JSONObject();
         try {
@@ -74,7 +75,7 @@ public class InterfaceUrls {
     }
     //查询列表
     public static void demoQueryList(String listType){
-        String url = "http://www.starrtc.com/aec/list/query.php";
+        String url = MLOC.LIST_QUERY_URL;
         String params = "";
         JSONObject jsonObject = new JSONObject();
         try {
@@ -194,7 +195,7 @@ public class InterfaceUrls {
 
     //获取IM群列表
     public static void demoQueryImGroupList(String userId){
-        String url = "http://www.starrtc.com/aec/group/list.php?userId="+userId;
+        String url = MLOC.IM_GROUP_LIST_URL+"?userId="+userId;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {
@@ -235,7 +236,7 @@ public class InterfaceUrls {
 
     //获取IM群成员列表+免打扰状态
     public static void demoQueryImGroupInfo(String userId,String groupId){
-        String url = "http://www.starrtc.com/aec/group/members.php?userId="+userId+"&groupId="+groupId;
+        String url = MLOC.IM_GROUP_INFO_URL+"?userId="+userId+"&groupId="+groupId;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {

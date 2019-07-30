@@ -17,7 +17,6 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
 import com.starrtc.demo.database.MessageBean;
-import com.starrtc.demo.serverAPI.InterfaceUrls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +41,13 @@ public class MLOC {
     public static String LIVE_PROXY_SERVER_URL    = "demo.starrtc.com:19932";
 
     public static Boolean AEventCenterEnable = false;
+
+    public static String IM_GROUP_LIST_URL  = "http://www.starrtc.com/aec/group/list.php";
+    public static String IM_GROUP_INFO_URL  = "http://www.starrtc.com/aec/group/members.php";
+    public static String LIST_SAVE_URL      = "http://www.starrtc.com/aec/list/save.php";
+    public static String LIST_DELETE_URL    = "http://www.starrtc.com/aec/list/del.php";
+    public static String LIST_QUERY_URL     = "http://www.starrtc.com/aec/list/query.php";
+
     public static final int LIST_TYPE_CHATROOM = 0;
     public static final int LIST_TYPE_LIVE = 1;
     public static final int LIST_TYPE_LIVE_PUSH = 2;
@@ -73,7 +79,6 @@ public class MLOC {
 
     public static boolean deleteGroup = false;
 
-
     private static CoreDB coreDB;
 
     public static void init(Context context){
@@ -83,18 +88,25 @@ public class MLOC {
         }
         userId = loadSharedData(context,"userId",userId);
 
-        VOIP_SERVER_URL = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
-        IM_SERVER_URL = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
-        LIVE_SRC_SERVER_URL = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
-        LIVE_PROXY_SERVER_URL =  loadSharedData(context,"LIVE_PROXY_SERVER_URL", LIVE_PROXY_SERVER_URL);
-        LIVE_VDN_SERVER_URL = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
-        CHATROOM_SERVER_URL = loadSharedData(context,"CHATROOM_SERVER_URL", CHATROOM_SERVER_URL);
+        VOIP_SERVER_URL         = loadSharedData(context,"VOIP_SERVER_URL",VOIP_SERVER_URL);
+        IM_SERVER_URL           = loadSharedData(context,"IM_SERVER_URL",IM_SERVER_URL);
+        LIVE_SRC_SERVER_URL     = loadSharedData(context,"LIVE_SRC_SERVER_URL",LIVE_SRC_SERVER_URL);
+        LIVE_PROXY_SERVER_URL   =  loadSharedData(context,"LIVE_PROXY_SERVER_URL", LIVE_PROXY_SERVER_URL);
+        LIVE_VDN_SERVER_URL     = loadSharedData(context,"LIVE_VDN_SERVER_URL",LIVE_VDN_SERVER_URL);
+        CHATROOM_SERVER_URL     = loadSharedData(context,"CHATROOM_SERVER_URL", CHATROOM_SERVER_URL);
+
 
         if(loadSharedData(context,"AEC_ENABLE", "0").equals("0")){
             AEventCenterEnable = false;
         }else{
             AEventCenterEnable = true;
         }
+
+        IM_GROUP_LIST_URL   = loadSharedData(context,"IM_GROUP_LIST_URL",IM_GROUP_LIST_URL);
+        IM_GROUP_INFO_URL   = loadSharedData(context,"IM_GROUP_INFO_URL",IM_GROUP_INFO_URL);
+        LIST_SAVE_URL       = loadSharedData(context,"LIST_SAVE_URL",LIST_SAVE_URL);
+        LIST_DELETE_URL     =  loadSharedData(context,"LIST_DELETE_URL", LIST_DELETE_URL);
+        LIST_QUERY_URL      = loadSharedData(context,"LIST_QUERY_URL",LIST_QUERY_URL);
     }
 
     private static Boolean debug = true;
@@ -317,6 +329,19 @@ public class MLOC {
                     }
                     dialogs[0].dismiss();
                     dialogs[0] = null;
+//                    if(type==0){
+//                        //C2C
+//                        Intent intent = new Intent(context,C2CListActivity.class);
+//                        context.startActivity(intent);
+//                    }else if(type==1){
+//                        //Group
+//                        Intent intent = new Intent(context, MessageGroupListActivity.class);
+//                        context.startActivity(intent);
+//                    }else if(type==2){
+//                        //VOIP
+//                        Intent intent = new Intent(context, VoipListActivity.class);
+//                        context.startActivity(intent);
+//                    }
                 }
             });
             dialogs[0].show();
@@ -368,4 +393,28 @@ public class MLOC {
         }
     }
 
+    public static void saveImGroupListUrl(String imGroupListUrl) {
+        MLOC.IM_GROUP_LIST_URL = imGroupListUrl;
+        saveSharedData(appContext,"IM_GROUP_LIST_URL", IM_GROUP_LIST_URL);
+    }
+
+    public static void saveImGroupInfoUrl(String imGroupInfoUrl) {
+        MLOC.IM_GROUP_INFO_URL = imGroupInfoUrl;
+        saveSharedData(appContext,"IM_GROUP_INFO_URL", IM_GROUP_INFO_URL);
+    }
+
+    public static void saveListSaveUrl(String listSaveUrl) {
+        MLOC.LIST_SAVE_URL = listSaveUrl;
+        saveSharedData(appContext,"LIST_SAVE_URL", LIST_SAVE_URL);
+    }
+
+    public static void saveListDeleteUrl(String listDeleteUrl) {
+        MLOC.LIST_DELETE_URL = listDeleteUrl;
+        saveSharedData(appContext,"LIST_DELETE_URL", LIST_DELETE_URL);
+    }
+
+    public static void saveListQueryUrl(String listQueryUrl) {
+        MLOC.LIST_QUERY_URL = listQueryUrl;
+        saveSharedData(appContext,"LIST_QUERY_URL", LIST_QUERY_URL);
+    }
 }
