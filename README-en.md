@@ -17,7 +17,7 @@ Group video meeting
 Online education
 ==
 You can upload a pdf document and markup the document besides live broadcaster.
-The whiteboard function is also available.
+And the whiteboard function is also available.
 
 ![edu_pdf](assets/edu_pdf.jpg)
 
