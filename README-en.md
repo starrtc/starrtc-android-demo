@@ -16,7 +16,8 @@ Group video meeting
 
 Online education
 ==
-you can uplaod pdf document and markup the document besides making live b
+You can upload a pdf document and markup the document besides live broadcaster.
+The whiteboard function is also available.
 
 ![edu_pdf](assets/edu_pdf.jpg)
 
@@ -108,9 +109,9 @@ Test car, face recognition, online education, etc.：https://docs.starrtc.com/en
 
 Contact
 =====
-QQ ： 2162498688
+QQ: 2162498688
 
-E-mail：<a href="mailto:support@starRTC.com">support@starRTC.com</a>
+E-mail:<a href="mailto:support@starRTC.com">support@starRTC.com</a>
 
 Phone Number: 186-1294-6552
 
