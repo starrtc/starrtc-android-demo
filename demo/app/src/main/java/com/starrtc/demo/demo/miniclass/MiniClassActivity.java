@@ -133,7 +133,6 @@ public class MiniClassActivity extends BaseActivity{
         vMeetingName = (TextView) findViewById(R.id.live_id_text);
         vMeetingName.setText("ID："+ className);
         vPaintPlayer = (StarWhitePanel2) findViewById(R.id.painter_view);
-        vPaintPlayer.setImageHost("api.starrtc.com");
 
         findViewById(R.id.chat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
