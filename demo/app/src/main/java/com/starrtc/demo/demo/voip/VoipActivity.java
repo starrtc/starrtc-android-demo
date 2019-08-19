@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -29,13 +30,16 @@ import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHSDKHelper;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
+import com.starrtc.starrtcsdk.core.camera.StarCameraConfig;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Set;
 
 public class VoipActivity extends BaseActivity implements View.OnClickListener {
@@ -79,8 +83,12 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
-        voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         voipManager.setRecorder(new XHCameraRecorder());
+//        XHCustomRecorder customRecorder = new XHCustomRecorder(640,480,270,true);
+//        pushYuvTest = new PushYuvTest(customRecorder);
+//        voipManager.setRecorder(customRecorder);
+
+        voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
 
         targetId = getIntent().getStringExtra("targetId");
@@ -100,10 +108,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         });
 
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
-        findViewById(R.id.head_bg).setBackgroundColor(ColorUtils.getColor(VoipActivity.this,targetId));
-        ((CircularCoverView)findViewById(R.id.head_cover)).setCoverColor(Color.parseColor("#000000"));
-        int cint = DensityUtils.dip2px(VoipActivity.this,45);
-        ((CircularCoverView)findViewById(R.id.head_cover)).setRadians(cint, cint, cint, cint,0);
+        ((ImageView)findViewById(R.id.head_img)).setImageResource(MLOC.getHeadImage(VoipActivity.this,targetId));
 
         findViewById(R.id.calling_hangup).setOnClickListener(this);
         findViewById(R.id.talking_hangup).setOnClickListener(this);
@@ -158,6 +163,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private void setupViews(){
         voipManager.setupView(selfPlayer, targetPlayer, new IXHResultCallback() {
+            //        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");

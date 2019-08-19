@@ -31,26 +31,13 @@
             android:layout_centerHorizontal="true"
             android:gravity="bottom"
             android:visibility="gone">
-            <RelativeLayout
-                android:id="@+id/head_bg"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:gravity="center"
+            <ImageView
+                android:id="@+id/head_img"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="100dp"
-                >
-                <com.starrtc.demo.ui.CircularCoverView
-                    android:id="@+id/head_cover"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
-                    android:layout_centerInParent="true"/>
-                <ImageView
-                    android:id="@+id/head_img"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/starfox_500"/>
-            </RelativeLayout>
+                android:src="@drawable/starfox_500"/>
             <TextView
                 android:id="@+id/targetid_text"
                 android:layout_width="wrap_content"
@@ -60,7 +47,7 @@
                 android:gravity="center"
                 android:text="XXX"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/head_bg"
+                android:layout_below="@id/head_img"
                 android:layout_marginTop="15dp"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -70,7 +57,7 @@
                 android:gravity="center"
                 android:text="正在等待对方接受视频通话..."
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/head_bg"
+                android:layout_below="@id/head_img"
                 android:layout_marginTop="55dp"/>
             <RelativeLayout
                 android:layout_width="wrap_content"

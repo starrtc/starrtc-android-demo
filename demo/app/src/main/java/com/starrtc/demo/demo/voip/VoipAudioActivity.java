@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -67,8 +68,8 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         action = getIntent().getStringExtra(ACTION);
         timer = (Chronometer) findViewById(R.id.timer);
 
-
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
+        ((ImageView)findViewById(R.id.head_img)).setImageResource(MLOC.getHeadImage(VoipAudioActivity.this,targetId));
         findViewById(R.id.head_bg).setBackgroundColor(ColorUtils.getColor(VoipAudioActivity.this,targetId));
         ((CircularCoverView)findViewById(R.id.head_cover)).setCoverColor(Color.parseColor("#000000"));
         int cint = DensityUtils.dip2px(VoipAudioActivity.this,45);

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
@@ -37,6 +38,7 @@ public class VoipAudioRingingActivity extends BaseActivity implements View.OnCli
         findViewById(R.id.ring_hangoff).setOnClickListener(this);
         findViewById(R.id.ring_pickup_audio).setOnClickListener(this);
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
+        ((ImageView)findViewById(R.id.head_img)).setImageResource(MLOC.getHeadImage(VoipAudioRingingActivity.this,targetId));
         findViewById(R.id.head_bg).setBackgroundColor(ColorUtils.getColor(VoipAudioRingingActivity.this,targetId));
         ((CircularCoverView)findViewById(R.id.head_cover)).setCoverColor(Color.parseColor("#000000"));
         int cint = DensityUtils.dip2px(VoipAudioRingingActivity.this,45);

@@ -22,6 +22,7 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:gravity="center_horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="55dp"
@@ -29,6 +30,33 @@
             android:gravity="center_vertical"
             android:background="#ffffff"
             android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:layout_marginLeft="16dp"
+                android:textSize="16sp"
+                android:text="群号"
+                />
+            <TextView
+                android:id="@+id/group_id"
+                android:layout_width="48dp"
+                android:layout_height="25dp"
+                android:layout_marginRight="16dp"
+                android:gravity="right"
+                />
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#ffffff">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

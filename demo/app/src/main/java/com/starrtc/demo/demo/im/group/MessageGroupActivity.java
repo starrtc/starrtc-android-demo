@@ -167,7 +167,6 @@ public class MessageGroupActivity extends Activity implements IEventListener, Ad
     @Override
     public void onResume(){
         super.onResume();
-
         if(MLOC.deleteGroup){
             MLOC.deleteGroup = false;
             finish();

@@ -17,6 +17,7 @@ import com.starrtc.demo.R;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
 import com.starrtc.demo.database.MessageBean;
+import com.starrtc.demo.serverAPI.InterfaceUrls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,14 +32,15 @@ import java.util.TimerTask;
 
 public class MLOC {
     public static Context appContext;
+    public static String authKey = "";
     public static String userId = "";
 
-    public static String VOIP_SERVER_URL          = "demo.starrtc.com:10086";
-    public static String IM_SERVER_URL            = "demo.starrtc.com:19903";
-    public static String CHATROOM_SERVER_URL      = "demo.starrtc.com:19906";
-    public static String LIVE_VDN_SERVER_URL      = "demo.starrtc.com:19928";
-    public static String LIVE_SRC_SERVER_URL      = "demo.starrtc.com:19931";
-    public static String LIVE_PROXY_SERVER_URL    = "demo.starrtc.com:19932";
+    public static String VOIP_SERVER_URL          = "test.starrtc.com:10086";
+    public static String IM_SERVER_URL            = "test.starrtc.com:19903";
+    public static String CHATROOM_SERVER_URL      = "test.starrtc.com:19906";
+    public static String LIVE_VDN_SERVER_URL      = "test.starrtc.com:19928";
+    public static String LIVE_SRC_SERVER_URL      = "test.starrtc.com:19931";
+    public static String LIVE_PROXY_SERVER_URL    = "test.starrtc.com:19932";
 
     public static Boolean AEventCenterEnable = false;
 
@@ -48,17 +50,17 @@ public class MLOC {
     public static String LIST_DELETE_URL    = "http://www.starrtc.com/aec/list/del.php";
     public static String LIST_QUERY_URL     = "http://www.starrtc.com/aec/list/query.php";
 
-    public static final int LIST_TYPE_CHATROOM = 0;
-    public static final int LIST_TYPE_LIVE = 1;
-    public static final int LIST_TYPE_LIVE_PUSH = 2;
-    public static final int LIST_TYPE_MEETING = 3;
-    public static final int LIST_TYPE_MEETING_PUSH = 4;
-    public static final int LIST_TYPE_CLASS = 5;
-    public static final int LIST_TYPE_CLASS_PUSH = 6;
-    public static final int LIST_TYPE_AUDIO_LIVE = 7;
-    public static final int LIST_TYPE_AUDIO_LIVE_PUSH = 8;
-    public static final int LIST_TYPE_SUPER_ROOM = 9;
-    public static final int LIST_TYPE_SUPER_ROOM_PUSH = 10;
+    public static final int LIST_TYPE_CHATROOM = 0;             //IM 聊天室
+    public static final int LIST_TYPE_LIVE = 1;                 //直播
+    public static final int LIST_TYPE_LIVE_PUSH = 2;            //直播转推第三方流
+    public static final int LIST_TYPE_MEETING = 3;              //会议
+    public static final int LIST_TYPE_MEETING_PUSH = 4;         //会议转推第三方流
+    public static final int LIST_TYPE_CLASS = 5;                //小班课
+    public static final int LIST_TYPE_CLASS_PUSH = 6;           //小班课转推第三方流
+    public static final int LIST_TYPE_AUDIO_LIVE = 7;           //音频直播
+    public static final int LIST_TYPE_AUDIO_LIVE_PUSH = 8;      //音频直播转推第三方流
+    public static final int LIST_TYPE_SUPER_ROOM = 9;           //超级对讲
+    public static final int LIST_TYPE_SUPER_ROOM_PUSH = 10;     //超级对讲转推第三方流
 
     public static final String LIST_TYPE_LIVE_ALL = LIST_TYPE_LIVE +","+ LIST_TYPE_LIVE_PUSH;
     public static final String LIST_TYPE_MEETING_ALL = LIST_TYPE_MEETING +","+ LIST_TYPE_MEETING_PUSH;

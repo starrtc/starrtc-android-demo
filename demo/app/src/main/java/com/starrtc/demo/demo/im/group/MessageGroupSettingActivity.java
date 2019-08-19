@@ -180,6 +180,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
     @Override
     public  void onResume(){
         super.onResume();
+        ((TextView)findViewById(R.id.group_id)).setText(mGroupId);
         AEvent.addListener(AEvent.AEVENT_GROUP_GOT_MEMBER_LIST,this);
     }
 
