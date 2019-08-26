@@ -350,7 +350,7 @@ public class MessageGroupSettingActivity extends BaseActivity{
         Context context;
 
         public MyAdapter(Context context) {
-            this.context = context;
+            this.context = context.getApplicationContext();
         }
 
         @Override

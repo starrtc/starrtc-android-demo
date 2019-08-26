@@ -20,26 +20,19 @@ import com.starrtc.demo.demo.BaseActivity;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.database.CoreDB;
 import com.starrtc.demo.database.HistoryBean;
-import com.starrtc.demo.ui.CircularCoverView;
 import com.starrtc.demo.utils.AEvent;
-import com.starrtc.demo.utils.ColorUtils;
-import com.starrtc.demo.utils.DensityUtils;
 import com.starrtc.starrtcsdk.api.XHClient;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHSDKHelper;
 import com.starrtc.starrtcsdk.api.XHVoipManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
-import com.starrtc.starrtcsdk.core.camera.StarCameraConfig;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
-import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Set;
 
 public class VoipActivity extends BaseActivity implements View.OnClickListener {
@@ -337,6 +330,9 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                         stopAndFinish();
                     }
                 });
+                if(xhsdkHelper!=null){
+                    xhsdkHelper.stopPerview();
+                }
                 break;
             case R.id.talking_hangup:
                 voipManager.hangup(new IXHResultCallback() {

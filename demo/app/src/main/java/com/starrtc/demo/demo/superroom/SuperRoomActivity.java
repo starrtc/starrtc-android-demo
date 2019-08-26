@@ -138,8 +138,10 @@ public class SuperRoomActivity extends BaseActivity {
         vHeadArray.add((ImageView) findViewById(R.id.mc_head_6));
 
         superRoomManager = XHClient.getInstance().getSuperRoomManager(this);
+        superRoomManager.addListener(new XHSuperRoomManagerListener());
         superRoomManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
         superRoomManager.setRecorder(new XHCameraRecorder());
+
 
         addListener();
         vRoomId = (TextView) findViewById(R.id.live_id_text);

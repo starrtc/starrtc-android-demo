@@ -35,7 +35,6 @@ public class VoipCreateActivity extends BaseActivity {
                 if(TextUtils.isEmpty(inputId)){
                     MLOC.showMsg(VoipCreateActivity.this,"id不能为空");
                 }else{
-
                     AlertDialog.Builder builder=new AlertDialog.Builder(VoipCreateActivity.this);
                     builder.setItems(new String[]{"视频通话","音频通话"}, new DialogInterface.OnClickListener() {
                         @Override

@@ -842,6 +842,7 @@ public class MiniClassActivity extends BaseActivity{
         if(starRTCAudioManager!=null){
             starRTCAudioManager.stop();
         }
+        vPaintPlayer.pause();
         removeListener();
         finish();
     }

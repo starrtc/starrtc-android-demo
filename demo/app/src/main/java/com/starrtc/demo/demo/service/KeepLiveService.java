@@ -99,7 +99,6 @@ public class KeepLiveService extends Service implements IEventListener {
             XHClient.getInstance().getVoipManager().addListener(new XHVoipManagerListener());
             XHClient.getInstance().getVoipP2PManager().addListener(new XHVoipP2PManagerListener());
             XHClient.getInstance().getLoginManager().addListener(new XHLoginManagerListener());
-            XHClient.getInstance().getSuperRoomManager().addListener(new XHSuperRoomManagerListener());
             XHVideoSourceManager.getInstance().setVideoSourceCallback(new DemoVideoSourceCallback());
 
             XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {

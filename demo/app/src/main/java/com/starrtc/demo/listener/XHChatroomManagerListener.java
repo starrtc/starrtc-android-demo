@@ -34,4 +34,9 @@ public class XHChatroomManagerListener implements IXHChatroomManagerListener {
     public void onReceivePrivateMessage(XHIMMessage message) {
         AEvent.notifyListener(AEvent.AEVENT_CHATROOM_REV_PRIVATE_MSG,true,message);
     }
+
+    @Override
+    public void onError(String error) {
+        AEvent.notifyListener(AEvent.AEVENT_CHATROOM_ERROR,true,error);
+    }
 }

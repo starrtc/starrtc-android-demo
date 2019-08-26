@@ -32,7 +32,6 @@ import java.util.TimerTask;
 
 public class MLOC {
     public static Context appContext;
-    public static String authKey = "";
     public static String userId = "";
 
     public static String VOIP_SERVER_URL          = "test.starrtc.com:10086";
@@ -84,7 +83,7 @@ public class MLOC {
     private static CoreDB coreDB;
 
     public static void init(Context context){
-        appContext = context;
+        appContext = context.getApplicationContext();
         if(coreDB==null){
             coreDB = new CoreDB();
         }
@@ -133,7 +132,7 @@ public class MLOC {
                 mToast.setText(str);
                 mToast.setDuration(Toast.LENGTH_SHORT);
             } else {
-                mToast = Toast.makeText(appContext, str, Toast.LENGTH_SHORT);
+                mToast = Toast.makeText(appContext.getApplicationContext(), str, Toast.LENGTH_SHORT);
             }
             mToast.show();
         }catch (Exception e){
@@ -146,7 +145,7 @@ public class MLOC {
                 mToast.setText(str);
                 mToast.setDuration(Toast.LENGTH_SHORT);
             } else {
-                mToast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
+                mToast = Toast.makeText(context.getApplicationContext(), str, Toast.LENGTH_SHORT);
             }
             mToast.show();
         }catch (Exception e){
@@ -195,19 +194,19 @@ public class MLOC {
     }
 
     public static void saveSharedData(Context context,String key,String value){
-        SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
+        SharedPreferences sp = context.getApplicationContext().getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, value);
         editor.commit();
     }
 
     public static String loadSharedData(Context context,String key){
-        SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
+        SharedPreferences sp = context.getApplicationContext().getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
         return sp.getString(key,"");
     }
 
     public static String loadSharedData(Context context,String key,String defValue){
-        SharedPreferences sp = context.getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
+        SharedPreferences sp = context.getApplicationContext().getSharedPreferences("stardemo", Activity.MODE_PRIVATE);
         return sp.getString(key,defValue);
     }
     public static void saveUserId(String id){
@@ -246,7 +245,7 @@ public class MLOC {
     }
 
     public static void saveC2CUserId(Context context,String uid){
-        String history = MLOC.loadSharedData(context,"c2cHistory");
+        String history = MLOC.loadSharedData(context.getApplicationContext(),"c2cHistory");
         if(history.length()>0){
             String[] arr = history.split(",,");
             String newHistory = "";
@@ -264,17 +263,17 @@ public class MLOC {
             }else{
                 newHistory = uid+",,"+newHistory;
             }
-            MLOC.saveSharedData(context,"c2cHistory",newHistory);
+            MLOC.saveSharedData(context.getApplicationContext(),"c2cHistory",newHistory);
         }else{
-            MLOC.saveSharedData(context,"c2cHistory",uid);
+            MLOC.saveSharedData(context.getApplicationContext(),"c2cHistory",uid);
         }
     }
     public static void cleanC2CUserId(Context context){
-        MLOC.saveSharedData(context,"c2cHistory","");
+        MLOC.saveSharedData(context.getApplicationContext(),"c2cHistory","");
     }
 
     public static void saveVoipUserId(Context context,String uid){
-        String history = MLOC.loadSharedData(context,"voipHistory");
+        String history = MLOC.loadSharedData(context.getApplicationContext(),"voipHistory");
         if(history.length()>0){
             String[] arr = history.split(",,");
             String newHistory = "";
@@ -292,13 +291,13 @@ public class MLOC {
             }else{
                 newHistory = uid+",,"+newHistory;
             }
-            MLOC.saveSharedData(context,"voipHistory",newHistory);
+            MLOC.saveSharedData(context.getApplicationContext(),"voipHistory",newHistory);
         }else{
-            MLOC.saveSharedData(context,"voipHistory",uid);
+            MLOC.saveSharedData(context.getApplicationContext(),"voipHistory",uid);
         }
     }
     public static void cleanVoipUserId(Context context){
-        MLOC.saveSharedData(context,"voipHistory","");
+        MLOC.saveSharedData(context.getApplicationContext(),"voipHistory","");
     }
 
     static Dialog[] dialogs = new Dialog[1];
@@ -311,7 +310,7 @@ public class MLOC {
             String msg = data.getString("msg");// 提示消息
 
             if(dialogs[0]==null||dialogs[0].isShowing()==false){
-                dialogs[0] = new Dialog(context, R.style.dialog_notify);
+                dialogs[0] = new Dialog(context.getApplicationContext(), R.style.dialog_notify);
                 dialogs[0].setContentView(R.layout.dialog_new_msg);
                 Window win = dialogs[0].getWindow();
                 win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -374,7 +373,7 @@ public class MLOC {
     private static int[] mHeadIconIds ;
     public static int getHeadImage(Context context,String userID){
         if(mHeadIconIds==null){
-            TypedArray ar = context.getResources().obtainTypedArray(R.array.head_images);
+            TypedArray ar = context.getApplicationContext().getResources().obtainTypedArray(R.array.head_images);
             int len = ar.length();
             mHeadIconIds = new int[len];
             for (int i = 0; i < len; i++) {
