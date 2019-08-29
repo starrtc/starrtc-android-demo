@@ -310,7 +310,7 @@ public class MLOC {
             String msg = data.getString("msg");// 提示消息
 
             if(dialogs[0]==null||dialogs[0].isShowing()==false){
-                dialogs[0] = new Dialog(context.getApplicationContext(), R.style.dialog_notify);
+                dialogs[0] = new Dialog(context, R.style.dialog_notify);
                 dialogs[0].setContentView(R.layout.dialog_new_msg);
                 Window win = dialogs[0].getWindow();
                 win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);

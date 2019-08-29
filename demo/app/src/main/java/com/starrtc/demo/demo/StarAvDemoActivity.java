@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
-import com.starrtc.demo.demo.audiolive.AudioLiveListActivity;
 import com.starrtc.demo.demo.im.IMDemoActivity;
 import com.starrtc.demo.demo.miniclass.MiniClassListActivity;
 import com.starrtc.demo.demo.setting.SettingActivity;
