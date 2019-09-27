@@ -31,6 +31,7 @@ import com.starrtc.starrtcsdk.api.XHLiveManager;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
+import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,6 +136,7 @@ public class AudioLiveActivity extends BaseActivity {
 
         liveManager = XHClient.getInstance().getLiveManager(this);
         liveManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_AUDIO_ONLY);
+        liveManager.setRecorder(new XHCameraRecorder());
         liveManager.addListener(new XHLiveManagerListener());
 
 

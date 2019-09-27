@@ -29,7 +29,7 @@
         android:id="@+id/us"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="www.StarRTC.com\n手机:186-1294-6552     微信:starRTC"
+        android:text="www.StarRTC.com\n手机:186-1294-6552     QQ群:807242783"
         android:gravity="center"
         android:layout_marginTop="20dp"
         android:textSize="12sp"
