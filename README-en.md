@@ -2,41 +2,43 @@
 
 ![StarRTC_demo](assets/StarRTC_demo.jpg)
 
-纯语音直播间
+Audio live room
 ==
 ![audio_live](assets/audio_live.png)
 
-纯语音直播间
+Video live room
 ==
 ![live](assets/live.jpg)
 
-多人视频会议
+Group video meeting
 ==
 ![meeting](assets/meeting.png)
 
-在线教育
+Online education
 ==
-pdf文档上传标记直播，白板
+You can upload a pdf document and markup the document besides live broadcaster.
+And the whiteboard function is also available.
 
 ![edu_pdf](assets/edu_pdf.jpg)
 
 ![edu_whiteboard](assets/edu_whiteboard.jpg)
 
-IM演示
+IM demo
 ==
-轻量级IM，安卓,ios和web互通，支持一对一聊天，群聊，聊天室，公有云免费！
+Lightweight IM supports one-to-one chat, group chat, and chat room which can send message during android platform, ios platform and web platform.
 
 ![im](assets/im.jpg)
-P2P直连
+
+P2P Connection
 ==
-不经过服务器直连：
+The communication between two devices can connect directlty without server：
 
 ![p2p](assets/p2p.jpg)
 
 ![p2p_calling](assets/p2p_calling.jpg)
 
 
-门禁对讲
+Access control intercom
 ==
 
 ![door_calling](assets/door_calling.jpg)
@@ -45,75 +47,77 @@ P2P直连
 
 ![door_voip](assets/door_voip.jpg)
 
-树莓派小车
+Car controlled by raspberry pie
 ==
-树莓派小车将视频实时传回到操控者的手机上：
+The Raspberry Pi car transmits the video back to the controller's mobile phone in real time:
 
 https://github.com/starrtc/starrtc-android-demo/raw/master/assets/rpi_car.MP4
 
-物联网硬件
+IoT hardware
 ==
-海思arm板采集mac电脑的hdmi信号进行实时录屏直播：
+The hdmi signal of mac computer which is captured by the Haisi arm board is broadcast for screen recording：
 
 ![arm_hdmi](assets/arm_hdmi.jpg)
 
 ![arm_hdmi_screen](assets/arm_hdmi_screen.jpg)
 
-hdmi接摄像头：
+Hdmi connects the camera:
 
 ![camera](assets/camera.jpg)
 
-电视盒子
+TV BOX
 ==
 
 ![tv_box_voip](assets/tv_box_voip.jpg)
 
-录屏
+Screen recording
 ==
 
 ![screen_phone](assets/screen_phone.jpg)
 
 ![screen_web](assets/screen_web.jpg)
 
-APP下载
+APP Download
 =====
-如果不想自己编译，可直接下载apk进行测试：
+If you don't want to compile the program, you also can download the apk to experience the functions：
 
-[点击下载Android示例程序](https://github.com/starrtc/starrtc-android-demo/raw/master/StarRTC_demo.apk)，注意需要2部手机都安装才能测试一对一通话，或者扫描下面二维码安装。
+[Click to download the android demo](https://github.com/starrtc/starrtc-android-demo/raw/master/StarRTC_demo.apk).
+Pay attention that you should install demo on two phones for voip test.
+You also can scan the QR code below to install the apk.
 
-![StarRTC_demo 安装包](assets/android.png)
+![StarRTC_demo installation package](assets/android.png)
 
-IM测试时，除了app之间可以互发消息，app也可以和这个页面互发消息进行测试：
+Besides sending message between the apps, the demo app can also send messages to this page for testing when doing IM test：
 
 [Web IM](https://www.starrtc.com/demo/im)
 
-一对一视频等功能也可以和这个页面测试：
+You can also test other functions such as 1to1 video on this page:
 
-[H5测试](https://www.starrtc.com/demo/web/)
+[H5 test](https://www.starrtc.com/demo/web/)
 
-后台api与数据库
+Background api and database
 ===
 https://github.com/starrtc/starrtc-demo-server-api-php
 
-自行部署服务端程序
+deploying the server program
 ===
 https://github.com/starrtc/starrtc-server
 
 More demo
 ==
-测试小车，人脸识别，在线教育等请参见：https://docs.starrtc.com/en/download/
+Test car, face recognition, online education, etc.：https://docs.starrtc.com/en/download/
 
 Contact
 =====
-QQ ： 2162498688
+QQ: 2162498688
 
-邮箱：<a href="mailto:support@starRTC.com">support@starRTC.com</a>
+E-mail:<a href="mailto:support@starRTC.com">support@starRTC.com</a>
 
-手机: 186-1294-6552
+Phone Number: 186-1294-6552
 
-微信：starRTC
+Webchat ID:starRTC
 
-QQ群：807242783
+QQ group ID:807242783
 
 ChangeLog
 ===
