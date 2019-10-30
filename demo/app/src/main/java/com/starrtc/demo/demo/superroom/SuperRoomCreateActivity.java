@@ -19,7 +19,7 @@ public class SuperRoomCreateActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_super_room_create);
-        ((TextView)findViewById(R.id.title_text)).setText("创建超级聊天室");
+        ((TextView)findViewById(R.id.title_text)).setText("创建对讲机房间");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override

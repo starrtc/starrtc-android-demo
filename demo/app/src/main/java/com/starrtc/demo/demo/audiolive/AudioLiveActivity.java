@@ -210,7 +210,17 @@ public class AudioLiveActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = false;
-                                    liveManager.changeToAudience();
+                                    liveManager.changeToAudience(new IXHResultCallback() {
+                                        @Override
+                                        public void success(Object data) {
+
+                                        }
+
+                                        @Override
+                                        public void failed(String errMsg) {
+
+                                        }
+                                    });
                                     vLinkBtn.setText("上麦");
                                     vAudioBtn.setVisibility(View.GONE);
                                     findViewById(R.id.audio_container).setVisibility(View.GONE);
@@ -574,7 +584,17 @@ public class AudioLiveActivity extends BaseActivity {
             case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
                 if(((XHConstants.XHLiveJoinResult)eventObj)== XHConstants.XHLiveJoinResult.XHLiveJoinResult_accept){
                     isUploader = true;
-                    liveManager.changeToBroadcaster();
+                    liveManager.changeToBroadcaster(new IXHResultCallback() {
+                        @Override
+                        public void success(Object data) {
+
+                        }
+
+                        @Override
+                        public void failed(String errMsg) {
+
+                        }
+                    });
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

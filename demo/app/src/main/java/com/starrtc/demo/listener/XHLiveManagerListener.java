@@ -3,6 +3,7 @@ package com.starrtc.demo.listener;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.apiInterface.IXHLiveManagerListener;
+import com.starrtc.starrtcsdk.core.StarRtcCore;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
 import org.json.JSONException;
@@ -102,7 +103,5 @@ public class XHLiveManagerListener implements IXHLiveManagerListener {
             e.printStackTrace();
 
         }
-
-
     }
 }

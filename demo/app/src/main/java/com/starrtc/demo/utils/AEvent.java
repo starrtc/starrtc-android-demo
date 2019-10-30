@@ -160,6 +160,7 @@ public class AEvent {
 
     public static final String AEVENT_C2C_REV_MSG               ="AEVENT_C2C_REV_MSG";
     public static final String AEVENT_GROUP_REV_MSG             ="AEVENT_GROUP_REV_MSG";
+    public static final String AEVENT_REV_SYSTEM_MSG             ="AEVENT_REV_SYSTEM_MSG";
 
     public static final String AEVENT_USER_KICKED               ="AEVENT_USER_KICKED";
     public static final String AEVENT_USER_ONLINE               ="AEVENT_USER_ONLINE";

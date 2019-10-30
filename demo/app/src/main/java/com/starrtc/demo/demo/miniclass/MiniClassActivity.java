@@ -298,7 +298,17 @@ public class MiniClassActivity extends BaseActivity{
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = false;
-                                    classManager.changeToAudience();
+                                    classManager.changeToAudience(new IXHResultCallback() {
+                                        @Override
+                                        public void success(Object data) {
+
+                                        }
+
+                                        @Override
+                                        public void failed(String errMsg) {
+
+                                        }
+                                    });
                                     vLinkBtn.setText("互动");
                                     vPaintPlayer.pause();
                                     vCameraBtn.setVisibility(View.GONE);
@@ -428,7 +438,7 @@ public class MiniClassActivity extends BaseActivity{
     private void startClass(){
         isUploader = true;
         //开始直播
-        vPaintPlayer.publish(MLOC.userId);
+        vPaintPlayer.publish(classManager,MLOC.userId);
         classManager.startLive(classId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
@@ -603,8 +613,6 @@ public class MiniClassActivity extends BaseActivity{
             e.printStackTrace();
             return txt;
         }
-
-
     }
 
     private void sendChatMsg(String msg){
@@ -771,8 +779,18 @@ public class MiniClassActivity extends BaseActivity{
                 break;
             case AEvent.AEVENT_LIVE_APPLY_LINK_RESULT:
                 isUploader = true;
-                classManager.changeToBroadcaster();
-                vPaintPlayer.publish(MLOC.userId);
+                classManager.changeToBroadcaster(new IXHResultCallback() {
+                    @Override
+                    public void success(Object data) {
+
+                    }
+
+                    @Override
+                    public void failed(String errMsg) {
+
+                    }
+                });
+                vPaintPlayer.publish(classManager,MLOC.userId);
                 vLinkBtn.setText("停止");
                 vCameraBtn.setVisibility(View.VISIBLE);
                 vMicBtn.setVisibility(View.VISIBLE);

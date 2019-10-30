@@ -46,7 +46,7 @@ public class AudioLiveListActivity extends BaseActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_live_list);
-        ((TextView)findViewById(R.id.title_text)).setText("语音直播列表");
+        ((TextView)findViewById(R.id.title_text)).setText("互动语音直播列表");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override

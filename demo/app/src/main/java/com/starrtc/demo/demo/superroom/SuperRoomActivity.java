@@ -145,7 +145,7 @@ public class SuperRoomActivity extends BaseActivity {
 
         addListener();
         vRoomId = (TextView) findViewById(R.id.live_id_text);
-        vRoomId.setText("超级聊天室名称："+ liveName);
+        vRoomId.setText("房间名称："+ liveName);
 
         vOnlineNum = findViewById(R.id.online_text);
         vOnlineNum.setText(onLineUserNumber+" 人在线");
@@ -215,10 +215,6 @@ public class SuperRoomActivity extends BaseActivity {
                 if(lastAction!=event.getAction()){
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
-                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
-                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
-                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
-                            MLOC.d("TEST","+=++++++++++++++++++++++++++++++++");
                             vPushBtn.setSelected(true);
                             superRoomManager.pickUpMic(new IXHResultCallback() {
                                 @Override
@@ -396,25 +392,10 @@ public class SuperRoomActivity extends BaseActivity {
                 }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        stop();
+                        stopAndFinish();
                     }
                 }
         ).show();
-    }
-
-    private void stop(){
-        superRoomManager.leaveSuperRoom(new IXHResultCallback() {
-            @Override
-            public void success(Object data) {
-                stopAndFinish();
-            }
-
-            @Override
-            public void failed(final String errMsg) {
-                MLOC.showMsg(SuperRoomActivity.this,errMsg);
-                stopAndFinish();
-            }
-        });
     }
 
     private void addPlayer(String addUserID){
@@ -678,14 +659,14 @@ public class SuperRoomActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 MLOC.d("SuperRoomActivity","leaveSuperRoom  success");
+                finish();
             }
-
             @Override
             public void failed(String errMsg) {
                 MLOC.d("SuperRoomActivity","leaveSuperRoom  failed");
+                finish();
             }
         });
         removeListener();
-        finish();
     }
 }

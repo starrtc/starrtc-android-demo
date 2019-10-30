@@ -47,7 +47,7 @@ public class SuperRoomListActivity extends BaseActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_super_room_list);
-        ((TextView)findViewById(R.id.title_text)).setText("超级聊天室列表");
+        ((TextView)findViewById(R.id.title_text)).setText("对讲机房间列表");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override

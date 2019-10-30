@@ -412,7 +412,7 @@ public class VideoMeetingActivity extends BaseActivity{
         final float mainEndX = clickPlayer.getX();
         final float mainEndY = clickPlayer.getY();
 
-        if(XHCustomConfig.getInstance().getOpenGLESEnable()){
+        if(XHCustomConfig.getInstance(this).getOpenGLESEnable()){
             clickPlayer.setX(clickEndX);
             clickPlayer.setY(clickEndY);
             clickPlayer.getLayoutParams().width = (int) clickEndW;

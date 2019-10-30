@@ -34,12 +34,12 @@ public class MLOC {
     public static Context appContext;
     public static String userId = "";
 
-    public static String VOIP_SERVER_URL          = "test.starrtc.com:10086";
-    public static String IM_SERVER_URL            = "test.starrtc.com:19903";
-    public static String CHATROOM_SERVER_URL      = "test.starrtc.com:19906";
-    public static String LIVE_VDN_SERVER_URL      = "test.starrtc.com:19928";
-    public static String LIVE_SRC_SERVER_URL      = "test.starrtc.com:19931";
-    public static String LIVE_PROXY_SERVER_URL    = "test.starrtc.com:19932";
+    public static String VOIP_SERVER_URL          = "demo.starrtc.com:10086";
+    public static String IM_SERVER_URL            = "demo.starrtc.com:19903";
+    public static String CHATROOM_SERVER_URL      = "demo.starrtc.com:19906";
+    public static String LIVE_VDN_SERVER_URL      = "demo.starrtc.com:19928";
+    public static String LIVE_SRC_SERVER_URL      = "demo.starrtc.com:19931";
+    public static String LIVE_PROXY_SERVER_URL    = "demo.starrtc.com:19932";
 
     public static Boolean AEventCenterEnable = false;
 

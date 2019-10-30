@@ -125,6 +125,7 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
 
     private void addListener(){
         AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_REV_SYSTEM_MSG,this);
     }
 
     @Override
@@ -147,6 +148,7 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
     @Override
     public void onStop(){
         AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_REV_SYSTEM_MSG,this);
         super.onStop();
     }
 
@@ -157,6 +159,7 @@ public class C2CActivity extends Activity implements IEventListener, AdapterView
         MLOC.d("IM_C2C",aEventID+"||"+eventObj);
         switch (aEventID){
             case AEvent.AEVENT_C2C_REV_MSG:
+            case AEvent.AEVENT_REV_SYSTEM_MSG:
                 final XHIMMessage revMsg = (XHIMMessage) eventObj;
                 if(revMsg.fromId.equals(mTargetId)){
                     HistoryBean historyBean = new HistoryBean();

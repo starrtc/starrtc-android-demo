@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <ImageView
-                    android:id="@+id/aec_switch"
+                    android:id="@+id/aecurl_switch"
                     android:layout_width="48dp"
                     android:layout_height="25dp"
                     android:src="@drawable/btn_style_switch_orange"
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textColor="#000000"
-                    android:text="语音直播示例"/>
+                    android:text="互动语音直播示例"/>
 
                 <View
                     android:layout_width="315dp"
@@ -616,6 +616,102 @@
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
             <LinearLayout
+                android:id="@+id/btn_aec"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="AEC(回声消除)"/>
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/aec_switch"
+                    android:layout_width="48dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/btn_style_switch_orange"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
+                android:id="@+id/btn_agc"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="AGC(自动增益)"/>
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/agc_switch"
+                    android:layout_width="48dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/btn_style_switch_orange"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
+                android:id="@+id/btn_ns"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:text="NS(噪声抑制)"/>
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/ns_switch"
+                    android:layout_width="48dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/btn_style_switch_orange"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="#CCCCCC"/>
+            <LinearLayout
                 android:id="@+id/btn_rnn"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
@@ -635,38 +731,6 @@
                     android:layout_weight="1"/>
                 <ImageView
                     android:id="@+id/rnn_switch"
-                    android:layout_width="48dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/btn_style_switch_orange"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:background="#CCCCCC"/>
-            <LinearLayout
-                android:id="@+id/btn_audio_process"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:gravity="center_vertical"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:text="音频处理(AGC,NS,AEC)"/>
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-                <ImageView
-                    android:id="@+id/audio_process_switch"
                     android:layout_width="48dp"
                     android:layout_height="25dp"
                     android:src="@drawable/btn_style_switch_orange"
@@ -813,37 +877,37 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
-            <LinearLayout
-                android:id="@+id/btn_uploadlogs"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:gravity="center_vertical"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:text="上传日志"/>
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-                <ImageView
-                    android:layout_width="6dp"
-                    android:layout_height="10dp"
-                    android:src="@drawable/icon_right"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:background="#CCCCCC"/>
+            <!--<LinearLayout-->
+                <!--android:id="@+id/btn_uploadlogs"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="55dp"-->
+                <!--android:paddingLeft="10dp"-->
+                <!--android:paddingRight="10dp"-->
+                <!--android:gravity="center_vertical"-->
+                <!--&gt;-->
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textColor="#000000"-->
+                    <!--android:text="上传日志"/>-->
+                <!--<View-->
+                    <!--android:layout_width="10dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"/>-->
+                <!--<ImageView-->
+                    <!--android:layout_width="6dp"-->
+                    <!--android:layout_height="10dp"-->
+                    <!--android:src="@drawable/icon_right"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_centerVertical="true"/>-->
+            <!--</LinearLayout>-->
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1px"-->
+                <!--android:layout_marginRight="10dp"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:background="#CCCCCC"/>-->
             <LinearLayout
                 android:id="@+id/btn_about"
                 android:layout_width="match_parent"

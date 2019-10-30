@@ -2,7 +2,6 @@ package com.starrtc.demo.demo.voip;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
+import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;
@@ -55,12 +55,9 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     //test
 //    private PushYuvTest pushYuvTest;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         starRTCAudioManager = StarRTCAudioManager.create(this.getApplicationContext());
         starRTCAudioManager.start(new StarRTCAudioManager.AudioManagerEvents() {
             @Override
@@ -68,9 +65,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
             }
         });
-
-
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
@@ -132,13 +126,14 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 @Override
                 public void success(Object data) {
                     xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
 //                    StarCameraConfig cameraConfig = new StarCameraConfig();
 //                    cameraConfig.previewW = StarRtcCore.cameraPreviewW;
 //                    cameraConfig.previewH = StarRtcCore.cameraPreviewH;
 //                    cameraConfig.frameRate = StarRtcCore.cameraPreviewFramrate;
 //                    cameraConfig.uploadGap = 1000/StarRtcCore.fpsBig;
 //                    pushYuvTest.initCamera(VoipActivity.this,cameraConfig,true);
-                    MLOC.d("newVoip","call success");
+                    MLOC.d("newVoip","call success! RecSessionId:"+data);
                 }
                 @Override
                 public void failed(String errMsg) {
@@ -156,7 +151,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private void setupViews(){
         voipManager.setupView(selfPlayer, targetPlayer, new IXHResultCallback() {
-            //        voipManager.setupView(this,null, targetPlayer, new IXHResultCallback() {
             @Override
             public void success(Object data) {
                 MLOC.d("newVoip","setupView success");
@@ -258,11 +252,19 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             case AEvent.AEVENT_VOIP_REV_BUSY:
                 MLOC.d("","对方线路忙");
                 MLOC.showMsg(VoipActivity.this,"对方线路忙");
+                if(xhsdkHelper!=null){
+                    xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
+                }
                 stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_REFUSED:
                 MLOC.d("","对方拒绝通话");
                 MLOC.showMsg(VoipActivity.this,"对方拒绝通话");
+                if(xhsdkHelper!=null){
+                    xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
+                }
                 stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_REV_HANGUP:
@@ -277,6 +279,10 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case AEvent.AEVENT_VOIP_REV_ERROR:
                 MLOC.d("",(String) eventObj);
+                if(xhsdkHelper!=null){
+                    xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
+                }
                 stopAndFinish();
                 break;
             case AEvent.AEVENT_VOIP_TRANS_STATE_CHANGED:
@@ -304,7 +310,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         voipManager.accept(this,targetId, new IXHResultCallback() {
             @Override
             public void success(Object data) {
-                MLOC.d("newVoip","onPickup OK ");
+                MLOC.d("newVoip","onPickup OK! RecSessionId:"+data);
             }
             @Override
             public void failed(String errMsg) {
@@ -332,6 +338,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 });
                 if(xhsdkHelper!=null){
                     xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
                 }
                 break;
             case R.id.talking_hangup:
@@ -348,7 +355,7 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 });
                 break;
             case R.id.screen_btn:
-                if(!XHCustomConfig.getInstance().getHardwareEnable()){
+                if(!XHCustomConfig.getInstance(this).getHardwareEnable()){
                     MLOC.showMsg(this,"需要打开硬编模式");
                     return;
                 }

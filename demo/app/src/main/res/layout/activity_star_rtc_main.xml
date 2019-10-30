@@ -272,7 +272,7 @@
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
                     android:textSize="21sp"
-                    android:text="超级对讲机"
+                    android:text="多人对讲机"
                     android:shadowColor="#ff000000"
                     android:shadowRadius="1"
                     android:shadowDx="1"

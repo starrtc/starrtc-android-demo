@@ -3,13 +3,16 @@ package com.starrtc.demo.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.starrtc.demo.R;
+import com.starrtc.demo.demo.audiolive.AudioLiveListActivity;
 import com.starrtc.demo.demo.im.IMDemoActivity;
 import com.starrtc.demo.demo.miniclass.MiniClassListActivity;
+import com.starrtc.demo.demo.service.KeepLiveService;
 import com.starrtc.demo.demo.setting.SettingActivity;
 import com.starrtc.demo.demo.superroom.SuperRoomListActivity;
 import com.starrtc.demo.demo.videolive.VideoLiveListActivity;

@@ -217,7 +217,17 @@ public class VideoLiveActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = false;
-                                    liveManager.changeToAudience();
+                                    liveManager.changeToAudience(new IXHResultCallback() {
+                                        @Override
+                                        public void success(Object data) {
+
+                                        }
+
+                                        @Override
+                                        public void failed(String errMsg) {
+
+                                        }
+                                    });
                                     vMicBtn.setSelected(false);
                                     vCameraBtn.setVisibility(View.GONE);
                                     vPanelBtn.setVisibility(View.GONE);
@@ -267,7 +277,7 @@ public class VideoLiveActivity extends BaseActivity {
                 }else{
                     vPanelBtn.setSelected(true);
                     vCleanBtn.setVisibility(View.VISIBLE);
-                    vPaintPlayer.publish();
+                    vPaintPlayer.publish(liveManager);
                 }
             }
         });
@@ -542,7 +552,7 @@ public class VideoLiveActivity extends BaseActivity {
         final float mainEndX = clickPlayer.getX();
         final float mainEndY = clickPlayer.getY();
 
-        if(XHCustomConfig.getInstance().getOpenGLESEnable()){
+        if(XHCustomConfig.getInstance(this).getOpenGLESEnable()){
             clickPlayer.setX(clickEndX);
             clickPlayer.setY(clickEndY);
             clickPlayer.getLayoutParams().width = (int) clickEndW;
@@ -791,7 +801,17 @@ public class VideoLiveActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     isUploader = true;
-                                    liveManager.changeToBroadcaster();
+                                    liveManager.changeToBroadcaster(new IXHResultCallback() {
+                                        @Override
+                                        public void success(Object data) {
+
+                                        }
+
+                                        @Override
+                                        public void failed(String errMsg) {
+
+                                        }
+                                    });
                                     vMicBtn.setSelected(true);
                                     vCameraBtn.setVisibility(View.VISIBLE);
                                     vPanelBtn.setVisibility(View.VISIBLE);

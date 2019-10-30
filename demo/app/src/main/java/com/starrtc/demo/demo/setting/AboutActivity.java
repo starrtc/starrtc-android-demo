@@ -24,7 +24,6 @@ public class AboutActivity extends BaseActivity {
             }
         });
         ((TextView)findViewById(R.id.title_text)).setText("关于");
-
         ((TextView)findViewById(R.id.version)).setText(XHClient.getVersion());
     }
 }

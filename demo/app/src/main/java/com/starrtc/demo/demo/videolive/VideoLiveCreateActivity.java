@@ -37,6 +37,7 @@ public class VideoLiveCreateActivity extends BaseActivity {
                     MLOC.showMsg(VideoLiveCreateActivity.this,"id不能为空");
                 }else{
                     xhsdkHelper.stopPerview();
+                    xhsdkHelper = null;
                     Intent intent = new Intent(VideoLiveCreateActivity.this, VideoLiveActivity.class);
                     intent.putExtra(VideoLiveActivity.LIVE_TYPE,XHConstants.XHLiveType.XHLiveTypeGlobalPublic);
                     intent.putExtra(VideoLiveActivity.LIVE_NAME,inputId);
@@ -63,6 +64,7 @@ public class VideoLiveCreateActivity extends BaseActivity {
         super.onPause();
         if(xhsdkHelper!=null){
             xhsdkHelper.stopPerview();
+            xhsdkHelper = null;
         }
     }
 }

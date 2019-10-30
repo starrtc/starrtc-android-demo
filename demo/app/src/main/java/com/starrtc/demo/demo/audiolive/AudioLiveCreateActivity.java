@@ -18,7 +18,7 @@ public class AudioLiveCreateActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_live_create);
-        ((TextView)findViewById(R.id.title_text)).setText("创建语音直播间");
+        ((TextView)findViewById(R.id.title_text)).setText("创建互动语音直播间");
         findViewById(R.id.title_left_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.title_left_btn).setOnClickListener(new View.OnClickListener() {
             @Override

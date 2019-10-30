@@ -37,7 +37,7 @@ public class VoipP2PDemoActivity extends BaseActivity {
         super.onResume();
         if(!onListening){
             onListening = true;
-            XHCustomConfig.getInstance().initStarDirectLink();
+            XHCustomConfig.getInstance(this).initStarDirectLink();
         }
     }
 
@@ -45,7 +45,7 @@ public class VoipP2PDemoActivity extends BaseActivity {
     public void onBackPressed(){
         removeListener();
         onListening = false;
-        XHCustomConfig.getInstance().stopStarDircetLink();
+        XHCustomConfig.getInstance(this).stopStarDircetLink();
         finish();
     }
 
