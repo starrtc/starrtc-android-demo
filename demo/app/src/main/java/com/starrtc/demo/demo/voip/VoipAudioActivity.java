@@ -110,9 +110,9 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
                 stopAndFinish();
             }
         });
-        if(action.equals(CALLING)){
-            showCallingView();
-        }
+//        if(action.equals(CALLING)){
+//            showCallingView();
+//        }
     }
 
     public void addListener(){
@@ -189,7 +189,7 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
                             }
                         });
                     }
-                 }
+                }
         ).show();
     }
 
@@ -229,9 +229,13 @@ public class VoipAudioActivity extends BaseActivity implements View.OnClickListe
         findViewById(R.id.timer).setVisibility(View.INVISIBLE);
     }
 
-    private void showTalkingView(){
+    private void hideTalkingView(){
         findViewById(R.id.calling_txt).setVisibility(View.INVISIBLE);
         findViewById(R.id.timer).setVisibility(View.VISIBLE);
+    }
+
+    private void showTalkingView(){
+        hideTalkingView();
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
         setupView();
