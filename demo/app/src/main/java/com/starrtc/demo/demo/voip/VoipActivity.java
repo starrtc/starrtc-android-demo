@@ -2,6 +2,7 @@ package com.starrtc.demo.demo.voip;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +30,6 @@ import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
-import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;

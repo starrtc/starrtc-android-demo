@@ -321,7 +321,13 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.rnn_switch:
                 customConfig.setDefConfigRnnEnable(customConfig.getRnnEnable()?false:true);
-                findViewById(R.id.rnn_switch).setSelected(customConfig.getRnnEnable());
+                if(customConfig.getRnnEnable()){
+                    findViewById(R.id.rnn_switch).setSelected(true);
+                    customConfig.setDefConfigAudioProcessNSEnable(false);
+                    findViewById(R.id.ns_switch).setSelected(false);
+                }else{
+                    findViewById(R.id.rnn_switch).setSelected(false);
+                }
                 break;
             case R.id.aec_switch:
                 customConfig.setDefConfigAudioProcessAECEnable(customConfig.getAudioProcessAECEnable()?false:true);
@@ -333,7 +339,13 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.ns_switch:
                 customConfig.setDefConfigAudioProcessNSEnable(customConfig.getAudioProcessNSEnable()?false:true);
-                findViewById(R.id.ns_switch).setSelected(customConfig.getAudioProcessNSEnable());
+                if(customConfig.getAudioProcessNSEnable()){
+                    findViewById(R.id.ns_switch).setSelected(true);
+                    customConfig.setDefConfigRnnEnable(false);
+                    findViewById(R.id.rnn_switch).setSelected(false);
+                }else{
+                    findViewById(R.id.ns_switch).setSelected(false);
+                }
                 break;
             case R.id.audio_process_qulity_switch:
                 customConfig.setDefConfigAECConfigQulity(

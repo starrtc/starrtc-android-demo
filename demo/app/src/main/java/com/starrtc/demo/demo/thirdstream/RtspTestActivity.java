@@ -26,7 +26,7 @@ import java.net.URLEncoder;
 public class RtspTestActivity extends BaseActivity {
 
     private String name;
-    private String rtsp;
+    private String streamUrl;
     private String roomId;
     private XHChatroomManager chatroomManager;
     private int createType = 0;
@@ -82,8 +82,8 @@ public class RtspTestActivity extends BaseActivity {
                                 info.put("id",jsonObject.getString("channelId")+roomId);
                                 info.put("creator",MLOC.userId);
                                 info.put("name",name);
-                                info.put("rtsp",rtsp);
-                                info.put("type",MLOC.LIST_TYPE_LIVE_PUSH);
+                                info.put("url",streamUrl);
+                                info.put("listType",MLOC.LIST_TYPE_LIVE_PUSH);
                                 String infostr = info.toString();
                                 infostr = URLEncoder.encode(infostr,"utf-8");
                                 if(MLOC.AEventCenterEnable){
@@ -97,8 +97,8 @@ public class RtspTestActivity extends BaseActivity {
                                 info.put("id",jsonObject.getString("channelId")+roomId);
                                 info.put("creator",MLOC.userId);
                                 info.put("name",name);
-                                info.put("rtsp",rtsp);
-                                info.put("type",MLOC.LIST_TYPE_MEETING_PUSH);
+                                info.put("url",streamUrl);
+                                info.put("listType",MLOC.LIST_TYPE_MEETING_PUSH);
                                 String infostr = info.toString();
                                 infostr = URLEncoder.encode(infostr,"utf-8");
                                 if(MLOC.AEventCenterEnable){
@@ -128,13 +128,13 @@ public class RtspTestActivity extends BaseActivity {
 
     private void createAndPush(final int type){
         name = ((EditText)findViewById(R.id.targetid_input)).getText().toString();
-        rtsp = ((EditText)findViewById(R.id.rtsp_input)).getText().toString();
-//        rtsp = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
-//        rtsp = "rtmp://liveali.ifeng.com/live/FHZX";
+        streamUrl = ((EditText)findViewById(R.id.rtsp_input)).getText().toString();
+//        url = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
+//        url = "rtmp://liveali.ifeng.com/live/FHZX";
         createType = type;//1 meeting 2 live
         if(TextUtils.isEmpty(name)){
             MLOC.showMsg(RtspTestActivity.this,"名字不能为空");
-        }else if(TextUtils.isEmpty(rtsp)){
+        }else if(TextUtils.isEmpty(streamUrl)){
             MLOC.showMsg(RtspTestActivity.this,"拉流地址不能为空");
         }else{
             chatroomManager = XHClient.getInstance().getChatroomManager();
@@ -144,13 +144,13 @@ public class RtspTestActivity extends BaseActivity {
                 public void success(final Object data) {
                     roomId = data.toString();
                     String streamType = "";
-                    if(rtsp.indexOf("rtsp://")==0){
+                    if(streamUrl.indexOf("rtsp://")==0){
                         streamType = "rtsp";
-                    }else if(rtsp.indexOf("rtmp://")==0){
+                    }else if(streamUrl.indexOf("rtmp://")==0){
                         streamType = "rtmp";
                     }
                     if(!streamType.equals("")){
-                        InterfaceUrls.demoPushStreamUrl(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,name,roomId,type,streamType,rtsp);
+                        InterfaceUrls.demoPushStreamUrl(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,name,roomId,type,streamType,streamUrl);
                     }else{
                         MLOC.showMsg(RtspTestActivity.this,"拉流地址不可用");
                     }

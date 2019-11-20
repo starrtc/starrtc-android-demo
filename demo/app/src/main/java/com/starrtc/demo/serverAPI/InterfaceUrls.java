@@ -132,9 +132,9 @@ public class InterfaceUrls {
         bundle.putString(StarHttpUtil.DATA,params);
         httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
     }
-    //恢复转发rtsp流 //rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
-    public static void demoResumePushRtsp(String userId,String server,String liveId,String rtsp){
-        String url = "http://"+server+"/start?userId="+userId+"&streamType=rtsp&streamUrl="+rtsp+"&channelId="+liveId.substring(0,16);
+    //恢复转发rtsp流 //url://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
+    public static void demoResumePushRtsp(String userId,String server,String channelId,String rtsp,String streamType){
+        String url = "http://"+server+"/start?userId="+userId+"&streamType="+streamType+"&streamUrl="+rtsp+"&channelId="+channelId;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {
@@ -153,8 +153,8 @@ public class InterfaceUrls {
         httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
     }
     //停止转发rtsp流 //aisee.f3322.org:19932
-    public static void demoStopPushRtsp(String userId,String server,String liveId){
-        String url = "http://"+server+"/close?userId="+userId+"&channelId="+liveId.substring(0,16);
+    public static void demoStopPushRtsp(String userId,String server,String channelId){
+        String url = "http://"+server+"/close?userId="+userId+"&channelId="+channelId;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {
@@ -173,8 +173,8 @@ public class InterfaceUrls {
         httpGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bundle);
     }
     //删除rtsp流记录
-    public static void demoDeleteRtsp(String userId,String server,String liveId){
-        String url = "http://"+server+"/delete?userId="+userId+"&channelId="+liveId.substring(0,16);
+    public static void demoDeleteRtsp(String userId,String server,String channelId){
+        String url = "http://"+server+"/delete?userId="+userId+"&channelId="+channelId;
         String params = "";
         StarHttpUtil httpGet = new StarHttpUtil(StarHttpUtil.REQUEST_METHOD_GET);
         httpGet.addListener(new ICallback() {

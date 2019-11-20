@@ -42,7 +42,7 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
 
     private ListView vList;
     private MyListAdapter myListAdapter;
-    private ArrayList<RtspInfo> mDatas;
+    private ArrayList<StreamInfo> mDatas;
     private LayoutInflater mInflater;
     private SwipeRefreshLayout refreshLayout;
     @Override
@@ -139,18 +139,24 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
                     refreshLayout.setRefreshing(false);
                     mDatas.clear();
                     try {
-//                    JSONArray array = (JSONArray) data;
                         for(int i = array.length()-1;i>=0;i--){
-                            RtspInfo info = new RtspInfo();
+                            StreamInfo info = new StreamInfo();
                             JSONObject obj = array.getJSONObject(i);
                             info.creator = obj.getString("creator");
-                            info.id = obj.getString("id");
+                            info.liveId = obj.getString("id");
+                            info.channelID = info.liveId.substring(0,16);
+                            info.chatroomID = info.liveId.substring(16,32);
                             info.name = obj.getString("name");
-                            info.rtsp = obj.getString("rtsp");
-                            if(obj.has("type")){
-                                info.type = obj.getInt("type");
+                            info.url = obj.getString("url");
+                            if(info.url.indexOf("rtsp://")==0){
+                                info.streamType = "rtsp";
+                            }else if(info.url.indexOf("rtmp://")==0){
+                                info.streamType = "rtmp";
+                            }
+                            if(obj.has("listType")){
+                                info.listType = obj.getInt("listType");
                             }else{
-                                info.type = MLOC.LIST_TYPE_CHATROOM;
+                                info.listType = MLOC.LIST_TYPE_CHATROOM;
                             }
                             mDatas.add(info);
                         }
@@ -184,12 +190,19 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
                             JSONObject json = datas.getJSONObject(i);
                             String tmp = json.getString("data");
                             JSONObject tmpObj = new JSONObject(URLDecoder.decode(tmp,"utf-8"));
-                            RtspInfo item = new RtspInfo();
+                            StreamInfo item = new StreamInfo();
                             item.creator = tmpObj.getString("creator");
-                            item.id = tmpObj.getString("id");
+                            item.liveId = tmpObj.getString("id");
+                            item.channelID = item.liveId.substring(0,16);
+                            item.chatroomID = item.liveId.substring(16,32);
                             item.name = tmpObj.getString("name");
-                            item.rtsp = tmpObj.getString("rtsp");
-                            item.type = tmpObj.getInt("type");
+                            item.url = tmpObj.getString("url");
+                            if(item.url.indexOf("rtsp://")==0){
+                                item.streamType = "rtsp";
+                            }else if(item.url.indexOf("rtmp://")==0){
+                                item.streamType = "rtmp";
+                            }
+                            item.listType = tmpObj.getInt("listType");
                             mDatas.add(item);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -216,7 +229,7 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final RtspInfo rtspInfo = mDatas.get(position);
+        final StreamInfo streamInfo = mDatas.get(position);
         String[] arr = new String[]{"停止拉流","恢复拉流","删除记录"};
 
         AlertDialog.Builder builder=new AlertDialog.Builder(RtspTestListActivity.this);
@@ -225,19 +238,19 @@ public class RtspTestListActivity extends BaseActivity implements AdapterView.On
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(i==0){
                     //停止
-                    InterfaceUrls.demoStopPushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    InterfaceUrls.demoStopPushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,streamInfo.channelID);
                 }else if(i==1){
                     //恢复
-                    if(!TextUtils.isEmpty(rtspInfo.rtsp)){
-                        InterfaceUrls.demoResumePushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id,rtspInfo.rtsp);
+                    if(!TextUtils.isEmpty(streamInfo.url)){
+                        InterfaceUrls.demoResumePushRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,streamInfo.channelID,streamInfo.url,streamInfo.streamType);
                     }
                 }else{
                     //删除
-                    InterfaceUrls.demoDeleteRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,rtspInfo.id);
+                    InterfaceUrls.demoDeleteRtsp(MLOC.userId,MLOC.LIVE_PROXY_SERVER_URL,streamInfo.channelID);
                     if(MLOC.AEventCenterEnable){
-                        InterfaceUrls.demoDeleteFromList(MLOC.userId,rtspInfo.type, rtspInfo.id);
+                        InterfaceUrls.demoDeleteFromList(MLOC.userId,streamInfo.listType, streamInfo.liveId);
                     }else{
-                        XHClient.getInstance().getChatroomManager().deleteFromList(MLOC.userId,rtspInfo.type, rtspInfo.id.substring(16), new IXHResultCallback() {
+                        XHClient.getInstance().getChatroomManager().deleteFromList(MLOC.userId,streamInfo.listType, streamInfo.chatroomID, new IXHResultCallback() {
                             @Override
                             public void success(Object data) {
                                 queryAllList();

@@ -6,7 +6,6 @@ import com.starrtc.starrtcsdk.core.videosrc.XHVideoSourceCallback;
 import com.starrtc.starrtcsdk.core.videosrc.StarVideoData;
 
 public class DemoVideoSourceCallback extends XHVideoSourceCallback {
-
     @Override
     public StarVideoData onVideoFrame(StarVideoData videoData){
         MLOC.d("DemoVideoSourceCallback","视频源数据已经接到了，不做处理，直接再丢回去"+videoData.getDataLength());

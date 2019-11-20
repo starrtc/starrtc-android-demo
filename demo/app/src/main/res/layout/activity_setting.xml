@@ -878,7 +878,7 @@
                 android:layout_marginLeft="10dp"
                 android:background="#CCCCCC"/>
             <!--<LinearLayout-->
-                <!--android:id="@+id/btn_uploadlogs"-->
+                <!--android:liveId="@+liveId/btn_uploadlogs"-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="55dp"-->
                 <!--android:paddingLeft="10dp"-->

@@ -74,4 +74,9 @@ public class XHMeetingManagerListener implements IXHMeetingManagerListener {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onPushStreamError(String err) {
+        AEvent.notifyListener(AEvent.AEVENT_MEETING_PUSH_STREAM_ERROR,true,err);
+    }
 }

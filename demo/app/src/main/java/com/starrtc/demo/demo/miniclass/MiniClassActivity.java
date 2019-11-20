@@ -597,7 +597,7 @@ public class MiniClassActivity extends BaseActivity{
 
     private String decodeMiniClassMsgContentData(String txt){
 //        {
-//                type: _type,
+//                listType: _type,
 //                from: _from,
 //                fromAvatar: _fromAvatar,
 //                fromNick: _fromNick,
@@ -619,7 +619,7 @@ public class MiniClassActivity extends BaseActivity{
         MLOC.d("XHLiveManager","sendChatMsg "+msg);
 
 //        {
-//                type: _type,
+//                listType: _type,
 //                from: _from,
 //                fromAvatar: _fromAvatar,
 //                fromNick: _fromNick,
@@ -627,7 +627,7 @@ public class MiniClassActivity extends BaseActivity{
 //        }
         String msgTxt = msg;
         try {JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type","text");
+            jsonObject.put("listType","text");
             jsonObject.put("from",MLOC.userId);
             jsonObject.put("fromAvatar","");
             jsonObject.put("fromNick",MLOC.userId);
@@ -754,7 +754,6 @@ public class MiniClassActivity extends BaseActivity{
                         byte[] tData = (byte[]) jsonObject.get("data");
                         String tUpid = jsonObject.getString("upId");
                         vPaintPlayer.setPaintData(tData,tUpid);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

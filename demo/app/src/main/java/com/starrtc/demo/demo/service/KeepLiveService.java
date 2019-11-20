@@ -141,15 +141,12 @@ public class KeepLiveService extends Service implements IEventListener {
 //                    MLOC.hasNewVoipMsg = true;
 //                }
                 break;
-            case AEvent.AEVENT_VOIP_REV_CALLING_AUDIO:
-                if(MLOC.canPickupVoip){
-                    Intent intent = new Intent(this, VoipAudioRingingActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-                    intent.putExtra("targetId",eventObj.toString());
-                    startActivity(intent);
-                }else{
-                    MLOC.hasNewVoipMsg = true;
-                }
+            case AEvent.AEVENT_VOIP_REV_CALLING_AUDIO:{
+                Intent intent = new Intent(this, VoipAudioRingingActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+                intent.putExtra("targetId",eventObj.toString());
+                startActivity(intent);
+            }
                 break;
             case AEvent.AEVENT_VOIP_P2P_REV_CALLING:
                 if(MLOC.canPickupVoip){

@@ -124,6 +124,7 @@ public class AEvent {
     public static final String AEVENT_LIVE_INVITE_LINK_RESULT    = "AEVENT_LIVE_INVITE_LINK_RESULT";
     public static final String AEVENT_LIVE_SELF_COMMANDED_TO_STOP  = "AEVENT_LIVE_SELF_COMMANDED_TO_STOP";
     public static final String AEVENT_LIVE_REV_REALTIME_DATA    = "AEVENT_LIVE_REV_REALTIME_DATA";
+    public static final String AEVENT_LIVE_PUSH_STREAM_ERROR    = "AEVENT_LIVE_PUSH_STREAM_ERROR";
 
     public static final String AEVENT_SUPER_ROOM_ADD_UPLOADER         = "AEVENT_SUPER_ROOM_ADD_UPLOADER";
     public static final String AEVENT_SUPER_ROOM_REMOVE_UPLOADER      = "AEVENT_SUPER_ROOM_REMOVE_UPLOADER";
@@ -136,6 +137,7 @@ public class AEvent {
     public static final String AEVENT_SUPER_ROOM_APPLY_LINK           = "AEVENT_SUPER_ROOM_APPLY_LINK";
     public static final String AEVENT_SUPER_ROOM_SELF_COMMANDED_TO_STOP  = "AEVENT_SUPER_ROOM_SELF_COMMANDED_TO_STOP";
     public static final String AEVENT_SUPER_ROOM_REV_REALTIME_DATA    = "AEVENT_SUPER_ROOM_REV_REALTIME_DATA";
+    public static final String AEVENT_SUPER_ROOM_PUSH_STREAM_ERROR    = "AEVENT_SUPER_ROOM_PUSH_STREAM_ERROR";
 
     public static final String AEVENT_MEETING_ADD_UPLOADER          = "AEVENT_MEETING_ADD_UPLOADER";
     public static final String AEVENT_MEETING_REMOVE_UPLOADER       = "AEVENT_MEETING_REMOVE_UPLOADER";
@@ -146,6 +148,7 @@ public class AEvent {
     public static final String AEVENT_MEETING_REV_MSG               = "AEVENT_MEETING_REV_MSG";
     public static final String AEVENT_MEETING_REV_PRIVATE_MSG       = "AEVENT_MEETING_REV_PRIVATE_MSG";
     public static final String AEVENT_MEETING_REV_REALTIME_DATA     = "AEVENT_MEETING_REV_REALTIME_DATA";
+    public static final String AEVENT_MEETING_PUSH_STREAM_ERROR     = "AEVENT_MEETING_PUSH_STREAM_ERROR";
 
     public static final String AEVENT_ECHO_FIN                  = "AEVENT_ECHO_FIN";
 

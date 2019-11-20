@@ -1,8 +1,6 @@
 package com.starrtc.demo.listener;
 
 import com.starrtc.demo.utils.AEvent;
-import com.starrtc.starrtcsdk.api.XHConstants;
-import com.starrtc.starrtcsdk.apiInterface.IXHLiveManagerListener;
 import com.starrtc.starrtcsdk.apiInterface.IXHSuperRoomManagerListener;
 import com.starrtc.starrtcsdk.core.im.message.XHIMMessage;
 
@@ -15,7 +13,7 @@ public class XHSuperRoomManagerListener implements IXHSuperRoomManagerListener {
     public void onActorJoined(String liveID, String actorID) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("liveID",liveID);
+            jsonObject.put("id",liveID);
             jsonObject.put("actorID",actorID);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -27,7 +25,7 @@ public class XHSuperRoomManagerListener implements IXHSuperRoomManagerListener {
     public void onActorLeft(String liveID, String actorID) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("liveID",liveID);
+            jsonObject.put("id",liveID);
             jsonObject.put("actorID",actorID);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -81,9 +79,11 @@ public class XHSuperRoomManagerListener implements IXHSuperRoomManagerListener {
         } catch (JSONException e) {
             AEvent.notifyListener(AEvent.AEVENT_SUPER_ROOM_REV_REALTIME_DATA,false,data);
             e.printStackTrace();
-
         }
+    }
 
-
+    @Override
+    public void onPushStreamError(String err) {
+        AEvent.notifyListener(AEvent.AEVENT_SUPER_ROOM_PUSH_STREAM_ERROR,true,err);
     }
 }

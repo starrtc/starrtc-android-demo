@@ -28,7 +28,9 @@ public class XHChatManagerListener implements IXHChatManagerListener {
         messageBean.setMsg(message.contentData);
         messageBean.setFromId(message.fromId);
         MLOC.saveMessage(messageBean);
+
         AEvent.notifyListener(AEvent.AEVENT_C2C_REV_MSG,true,message);
+
     }
 
     @Override

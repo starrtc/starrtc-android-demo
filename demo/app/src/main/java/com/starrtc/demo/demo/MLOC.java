@@ -305,7 +305,7 @@ public class MLOC {
     static TimerTask timerTask;
     public static void showDialog(final Context context, final JSONObject data){
         try {
-            final int type = data.getInt("type");// 0:c2c,1:group,2:voip
+            final int type = data.getInt("listType");// 0:c2c,1:group,2:voip
             final String farId = data.getString("farId");// 对方ID
             String msg = data.getString("msg");// 提示消息
 
@@ -330,15 +330,15 @@ public class MLOC {
                     }
                     dialogs[0].dismiss();
                     dialogs[0] = null;
-//                    if(type==0){
+//                    if(listType==0){
 //                        //C2C
 //                        Intent intent = new Intent(context,C2CListActivity.class);
 //                        context.startActivity(intent);
-//                    }else if(type==1){
+//                    }else if(listType==1){
 //                        //Group
 //                        Intent intent = new Intent(context, MessageGroupListActivity.class);
 //                        context.startActivity(intent);
-//                    }else if(type==2){
+//                    }else if(listType==2){
 //                        //VOIP
 //                        Intent intent = new Intent(context, VoipListActivity.class);
 //                        context.startActivity(intent);

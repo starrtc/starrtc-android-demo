@@ -219,12 +219,12 @@ public class SuperRoomActivity extends BaseActivity {
                             superRoomManager.pickUpMic(new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
-                                    MLOC.showMsg(SuperRoomActivity.this,"可以发言了");
+//                                    MLOC.showMsg(SuperRoomActivity.this,"可以发言了");
                                 }
 
                                 @Override
                                 public void failed(String errMsg) {
-                                    MLOC.showMsg(SuperRoomActivity.this,"发言failed");
+//                                    MLOC.showMsg(SuperRoomActivity.this,"发言failed");
                                 }
                             });
                             break;
@@ -234,12 +234,12 @@ public class SuperRoomActivity extends BaseActivity {
                             superRoomManager.layDownMic(new IXHResultCallback() {
                                 @Override
                                 public void success(Object data) {
-                                    MLOC.showMsg(SuperRoomActivity.this,"已经交出发言权限");
+//                                    MLOC.showMsg(SuperRoomActivity.this,"已经交出发言权限");
                                 }
 
                                 @Override
                                 public void failed(String errMsg) {
-                                    MLOC.showMsg(SuperRoomActivity.this,"交出发言权限failed");
+//                                    MLOC.showMsg(SuperRoomActivity.this,"交出发言权限failed");
                                 }
                             });
                             break;

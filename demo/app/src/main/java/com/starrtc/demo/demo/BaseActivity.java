@@ -79,7 +79,7 @@ public class BaseActivity extends Activity implements IEventListener {
 //                    MLOC.hasNewVoipMsg = true;
 //                    try {
 //                        JSONObject alertData = new JSONObject();
-//                        alertData.put("type",2);
+//                        alertData.put("listType",2);
 //                        alertData.put("farId",eventObj.toString());
 //                        alertData.put("msg","收到视频通话请求");
 //                        MLOC.showDialog(BaseActivity.this,alertData);
@@ -108,7 +108,7 @@ public class BaseActivity extends Activity implements IEventListener {
                 try {
                     XHIMMessage revMsg = (XHIMMessage) eventObj;
                     JSONObject alertData = new JSONObject();
-                    alertData.put("type",0);
+                    alertData.put("listType",0);
                     alertData.put("farId",revMsg.fromId);
                     alertData.put("msg","收到一条新消息");
                     MLOC.showDialog(BaseActivity.this,alertData);
@@ -127,7 +127,7 @@ public class BaseActivity extends Activity implements IEventListener {
                 try {
                     XHIMMessage revMsg = (XHIMMessage) eventObj;
                     JSONObject alertData = new JSONObject();
-                    alertData.put("type",1);
+                    alertData.put("listType",1);
                     alertData.put("farId",revMsg.targetId);
                     alertData.put("msg","收到一条群消息");
                     MLOC.showDialog(BaseActivity.this,alertData);
