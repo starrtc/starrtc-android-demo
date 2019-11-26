@@ -566,10 +566,12 @@ public class SuperRoomActivity extends BaseActivity {
             AlertDialog.Builder builder=new AlertDialog.Builder(this);
             if(createrId.equals(MLOC.userId)){
                 Boolean ac = false;
-                for(int i = 0 ;i<mPlayerList.size();i++){
-                    if(userId.equals(mPlayerList.get(i))){
-                        ac = true;
-                        break;
+                if(mPlayerList!=null){
+                    for(int i = 0 ;i<mPlayerList.size();i++){
+                        if(userId.equals(mPlayerList.get(i))){
+                            ac = true;
+                            break;
+                        }
                     }
                 }
                 if(ac){
@@ -631,11 +633,13 @@ public class SuperRoomActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 //踢人成功
+                MLOC.showMsg(SuperRoomActivity.this,"踢人成功");
             }
 
             @Override
             public void failed(String errMsg) {
                 //踢人失败
+                MLOC.showMsg(SuperRoomActivity.this,"踢人失败");
             }
         });
     }
@@ -644,11 +648,13 @@ public class SuperRoomActivity extends BaseActivity {
             @Override
             public void success(Object data) {
                 //禁言成功
+                MLOC.showMsg(SuperRoomActivity.this,"禁言成功");
             }
 
             @Override
             public void failed(String errMsg) {
                 //禁言失败
+                MLOC.showMsg(SuperRoomActivity.this,"禁言失败");
             }
         });
     }

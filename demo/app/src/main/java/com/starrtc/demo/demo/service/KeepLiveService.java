@@ -91,8 +91,8 @@ public class KeepLiveService extends Service implements IEventListener {
 //            customConfig.setDefConfigCameraId(1);//设置默认摄像头方向  0后置  1前置
 //            customConfig.setDefConfigVideoSize(XHConstants.XHCropTypeEnum.STAR_VIDEO_CONFIG_360BW_640BH_180SW_320SH);
 //            customConfig.setLogDirPath(Environment.getExternalStorageDirectory().getPath()+"/starrtcLog");
-            customConfig.setDefConfigCamera2Enable(false);
-            StarCamera.setFrameBufferEnable(false);
+//            customConfig.setDefConfigCamera2Enable(false);
+//            StarCamera.setFrameBufferEnable(false);
             customConfig.initSDKForFree(MLOC.userId, new IXHErrorCallback() {
                 @Override
                 public void error(final String errMsg, Object data) {
