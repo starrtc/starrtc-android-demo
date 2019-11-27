@@ -1,11 +1,7 @@
 package com.starrtc.demo.demo.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -18,18 +14,14 @@ import com.starrtc.demo.demo.voip.VoipRingingActivity;
 import com.starrtc.demo.listener.XHChatManagerListener;
 import com.starrtc.demo.listener.XHGroupManagerListener;
 import com.starrtc.demo.listener.XHLoginManagerListener;
-import com.starrtc.demo.listener.XHSuperRoomManagerListener;
 import com.starrtc.demo.listener.XHVoipManagerListener;
 import com.starrtc.demo.listener.XHVoipP2PManagerListener;
-import com.starrtc.demo.serverAPI.InterfaceUrls;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.demo.utils.IEventListener;
 import com.starrtc.starrtcsdk.api.XHClient;
-import com.starrtc.starrtcsdk.api.XHConstants;
 import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.apiInterface.IXHErrorCallback;
 import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
-import com.starrtc.starrtcsdk.core.camera.StarCamera;
 import com.starrtc.starrtcsdk.core.videosrc.XHVideoSourceManager;
 
 import java.util.Random;
@@ -132,14 +124,6 @@ public class KeepLiveService extends Service implements IEventListener {
                 intent.putExtra("targetId",eventObj.toString());
                 startActivity(intent);
             }
-//                if(MLOC.canPickupVoip){
-//                    Intent intent = new Intent(this, VoipRingingActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-//                    intent.putExtra("targetId",eventObj.toString());
-//                    startActivity(intent);
-//                }else{
-//                    MLOC.hasNewVoipMsg = true;
-//                }
                 break;
             case AEvent.AEVENT_VOIP_REV_CALLING_AUDIO:{
                 Intent intent = new Intent(this, VoipAudioRingingActivity.class);

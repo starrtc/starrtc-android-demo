@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.service.FloatWindowsService;
+import com.starrtc.demo.demo.service.KeepLiveService;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
 
@@ -82,9 +83,9 @@ public class SetupServerHostActivity extends Activity {
                 }
 
                 XHClient.getInstance().getLoginManager().logout();
-                AEvent.notifyListener(AEvent.AEVENT_LOGOUT,true,null);
+                stopService(new Intent(SetupServerHostActivity.this, KeepLiveService.class));
                 stopService(new Intent(SetupServerHostActivity.this, FloatWindowsService.class));
-                MLOC.hasLogout = true;
+                startService(new Intent(SetupServerHostActivity.this, KeepLiveService.class));
                 finish();
             }
         });
