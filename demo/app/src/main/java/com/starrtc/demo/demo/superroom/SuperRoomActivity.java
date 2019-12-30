@@ -259,7 +259,7 @@ public class SuperRoomActivity extends BaseActivity {
             if(liveId==null){
                 createNewLive();
             }else {
-               joinLive();
+                joinLive();
             }
         }else{
             joinLive();
@@ -354,18 +354,6 @@ public class SuperRoomActivity extends BaseActivity {
     public void onPause(){
         super.onPause();
         MLOC.canPickupVoip = true;
-    }
-
-    @Override
-    public void onRestart(){
-        super.onRestart();
-        addListener();
-    }
-
-    @Override
-    public void onStop(){
-        removeListener();
-        super.onStop();
     }
 
     private void removeListener(){
@@ -495,11 +483,24 @@ public class SuperRoomActivity extends BaseActivity {
                 break;
             case AEvent.AEVENT_SUPER_ROOM_ERROR:
                 String errStr = (String) eventObj;
-                if(errStr.equals("30016")){
-                    errStr = "直播关闭";
-                }
                 MLOC.showMsg(getApplicationContext(),errStr);
-                stopAndFinish();
+                if(errStr.equals("ERROR_VDN_DISCONNECTED")){
+                    superRoomManager.leaveSuperRoom(new IXHResultCallback() {
+                        @Override
+                        public void success(Object data) {
+                            MLOC.d("SuperRoomActivity","leaveSuperRoom  success");
+                            joinLive();
+                        }
+                        @Override
+                        public void failed(String errMsg) {
+                            MLOC.d("SuperRoomActivity","leaveSuperRoom  failed");
+                        }
+                    });
+                }else if(errStr.equals("ERROR_SRC_DISCONNECTED")){
+
+                }else {
+                    stopAndFinish();
+                }
                 break;
             case AEvent.AEVENT_SUPER_ROOM_SELF_COMMANDED_TO_STOP:
                 vAudioBtn.setVisibility(View.GONE);
@@ -582,7 +583,7 @@ public class SuperRoomActivity extends BaseActivity {
                             if(i==0){
                                 kickUser(userId);
                             }else if(i==1){
-                               muteUser(userId,60);
+                                muteUser(userId,60);
                             }else if(i==2){
                                 mPrivateMsgTargetId = userId;
                                 vEditText.setText("[私"+userId+"]");

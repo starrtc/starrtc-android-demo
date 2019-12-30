@@ -103,13 +103,36 @@
                 android:layout_marginTop="70dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/btn_switch_camera" />
+
+
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="190dp"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
                 android:orientation="vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:gravity="bottom">
+                <TextView
+                    android:id="@+id/speaker_off_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/btn_style_white"
+                    android:textColor="#000000"
+                    android:text="听筒模式"/>
+                <TextView
+                    android:id="@+id/speaker_on_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn_style_white"
+                    android:textColor="#000000"
+                    android:text="免提模式"/>
                 <Chronometer
                     android:id="@+id/timer"
                     android:layout_width="match_parent"

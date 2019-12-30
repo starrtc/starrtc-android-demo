@@ -136,6 +136,35 @@ public class VideoMeetingActivity extends BaseActivity{
                 meetingManager.switchCamera();
             }
         });
+
+        findViewById(R.id.mic_btn).setSelected(true);
+        findViewById(R.id.camera_btn).setSelected(true);
+        findViewById(R.id.camera_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(findViewById(R.id.camera_btn).isSelected()){
+                    findViewById(R.id.camera_btn).setSelected(false);
+                    meetingManager.setVideoEnable(false);
+                }else{
+                    findViewById(R.id.camera_btn).setSelected(true);
+                    meetingManager.setVideoEnable(true);
+                }
+            }
+        });
+
+        findViewById(R.id.mic_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(findViewById(R.id.mic_btn).isSelected()){
+                    findViewById(R.id.mic_btn).setSelected(false);
+                    meetingManager.setAudioEnable(false);
+                }else{
+                    findViewById(R.id.mic_btn).setSelected(true);
+                    meetingManager.setAudioEnable(true);
+                }
+            }
+        });
+
         init();
     }
 

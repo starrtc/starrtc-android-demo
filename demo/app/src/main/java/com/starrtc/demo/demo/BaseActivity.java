@@ -60,6 +60,7 @@ public class BaseActivity extends Activity implements IEventListener {
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.addListener(AEvent.AEVENT_USER_OFFLINE,this);
+        AEvent.addListener(AEvent.AEVENT_CONN_DEATH,this);
     }
     private void removeListener(){
         AEvent.removeListener(AEvent.AEVENT_VOIP_REV_CALLING,this);
@@ -69,6 +70,7 @@ public class BaseActivity extends Activity implements IEventListener {
         AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_USER_ONLINE,this);
         AEvent.removeListener(AEvent.AEVENT_USER_OFFLINE,this);
+        AEvent.removeListener(AEvent.AEVENT_CONN_DEATH,this);
     }
 
     @Override
@@ -137,6 +139,7 @@ public class BaseActivity extends Activity implements IEventListener {
                 break;
             case AEvent.AEVENT_USER_OFFLINE:
                 MLOC.showMsg(BaseActivity.this,"服务已断开");
+                ((TextView)findViewById(R.id.loading)).setText("连接中...");
                 if(findViewById(R.id.loading)!=null) {
                     if (XHClient.getInstance().getIsOnline()) {
                         findViewById(R.id.loading).setVisibility(View.INVISIBLE);
@@ -147,6 +150,19 @@ public class BaseActivity extends Activity implements IEventListener {
                 break;
             case AEvent.AEVENT_USER_ONLINE:
                 if(findViewById(R.id.loading)!=null) {
+                    if (XHClient.getInstance().getIsOnline()) {
+                        findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+                    } else {
+                        findViewById(R.id.loading).setVisibility(View.VISIBLE);
+                    }
+                    ((ImageView)findViewById(R.id.userinfo_head)).setImageResource(MLOC.getHeadImage(this,MLOC.userId));
+                    ((TextView)findViewById(R.id.userinfo_id)).setText(MLOC.userId);
+                }
+                break;
+            case AEvent.AEVENT_CONN_DEATH:
+                MLOC.showMsg(BaseActivity.this,"服务已断开");
+                if(findViewById(R.id.loading)!=null) {
+                    ((TextView)findViewById(R.id.loading)).setText("连接异常，请重新登录");
                     if (XHClient.getInstance().getIsOnline()) {
                         findViewById(R.id.loading).setVisibility(View.INVISIBLE);
                     } else {

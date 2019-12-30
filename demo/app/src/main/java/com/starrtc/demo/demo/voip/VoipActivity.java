@@ -30,6 +30,7 @@ import com.starrtc.starrtcsdk.apiInterface.IXHResultCallback;
 import com.starrtc.starrtcsdk.core.audio.StarRTCAudioManager;
 import com.starrtc.starrtcsdk.core.player.StarPlayer;
 import com.starrtc.starrtcsdk.core.pusher.XHCameraRecorder;
+import com.starrtc.starrtcsdk.core.pusher.XHCustomRecorder;
 import com.starrtc.starrtcsdk.core.pusher.XHScreenRecorder;
 
 import java.text.SimpleDateFormat;
@@ -38,23 +39,20 @@ import java.util.Set;
 public class VoipActivity extends BaseActivity implements View.OnClickListener {
 
     private XHVoipManager voipManager;
-
     private StarPlayer targetPlayer;
     private StarPlayer selfPlayer;
     private Chronometer timer;
-
     public static String ACTION = "ACTION";
     public static String RING = "RING";
     public static String CALLING = "CALLING";
     private String action;
     private String targetId;
     private Boolean isTalking = false;
-
     private StarRTCAudioManager starRTCAudioManager;
     private XHSDKHelper xhsdkHelper;
 
-    //test
-//    private PushYuvTest pushYuvTest;
+//    private PushUVCTest pushUVCTest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,22 +63,17 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 MLOC.d("onAudioDeviceChanged ",selectedAudioDevice.name());
             }
         });
+        starRTCAudioManager.setDefaultAudioDevice(StarRTCAudioManager.AudioDevice.SPEAKER_PHONE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
                 WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_voip);
         voipManager = XHClient.getInstance().getVoipManager();
         voipManager.setRecorder(new XHCameraRecorder());
-//        XHCustomRecorder customRecorder = new XHCustomRecorder(640,480,270,true);
-//        pushYuvTest = new PushYuvTest(customRecorder);
-//        voipManager.setRecorder(customRecorder);
-
         voipManager.setRtcMediaType(XHConstants.XHRtcMediaTypeEnum.STAR_RTC_MEDIA_TYPE_VIDEO_AND_AUDIO);
         addListener();
-
         targetId = getIntent().getStringExtra("targetId");
         action = getIntent().getStringExtra(ACTION);
-
         targetPlayer = (StarPlayer) findViewById(R.id.voip_surface_target);
         selfPlayer = (StarPlayer) findViewById(R.id.voip_surface_self);
         selfPlayer.setZOrderMediaOverlay(true);
@@ -94,9 +87,14 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
+//        final XHCustomRecorder recorder = new XHCustomRecorder(480,480,0,false);
+//        voipManager.setRecorder(recorder);
+//        pushUVCTest = new PushUVCTest(recorder);
+//        pushUVCTest.startRecoder();
+
+
         ((TextView)findViewById(R.id.targetid_text)).setText(targetId);
         ((ImageView)findViewById(R.id.head_img)).setImageResource(MLOC.getHeadImage(VoipActivity.this,targetId));
-
         findViewById(R.id.calling_hangup).setOnClickListener(this);
         findViewById(R.id.talking_hangup).setOnClickListener(this);
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
@@ -106,18 +104,16 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
             }
         });
         findViewById(R.id.screen_btn).setOnClickListener(this);
-
         findViewById(R.id.mic_btn).setSelected(true);
         findViewById(R.id.mic_btn).setOnClickListener(this);
         findViewById(R.id.camera_btn).setSelected(true);
         findViewById(R.id.camera_btn).setOnClickListener(this);
-
-
+        findViewById(R.id.speaker_on_btn).setOnClickListener(this);
+        findViewById(R.id.speaker_off_btn).setOnClickListener(this);
 
         if(action.equals(CALLING)){
             showCallingView();
             MLOC.d("newVoip","call");
-
             xhsdkHelper = new XHSDKHelper();
             xhsdkHelper.setDefaultCameraId(1);
             xhsdkHelper.startPerview(this,((StarPlayer)findViewById(R.id.voip_surface_target)));
@@ -127,12 +123,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                 public void success(Object data) {
                     xhsdkHelper.stopPerview();
                     xhsdkHelper = null;
-//                    StarCameraConfig cameraConfig = new StarCameraConfig();
-//                    cameraConfig.previewW = StarRtcCore.cameraPreviewW;
-//                    cameraConfig.previewH = StarRtcCore.cameraPreviewH;
-//                    cameraConfig.frameRate = StarRtcCore.cameraPreviewFramrate;
-//                    cameraConfig.uploadGap = 1000/StarRtcCore.fpsBig;
-//                    pushYuvTest.initCamera(VoipActivity.this,cameraConfig,true);
                     MLOC.d("newVoip","call success! RecSessionId:"+data);
                 }
                 @Override
@@ -141,8 +131,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     stopAndFinish();
                 }
             });
-
-
         }else{
             MLOC.d("newVoip","onPickup");
             onPickup();
@@ -393,6 +381,18 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
                     voipManager.setAudioEnable(true);
                 }
                 break;
+            case R.id.speaker_on_btn:
+//                starRTCAudioManager.selectAudioDevice(StarRTCAudioManager.AudioDevice.SPEAKER_PHONE);
+                starRTCAudioManager.setSpeakerphoneOn(true);
+                findViewById(R.id.speaker_on_btn).setSelected(true);
+                findViewById(R.id.speaker_off_btn).setSelected(false);
+                break;
+            case R.id.speaker_off_btn:
+//                starRTCAudioManager.selectAudioDevice(StarRTCAudioManager.AudioDevice.EARPIECE);
+                starRTCAudioManager.setSpeakerphoneOn(false);
+                findViewById(R.id.speaker_on_btn).setSelected(false);
+                findViewById(R.id.speaker_off_btn).setSelected(true);
+                break;
         }
     }
 
@@ -411,7 +411,6 @@ public class VoipActivity extends BaseActivity implements View.OnClickListener {
         if(starRTCAudioManager !=null){
             starRTCAudioManager.stop();
         }
-//        pushYuvTest.stopCamera();
         VoipActivity.this.finish();
     }
 

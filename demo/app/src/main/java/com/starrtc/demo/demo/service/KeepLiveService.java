@@ -47,6 +47,7 @@ public class KeepLiveService extends Service implements IEventListener {
     public void onDestroy()
     {
         super.onDestroy();
+        removeListener();
     }
 
     @Override
@@ -124,14 +125,14 @@ public class KeepLiveService extends Service implements IEventListener {
                 intent.putExtra("targetId",eventObj.toString());
                 startActivity(intent);
             }
-                break;
+            break;
             case AEvent.AEVENT_VOIP_REV_CALLING_AUDIO:{
                 Intent intent = new Intent(this, VoipAudioRingingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
                 intent.putExtra("targetId",eventObj.toString());
                 startActivity(intent);
             }
-                break;
+            break;
             case AEvent.AEVENT_VOIP_P2P_REV_CALLING:
                 if(MLOC.canPickupVoip){
                     Intent intent = new Intent(this, VoipP2PRingingActivity.class);
@@ -159,6 +160,22 @@ public class KeepLiveService extends Service implements IEventListener {
                 removeListener();
                 this.stopSelf();
                 break;
+            case AEvent.AEVENT_USER_KICKED:
+            case AEvent.AEVENT_CONN_DEATH:
+                MLOC.d("KeepLiveService","AEVENT_USER_KICKED OR AEVENT_CONN_DEATH");
+                XHClient.getInstance().getLoginManager().loginFree(new IXHResultCallback() {
+                    @Override
+                    public void success(Object data) {
+                        MLOC.d("KeepLiveService","loginSuccess");
+                        isLogin = true;
+                    }
+                    @Override
+                    public void failed(final String errMsg) {
+                        MLOC.d("KeepLiveService","loginFailed "+errMsg);
+                        MLOC.showMsg(KeepLiveService.this,errMsg);
+                    }
+                });
+                break;
         }
     }
 
@@ -170,6 +187,8 @@ public class KeepLiveService extends Service implements IEventListener {
         AEvent.addListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.addListener(AEvent.AEVENT_REV_SYSTEM_MSG,this);
         AEvent.addListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+        AEvent.addListener(AEvent.AEVENT_USER_KICKED,this);
+        AEvent.addListener(AEvent.AEVENT_CONN_DEATH,this);
     }
 
     private void removeListener(){
@@ -180,6 +199,8 @@ public class KeepLiveService extends Service implements IEventListener {
         AEvent.removeListener(AEvent.AEVENT_C2C_REV_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_REV_SYSTEM_MSG,this);
         AEvent.removeListener(AEvent.AEVENT_GROUP_REV_MSG,this);
+        AEvent.removeListener(AEvent.AEVENT_USER_KICKED,this);
+        AEvent.removeListener(AEvent.AEVENT_CONN_DEATH,this);
     }
 
 }

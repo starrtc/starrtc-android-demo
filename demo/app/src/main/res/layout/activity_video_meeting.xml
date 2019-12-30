@@ -54,4 +54,22 @@
         android:gravity="center"
         android:text="RTMP"
         android:textColor="#ffffff"/>
+    <ImageView
+        android:id="@+id/mic_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="110dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/btn_switch_mic" />
+
+    <ImageView
+        android:id="@+id/camera_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="160dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/btn_switch_camera" />
+
 </RelativeLayout>

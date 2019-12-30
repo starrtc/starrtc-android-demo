@@ -84,6 +84,12 @@ public class SplashActivity extends Activity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  final String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        checkPermission();
+    }
+
     private void initSDK(){
         startService();
         startAnimation();
@@ -95,11 +101,6 @@ public class SplashActivity extends Activity {
         startService(intent);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,  final String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        checkPermission();
-    }
 
     @SuppressLint("WrongConstant")
     private void startAnimation(){
