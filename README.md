@@ -14,9 +14,7 @@ https://github.com/starrtc/starrtc-server
 
 App下载：
 
-[点击下载Android示例程序](https://github.com/starrtc/starrtc-android-demo/raw/master/StarRTC_demo.apk)，或者扫描下面二维码安装。
-
-![StarRTC_demo 安装包](assets/android.png)
+[点击下载Android示例程序](https://github.com/starrtc/starrtc-android-demo/blob/master/StarRTC_demo.apk)
 
 IM测试时，除了app之间可以互发消息，app也可以和这个页面互发消息进行测试：
 
