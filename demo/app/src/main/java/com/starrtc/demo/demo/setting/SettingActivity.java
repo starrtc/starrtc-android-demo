@@ -56,6 +56,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.no_video_switch).setOnClickListener(this);
         findViewById(R.id.btn_video_size).setOnClickListener(this);
         findViewById(R.id.btn_video_config_big).setOnClickListener(this);
+        findViewById(R.id.btn_audio_bitrate).setOnClickListener(this);
         findViewById(R.id.btn_video_config_small).setOnClickListener(this);
         findViewById(R.id.btn_video_codec_type).setOnClickListener(this);
         findViewById(R.id.btn_audio_codec_type).setOnClickListener(this);
@@ -109,7 +110,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         ((TextView)findViewById(R.id.audio_codec_type_text)).setText(customConfig.getAudioCodecTypeName());
         ((TextView)findViewById(R.id.audio_source)).setText(customConfig.getAudioSourceName());
         ((TextView)findViewById(R.id.audio_stream_type)).setText(customConfig.getAudioStreamTypeName());
+        ((TextView)findViewById(R.id.audio_bitrate_text)).setText(customConfig.getAudioBitrate() +"kbps");
         findViewById(R.id.aecurl_switch).setSelected(MLOC.AEventCenterEnable);
+
 
     }
     @Override
@@ -158,6 +161,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_video_config_small:
                 showAddDialog(false);
+                break;
+            case R.id.btn_audio_bitrate:
+                showAudioDialog();
                 break;
             case R.id.btn_video_codec_type:{
                 AlertDialog.Builder builder=new AlertDialog.Builder(this);
@@ -428,11 +434,62 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             public void onClick(View v) {
                 if(isbig){
                     customConfig.setDefConfigBigVideoConfig(fpsSeekBar.getProgress(),bitrateSeekBar.getProgress());
-                    ((TextView)findViewById(R.id.video_config_big_text)).setText("("+ customConfig.getBigVideoFPS() +"/"+customConfig.getBigVideoBitrate()+")");
+                    ((TextView)findViewById(R.id.video_config_big_text)).setText("("+ customConfig.getBigVideoFPS() +"fps/"+customConfig.getBigVideoBitrate()+"kbps)");
                 }else{
                     customConfig.setDefConfigSmallVideoConfig(fpsSeekBar.getProgress(),bitrateSeekBar.getProgress());
-                    ((TextView)findViewById(R.id.video_config_small_text)).setText("("+ customConfig.getSmallVideoFPS() +"/"+customConfig.getSmallVideoBitrate()+")");
+                    ((TextView)findViewById(R.id.video_config_small_text)).setText("("+ customConfig.getSmallVideoFPS() +"fps/"+customConfig.getSmallVideoBitrate()+"kbps)");
                 }
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.btn_no).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showAudioDialog(){
+        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
+        dialog.setContentView(R.layout.dialog_video_config_setting);
+        Window win = dialog.getWindow();
+        win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        win.setGravity(Gravity.CENTER);
+        dialog.setCanceledOnTouchOutside(true);
+
+        final TextView fpsTxt = (TextView) dialog.findViewById(R.id.fps_txt);
+        final SeekBar fpsSeekBar = (SeekBar) dialog.findViewById(R.id.fps_seekbar);
+        final TextView bitrateTxt = (TextView) dialog.findViewById(R.id.bitrate_txt);
+        final SeekBar bitrateSeekBar = (SeekBar) dialog.findViewById(R.id.bitrate_seekbar);
+
+        fpsTxt.setVisibility(View.GONE);
+        fpsSeekBar.setVisibility(View.GONE);
+
+        bitrateSeekBar.setMax(128);
+        bitrateSeekBar.setProgress(customConfig.getAudioBitrate());
+        bitrateTxt.setText("音频码率:"+customConfig.getAudioBitrate());
+
+
+        bitrateSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                bitrateTxt.setText("音频码率:"+progress);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+
+        dialog.findViewById(R.id.btn_yes).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customConfig.setDefConfigAudioBitRate(bitrateSeekBar.getProgress());
+                ((TextView)findViewById(R.id.audio_bitrate_text)).setText(customConfig.getAudioBitrate() +"kbps");
                 dialog.dismiss();
             }
         });
