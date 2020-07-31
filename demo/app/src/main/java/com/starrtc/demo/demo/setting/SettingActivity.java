@@ -255,7 +255,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                             }
                         }
                         if(customConfig.setDefConfigVideoSize(selected)){
-                            MLOC.d("Setting","Setting selected "+ selected.toString());
+                            MLOC.d("Setting","Setting  selected  "+ selected.toString());
                             ((TextView)findViewById(R.id.video_size_text)).setText("("+ customConfig.getVideoSizeName() +")");
                         }else{
                             MLOC.showMsg(SettingActivity.this,"设备无法支持所选配置");
@@ -368,6 +368,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                     findViewById(R.id.aecurl_switch).setSelected(false);
                     MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","0");
                 }else{
+
                     MLOC.AEventCenterEnable = true;
                     findViewById(R.id.aecurl_switch).setSelected(true);
                     MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","1");
