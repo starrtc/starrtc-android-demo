@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.starrtc.demo.demo.MLOC;
 import com.starrtc.demo.demo.beauty.DemoVideoSourceCallback;

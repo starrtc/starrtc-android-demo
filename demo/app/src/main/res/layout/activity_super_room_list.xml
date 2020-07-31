@@ -11,7 +11,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
         <include layout="@layout/ui_title_bar"/>
-        <android.support.v4.widget.SwipeRefreshLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -27,7 +27,7 @@
                 android:paddingRight="10dp"
                 android:dividerHeight="1px"
                 />
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <RelativeLayout
             android:id="@+id/create_btn"

@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 import com.starrtc.demo.R;
 
 
-public class RoundImageView extends android.support.v7.widget.AppCompatImageView {
+public class RoundImageView extends androidx.appcompat.widget.AppCompatImageView {
     private int mBorderThickness = 0;
     private Context mContext;
     private int defaultColor = 0xFFFFFFFF;
