@@ -26,6 +26,14 @@
                 android:layout_height="80dp"
                 android:padding="1dp"
                 />
+            <TextView
+                android:id="@+id/fps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:text="fps:30/30"
+                android:textColor="#FF0000"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="0dp"

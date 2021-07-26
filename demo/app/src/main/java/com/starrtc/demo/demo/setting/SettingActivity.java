@@ -26,8 +26,8 @@ import com.starrtc.demo.demo.test.LoopTestActivity;
 import com.starrtc.demo.demo.thirdstream.RtspTestListActivity;
 import com.starrtc.demo.utils.AEvent;
 import com.starrtc.starrtcsdk.api.XHClient;
-import com.starrtc.starrtcsdk.api.XHCustomConfig;
 import com.starrtc.starrtcsdk.api.XHConstants;
+import com.starrtc.starrtcsdk.api.XHCustomConfig;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
     /***
@@ -70,6 +70,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.aec_switch).setOnClickListener(this);
         findViewById(R.id.agc_switch).setOnClickListener(this);
         findViewById(R.id.ns_switch).setOnClickListener(this);
+        findViewById(R.id.camera2_switch).setOnClickListener(this);
         findViewById(R.id.audio_process_qulity_switch).setOnClickListener(this);
         findViewById(R.id.log_switch).setOnClickListener(this);
         findViewById(R.id.hard_encode_switch).setOnClickListener(this);
@@ -100,6 +101,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.aec_switch).setSelected(customConfig.getAudioProcessAECEnable());
         findViewById(R.id.agc_switch).setSelected(customConfig.getAudioProcessAGCEnable());
         findViewById(R.id.ns_switch).setSelected(customConfig.getAudioProcessNSEnable());
+        findViewById(R.id.camera2_switch).setSelected(customConfig.getCamera2Enable());
         findViewById(R.id.audio_process_qulity_switch).setSelected(customConfig.getAECConfigQulity() ==
                 XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
         ((TextView)findViewById(R.id.video_config_big_text)).setText("("+ customConfig.getBigVideoFPS() +"/"+customConfig.getBigVideoBitrate()+")");
@@ -134,19 +136,19 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_server_set:
-                startActivity(new Intent(this,SetupServerHostActivity.class));
+                startActivity(new Intent(this, SetupServerHostActivity.class));
                 break;
             case R.id.btn_test_loop:
-                startActivity(new Intent(this,LoopTestActivity.class));
+                startActivity(new Intent(this, LoopTestActivity.class));
                 break;
             case R.id.btn_test_rtsp:
-                startActivity(new Intent(this,RtspTestListActivity.class));
+                startActivity(new Intent(this, RtspTestListActivity.class));
                 break;
             case R.id.btn_test_superroom:
                 startActivity(new Intent(this, AudioLiveListActivity.class));
                 break;
             case R.id.btn_test_p2p:
-                startActivity(new Intent(this,VoipP2PDemoActivity.class));
+                startActivity(new Intent(this, VoipP2PDemoActivity.class));
                 break;
             case R.id.no_audio_switch:
                 customConfig.setDefConfigAudioEnable(customConfig.getAudioEnable() ?false:true);
@@ -255,7 +257,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                             }
                         }
                         if(customConfig.setDefConfigVideoSize(selected)){
-                            MLOC.d("Setting","Setting  selected  "+ selected.toString());
+                            MLOC.d("Setting","Setting selected "+ selected.toString());
                             ((TextView)findViewById(R.id.video_size_text)).setText("("+ customConfig.getVideoSizeName() +")");
                         }else{
                             MLOC.showMsg(SettingActivity.this,"设备无法支持所选配置");
@@ -300,7 +302,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_about:
-                startActivity(new Intent(this,AboutActivity.class));
+                startActivity(new Intent(this, AboutActivity.class));
                 break;
 //            case R.id.btn_uploadlogs:
 //                customConfig.uploadLogs();
@@ -353,12 +355,16 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                     findViewById(R.id.ns_switch).setSelected(false);
                 }
                 break;
+            case R.id.camera2_switch:
+                customConfig.setDefConfigCamera2Enable(customConfig.getCamera2Enable()?false:true);
+                findViewById(R.id.camera2_switch).setSelected(customConfig.getCamera2Enable());
+                break;
             case R.id.audio_process_qulity_switch:
                 customConfig.setDefConfigAECConfigQulity(
                         customConfig.getAECConfigQulity() ==
                                 XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY
-                                ?XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY
-                                :XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY);
+                                ? XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY
+                                : XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_HIGH_QULITY);
                 findViewById(R.id.audio_process_qulity_switch).setSelected(customConfig.getAECConfigQulity() ==
                         XHConstants.XHAudioAECQulityEnum.AUDIO_AEC_LOW_QULITY?true:false);
                 break;
@@ -368,7 +374,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                     findViewById(R.id.aecurl_switch).setSelected(false);
                     MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","0");
                 }else{
-
                     MLOC.AEventCenterEnable = true;
                     findViewById(R.id.aecurl_switch).setSelected(true);
                     MLOC.saveSharedData(SettingActivity.this,"AEC_ENABLE","1");
@@ -379,7 +384,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
 
 
     private void showAddDialog(final Boolean isbig){
-        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
+        final Dialog dialog = new Dialog(this, R.style.dialog_popup);
         dialog.setContentView(R.layout.dialog_video_config_setting);
         Window win = dialog.getWindow();
         win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -454,7 +459,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void showAudioDialog(){
-        final Dialog dialog = new Dialog(this,R.style.dialog_popup);
+        final Dialog dialog = new Dialog(this, R.style.dialog_popup);
         dialog.setContentView(R.layout.dialog_video_config_setting);
         Window win = dialog.getWindow();
         win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -472,7 +477,6 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         bitrateSeekBar.setMax(128);
         bitrateSeekBar.setProgress(customConfig.getAudioBitrate());
         bitrateTxt.setText("音频码率:"+customConfig.getAudioBitrate());
-
 
         bitrateSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

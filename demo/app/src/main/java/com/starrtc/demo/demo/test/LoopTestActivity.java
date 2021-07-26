@@ -1,10 +1,12 @@
 package com.starrtc.demo.demo.test;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.starrtc.demo.R;
 import com.starrtc.demo.demo.BaseActivity;
@@ -16,14 +18,14 @@ import com.starrtc.starrtcsdk.core.player.StarPlayer;
 
 import java.util.Set;
 
-public class LoopTestActivity extends BaseActivity{
+public class LoopTestActivity extends BaseActivity {
 
     private StarPlayer selfPlayer;
     private StarPlayer selfSmallPlayer;
     private StarPlayer targetPlayer;
     private StarPlayer targetSmallPlayer;
-
     private StarRTCAudioManager starRTCAudioManager;
+    private TextView fpsValue ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,14 +104,44 @@ public class LoopTestActivity extends BaseActivity{
                     selfPlayer,2,
                     selfSmallPlayer,3);
         }
-    }
+        fpsValue = (TextView) findViewById(R.id.fps);
+        countDownTimer.start();
 
+    }
+    private CountDownTimer countDownTimer = new CountDownTimer(1200000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            fpsValue.setText("FPS:"+ StarRtcCore.cameraRealFps+"/"+ StarRtcCore.encoderRealFps);
+        }
+
+        @Override
+        public void onFinish() {
+        }
+    };
     @Override
     public void onBackPressed() {
         StarRtcCore.getInstance().stopLoopTest();
         if(starRTCAudioManager!=null){
             starRTCAudioManager.stop();
         }
+        if(targetSmallPlayer!=null){
+            targetSmallPlayer.release();
+            targetSmallPlayer = null;
+        }
+        if(targetPlayer!=null){
+            targetPlayer.release();
+            targetPlayer = null;
+        }
+        if(selfPlayer!=null){
+            selfPlayer.release();
+            selfPlayer = null;
+        }
+        if(selfSmallPlayer!=null){
+            selfSmallPlayer.release();
+            selfSmallPlayer = null;
+        }
+        countDownTimer.cancel();
         finish();
     }
 }
